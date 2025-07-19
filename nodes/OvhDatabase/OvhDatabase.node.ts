@@ -300,12 +300,22 @@ export class OvhDatabase implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['service', 'database', 'user', 'backup'],
-						operation: ['get', 'delete', 'update', 'create', 'getAll', 'resetPassword', 'restore'],
-					},
-					hide: {
 						resource: ['service'],
-						operation: ['getAll', 'create'],
+						operation: ['get', 'delete', 'update'],
+					},
+				},
+				description: 'The database service ID',
+			},
+			// Service ID field for other resources
+			{
+				displayName: 'Service ID',
+				name: 'serviceId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['database', 'user', 'backup'],
 					},
 				},
 				description: 'The database service ID',

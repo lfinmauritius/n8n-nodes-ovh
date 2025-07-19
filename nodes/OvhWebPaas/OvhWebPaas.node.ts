@@ -329,11 +329,23 @@ export class OvhWebPaas implements INodeType {
 				description: 'The Web PaaS service name (subscription ID)',
 				displayOptions: {
 					show: {
-						resource: ['project', 'environment', 'deployment', 'user', 'certificate'],
-					},
-					hide: {
 						resource: ['project'],
-						operation: ['getAll', 'create'],
+						operation: ['get', 'update', 'delete'],
+					},
+				},
+			},
+			// Service name field for other resources
+			{
+				displayName: 'Service Name',
+				name: 'serviceName',
+				type: 'string',
+				default: '',
+				required: true,
+				placeholder: 'webpaas-xxxxxxxxxx',
+				description: 'The Web PaaS service name (subscription ID)',
+				displayOptions: {
+					show: {
+						resource: ['environment', 'deployment', 'user', 'certificate'],
 					},
 				},
 			},
@@ -360,12 +372,36 @@ export class OvhWebPaas implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['environment', 'deployment', 'certificate'],
-						operation: ['get', 'activate', 'deactivate', 'getAll', 'trigger', 'add', 'delete'],
+						resource: ['environment'],
+						operation: ['get', 'activate', 'deactivate', 'trigger'],
 					},
-					hide: {
-						resource: ['environment', 'deployment'],
-						operation: ['getAll'],
+				},
+			},
+			// Environment ID field for deployments
+			{
+				displayName: 'Environment ID',
+				name: 'environmentId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['deployment'],
+						operation: ['getAll', 'trigger'],
+					},
+				},
+			},
+			// Environment ID field for certificates
+			{
+				displayName: 'Environment ID',
+				name: 'environmentId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['certificate'],
+						operation: ['get', 'getAll', 'add', 'delete'],
 					},
 				},
 			},

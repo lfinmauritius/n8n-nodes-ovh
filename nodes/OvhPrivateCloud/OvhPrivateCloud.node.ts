@@ -253,11 +253,23 @@ export class OvhPrivateCloud implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['service', 'datacenter', 'vm', 'user', 'task'],
-					},
-					hide: {
 						resource: ['service'],
-						operation: ['getAll'],
+						operation: ['get', 'update'],
+					},
+				},
+				placeholder: 'pcc-xxx-xxx-xxx-xxx',
+				description: 'The Private Cloud service name',
+			},
+			// Service name field for other resources
+			{
+				displayName: 'Service Name',
+				name: 'serviceName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['datacenter', 'vm', 'user', 'task'],
 					},
 				},
 				placeholder: 'pcc-xxx-xxx-xxx-xxx',
@@ -272,15 +284,24 @@ export class OvhPrivateCloud implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['datacenter', 'vm'],
-						operation: ['get', 'getAll', 'powerOff', 'powerOn', 'reset', 'revertSnapshot'],
-					},
-					hide: {
 						resource: ['datacenter'],
-						operation: ['getAll'],
+						operation: ['get'],
 					},
 				},
-
+			},
+			// Datacenter ID field for VMs
+			{
+				displayName: 'Datacenter ID',
+				name: 'datacenterId',
+				type: 'number',
+				default: 0,
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vm'],
+						operation: ['get', 'getAll', 'powerOff', 'powerOn', 'reset', 'revertSnapshot'],
+					},
+				},
 			},
 			// VM ID field
 			{

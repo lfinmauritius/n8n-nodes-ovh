@@ -183,12 +183,21 @@ export class OvhContainerRegistry implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['registry', 'user'],
-						operation: ['get', 'delete', 'update', 'getAll', 'create'],
-					},
-					hide: {
 						resource: ['registry'],
-						operation: ['getAll', 'create'],
+						operation: ['get', 'delete', 'update'],
+					},
+				},
+			},
+			// Registry ID field for users
+			{
+				displayName: 'Registry ID',
+				name: 'registryId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['user'],
 					},
 				},
 			},

@@ -318,12 +318,22 @@ export class OvhCompute implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['instance', 'instanceBackup'],
-						operation: ['get', 'delete', 'update', 'start', 'stop', 'reboot', 'reinstall', 'resize', 'getAll', 'create', 'restore'],
-					},
-					hide: {
 						resource: ['instance'],
-						operation: ['getAll', 'create'],
+						operation: ['get', 'delete', 'update', 'start', 'stop', 'reboot', 'reinstall', 'resize'],
+					},
+				},
+			},
+			// Instance ID field for backups
+			{
+				displayName: 'Instance ID',
+				name: 'instanceId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['instanceBackup'],
+						operation: ['getAll', 'create', 'get', 'delete', 'restore'],
 					},
 				},
 			},

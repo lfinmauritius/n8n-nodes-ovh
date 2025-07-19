@@ -38,7 +38,8 @@
       "Bash(do sed -i '/^function sha1/,/^}$/d' \"$file\")",
       "Bash(do echo \"=== $file ===\")",
       "Bash(node:*)",
-      "Bash(npm version:*)"
+      "Bash(npm version:*)",
+      "WebFetch(domain:api.ovh.com)"
     ],
     "deny": []
   }

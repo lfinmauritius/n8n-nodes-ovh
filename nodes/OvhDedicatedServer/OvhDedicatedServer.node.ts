@@ -173,11 +173,39 @@ export class OvhDedicatedServer implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['server', 'task', 'ip'],
-						operation: ['get', 'getHardware', 'getNetwork', 'getServiceInfo', 'reboot', 'getAll', 'cancel'],
-					},
-					hide: {
 						resource: ['server'],
+						operation: ['get', 'getHardware', 'getNetwork', 'getServiceInfo', 'reboot'],
+					},
+				},
+				placeholder: 'ns1234567.ip-1-2-3.eu',
+				description: 'The server name to operate on',
+			},
+			// Server name field for tasks
+			{
+				displayName: 'Server Name',
+				name: 'serverName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['task'],
+						operation: ['getAll', 'get', 'cancel'],
+					},
+				},
+				placeholder: 'ns1234567.ip-1-2-3.eu',
+				description: 'The server name to operate on',
+			},
+			// Server name field for IPs
+			{
+				displayName: 'Server Name',
+				name: 'serverName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ip'],
 						operation: ['getAll'],
 					},
 				},

@@ -195,12 +195,22 @@ export class OvhKubernetes implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['cluster', 'nodePool', 'kubeconfig'],
-						operation: ['get', 'delete', 'update', 'reset', 'getAll', 'create'],
-					},
-					hide: {
 						resource: ['cluster'],
-						operation: ['getAll', 'create'],
+						operation: ['get', 'delete', 'update', 'reset'],
+					},
+				},
+				description: 'The Kubernetes cluster ID',
+			},
+			// Cluster ID field for other resources
+			{
+				displayName: 'Cluster ID',
+				name: 'clusterId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['nodePool', 'kubeconfig'],
 					},
 				},
 				description: 'The Kubernetes cluster ID',
