@@ -178,7 +178,7 @@ export class OvhDedicatedServer implements INodeType {
 						name: 'Get Many',
 						value: 'getAll',
 						description: 'Get many IPs',
-						action: 'Get many IPs',
+						action: 'Get many i ps',
 					},
 				],
 				default: 'get',
