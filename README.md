@@ -22,16 +22,27 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Update**: Update domain settings (e.g., transfer lock status)
 
 #### DNS Zone Operations
-- **Export**: Export a DNS zone
+- **Export**: Export a DNS zone (returns complete zone content in `zoneContent` field)
 - **Import**: Import a DNS zone from a zone file
 - **Refresh**: Refresh a DNS zone
 
 #### DNS Record Operations
 - **Get**: Get information about a specific DNS record
-- **Get Many**: List DNS records filtered by type (A, AAAA, CNAME, MX, NS, PTR, SRV, TXT)
+- **Get All Detailed**: Get detailed information for all DNS records of a specific type (replaces Get Many for better data structure)
 - **Create**: Create a new DNS record with subdomain, target, TTL, and priority (for MX/SRV)
 - **Update**: Update existing DNS record properties
 - **Delete**: Delete a DNS record
+
+#### Nameserver Operations
+- **Get**: Get information about a specific nameserver
+- **Get Many**: List all nameservers for a domain (returns nameserver names, IDs, and types)
+- **Update**: Update domain nameservers
+
+#### Contact Operations
+- **Get**: Get domain contact information by type (Owner, Admin, Tech, Billing)
+  - Returns proper contact IDs extracted from OVH API structure
+  - Includes additional domain information (state, expiration, transfer lock status)
+- **Update**: Update domain contacts by assigning new contact IDs
 
 ### OVH Dedicated Server Node
 
@@ -380,21 +391,26 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
-### Version 0.5.8 - January 2025
-- **🚀 OVH Domain node now active** - Full domain and DNS management capabilities
+### Version 0.7.6 - January 2025
+- **🚀 Complete OVH Domain node implementation** - Full domain and DNS management capabilities
+- **🔧 Major API improvements and bug fixes**:
+  - **Contact Get**: Fixed to properly extract contact IDs from OVH API structure (`contactOwner.id`, etc.)
+  - **Nameserver Get Many**: Now returns nameserver names, IDs, and types instead of just IDs
+  - **Zone Export**: Returns complete zone content in `zoneContent` field instead of individual characters
+  - **DNS Records**: Removed redundant "Get Many" operation, enhanced "Get All Detailed" for better data structure
 - **✨ Enhanced OVH Dedicated Server** with comprehensive server management:
   - **Installation management**: OS template installation with status monitoring
   - **Network management**: Virtual MAC, secondary DNS, IP block operations
   - **Security management**: Firewall and IP spoof protection configuration
   - **Server options**: Available options and add-ons management
   - **Interventions**: Hardware intervention tracking and management
-- **🛡️ Improved error handling** with graceful handling of unavailable features
-- **🔧 Smart API endpoint validation** preventing 404 errors for server-specific features
-- **📊 Better response formatting** for array data with meaningful object structures
 
-### Key Improvements
+### Key Improvements (v0.7.1 - v0.7.6)
+- **Correct API mapping**: Fixed Contact operations to use proper OVH API response structure
+- **Enhanced data presentation**: Nameserver operations return meaningful object structures
+- **Better zone handling**: Zone Export returns complete content instead of parsing errors
+- **Simplified interface**: Removed redundant operations to improve user experience
 - **Graceful degradation**: Features unavailable on specific servers return informative messages instead of errors
-- **Enhanced data presentation**: Array responses now include descriptive field names (e.g., `{taskId: 123, id: 123}` instead of just `123`)
 - **Robust validation**: Empty field validation with clear error messages
 - **Optimized API calls**: Proper content-type handling and signature generation
 
