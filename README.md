@@ -391,7 +391,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
-### Version 0.7.6 - January 2025
+### Version 0.7.6 - July 2025
 - **🚀 Complete OVH Domain node implementation** - Full domain and DNS management capabilities
 - **🔧 Major API improvements and bug fixes**:
   - **Contact Get**: Fixed to properly extract contact IDs from OVH API structure (`contactOwner.id`, etc.)
