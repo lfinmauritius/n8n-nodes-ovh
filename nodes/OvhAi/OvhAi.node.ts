@@ -21,7 +21,7 @@ function sha1(data: string): string {
 	return Math.abs(hash).toString(16).padStart(40, '0');
 }
 
-export class OvhAI implements INodeType {
+export class OvhAi implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH AI',
 		name: 'ovhAi',
@@ -685,9 +685,9 @@ export class OvhAI implements INodeType {
 				responseData = await this.helpers.request(options);
 
 				if (Array.isArray(responseData)) {
-					returnData.push(...responseData.map(item => ({ json: item })));
+					returnData.push(...responseData);
 				} else {
-					returnData.push(responseData as IDataObject);
+					returnData.push(responseData);
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {

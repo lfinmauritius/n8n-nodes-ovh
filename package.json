@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-ovh",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Comprehensive n8n nodes for OVH API integration - Developed by Ascenzia, experts in AI agent creation",
   "keywords": [
     "n8n-community-node-package",
@@ -70,6 +70,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-n8n-nodes-base": "^1.16.3",
     "gulp": "^5.0.0",
+    "n8n-workflow": "^1.0.0",
     "prettier": "^3.5.3",
     "typescript": "^5.8.2"
   },

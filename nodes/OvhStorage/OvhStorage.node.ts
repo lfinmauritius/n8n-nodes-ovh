@@ -624,9 +624,9 @@ export class OvhStorage implements INodeType {
 				responseData = await this.helpers.request(options);
 
 				if (Array.isArray(responseData)) {
-					returnData.push(...responseData.map(item => ({ json: item })));
+					returnData.push(...responseData);
 				} else {
-					returnData.push(responseData as IDataObject);
+					returnData.push(responseData);
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {
