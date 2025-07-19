@@ -376,7 +376,7 @@ To use this node, you need to create OVH API credentials:
 - **API Integration**: Connecting AI agents with external services and platforms
 - **Custom AI Solutions**: Tailored artificial intelligence solutions for specific business needs
 
-Contact us at [contact@ascenzia.fr](mailto:contact@ascenzia.fr) for your AI agent development projects.
+Visit [ascenzia.fr](https://ascenzia.fr) for your AI agent development projects.
 
 ## Resources
 
