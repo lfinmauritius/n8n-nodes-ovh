@@ -8,18 +8,8 @@ import {
 	IRequestOptions,
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { createHash } from 'crypto';
 
-function sha1(data: string): string {
-	// Simple SHA1 implementation for OVH signature
-	// In production, you might want to use a proper crypto library
-	let hash = 0;
-	for (let i = 0; i < data.length; i++) {
-		const char = data.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
-		hash = hash & hash; // Convert to 32-bit integer
-	}
-	return Math.abs(hash).toString(16).padStart(40, '0');
-}
 
 export class OvhDataProcessing implements INodeType {
 	description: INodeTypeDescription = {
@@ -471,18 +461,28 @@ export class OvhDataProcessing implements INodeType {
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
 				
-				// Create signature
-				const toSign = [
+				// Prepare body for signature exactly like official OVH SDK
+				let bodyForSignature = '';
+				if (method === 'POST') {
+					if (Object.keys(body).length > 0) {
+						// Match official OVH SDK: JSON.stringify + unicode escaping
+						bodyForSignature = JSON.stringify(body).replace(/[\u0080-\uFFFF]/g, (m) => {
+							return '\\u' + ('0000' + m.charCodeAt(0).toString(16)).slice(-4);
+						});
+					}
+				}
+
+				// Generate signature exactly like official OVH SDK
+				const signatureElements = [
 					applicationSecret,
 					consumerKey,
 					method,
 					fullUrl,
-					JSON.stringify(body),
+					bodyForSignature,
 					timestamp,
-				].join('+');
-				
-				// Generate OVH signature
-				const signature = '$1$' + sha1(toSign);
+				];
+
+				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const options: IRequestOptions = {
 					method,

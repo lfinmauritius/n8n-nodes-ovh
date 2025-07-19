@@ -82,16 +82,15 @@ export class OvhApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: '={{$credentials.endpoint}}',
-			url: '/me',
+			url: '/auth/time',
 			method: 'GET',
 		},
 		rules: [
 			{
-				type: 'responseSuccessBody',
+				type: 'responseCode',
 				properties: {
-					key: 'nichandle',
-					value: '',
-					message: 'Invalid credentials',
+					value: 200,
+					message: 'Connection successful! Authentication will be verified when using the nodes. Make sure your Application Key, Application Secret, and Consumer Key are correct.',
 				},
 			},
 		],

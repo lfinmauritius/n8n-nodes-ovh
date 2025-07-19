@@ -8,18 +8,8 @@ import {
 	IRequestOptions,
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { createHash } from 'crypto';
 
-function sha1(data: string): string {
-	// Simple SHA1 implementation for OVH signature
-	// In production, you might want to use a proper crypto library
-	let hash = 0;
-	for (let i = 0; i < data.length; i++) {
-		const char = data.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
-		hash = hash & hash; // Convert to 32-bit integer
-	}
-	return Math.abs(hash).toString(16).padStart(40, '0');
-}
 
 export class OvhDomain implements INodeType {
 	description: INodeTypeDescription = {
@@ -464,13 +454,19 @@ export class OvhDomain implements INodeType {
 				if (resource === 'domain') {
 					if (operation === 'get') {
 						const domain = this.getNodeParameter('domain', i) as string;
-						path = `/domain/${domain}`;
+						if (!domain || domain.trim() === '') {
+							throw new NodeOperationError(this.getNode(), 'Domain name is required', { itemIndex: i });
+						}
+						path = `/domain/${domain.trim()}`;
 					} else if (operation === 'getAll') {
 						path = '/domain';
 					} else if (operation === 'update') {
 						method = 'PUT';
 						const domain = this.getNodeParameter('domain', i) as string;
-						path = `/domain/${domain}`;
+						if (!domain || domain.trim() === '') {
+							throw new NodeOperationError(this.getNode(), 'Domain name is required', { itemIndex: i });
+						}
+						path = `/domain/${domain.trim()}`;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						
 						if (updateFields.transferLockStatus) {
@@ -479,12 +475,17 @@ export class OvhDomain implements INodeType {
 					}
 				} else if (resource === 'record') {
 					const zoneName = this.getNodeParameter('zoneName', i) as string;
+					if (!zoneName || zoneName.trim() === '') {
+						throw new NodeOperationError(this.getNode(), 'Zone name is required', { itemIndex: i });
+					}
+					
+					const zoneNameTrimmed = zoneName.trim();
 					
 					if (operation === 'get') {
 						const recordId = this.getNodeParameter('recordId', i) as number;
-						path = `/domain/zone/${zoneName}/record/${recordId}`;
+						path = `/domain/zone/${zoneNameTrimmed}/record/${recordId}`;
 					} else if (operation === 'getAll') {
-						path = `/domain/zone/${zoneName}/record`;
+						path = `/domain/zone/${zoneNameTrimmed}/record`;
 						const recordType = this.getNodeParameter('recordType', i) as string;
 						path += `?fieldType=${recordType}`;
 					} else if (operation === 'create') {
@@ -494,7 +495,7 @@ export class OvhDomain implements INodeType {
 						const target = this.getNodeParameter('target', i) as string;
 						const ttl = this.getNodeParameter('ttl', i) as number;
 						
-						path = `/domain/zone/${zoneName}/record`;
+						path = `/domain/zone/${zoneNameTrimmed}/record`;
 						body = {
 							fieldType: recordType,
 							subDomain: subdomain,
@@ -511,7 +512,7 @@ export class OvhDomain implements INodeType {
 						method = 'PUT';
 						const recordId = this.getNodeParameter('recordId', i) as number;
 						const recordUpdateFields = this.getNodeParameter('recordUpdateFields', i) as IDataObject;
-						path = `/domain/zone/${zoneName}/record/${recordId}`;
+						path = `/domain/zone/${zoneNameTrimmed}/record/${recordId}`;
 						
 						if (recordUpdateFields.subdomain !== undefined) body.subDomain = recordUpdateFields.subdomain;
 						if (recordUpdateFields.target) {
@@ -526,21 +527,26 @@ export class OvhDomain implements INodeType {
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const recordId = this.getNodeParameter('recordId', i) as number;
-						path = `/domain/zone/${zoneName}/record/${recordId}`;
+						path = `/domain/zone/${zoneNameTrimmed}/record/${recordId}`;
 					}
 				} else if (resource === 'zone') {
 					const zoneName = this.getNodeParameter('zoneNameForZone', i) as string;
+					if (!zoneName || zoneName.trim() === '') {
+						throw new NodeOperationError(this.getNode(), 'Domain zone name is required', { itemIndex: i });
+					}
+					
+					const zoneNameTrimmed = zoneName.trim();
 					
 					if (operation === 'export') {
-						path = `/domain/zone/${zoneName}/export`;
+						path = `/domain/zone/${zoneNameTrimmed}/export`;
 					} else if (operation === 'import') {
 						method = 'POST';
-						path = `/domain/zone/${zoneName}/import`;
+						path = `/domain/zone/${zoneNameTrimmed}/import`;
 						const zoneContent = this.getNodeParameter('zoneContent', i) as string;
 						body = { zoneContent };
 					} else if (operation === 'refresh') {
 						method = 'POST';
-						path = `/domain/zone/${zoneName}/refresh`;
+						path = `/domain/zone/${zoneNameTrimmed}/refresh`;
 					}
 				}
 
@@ -548,32 +554,51 @@ export class OvhDomain implements INodeType {
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
 				
-				// Create signature
-				const toSign = [
+				// Prepare body for signature exactly like official OVH SDK
+				let bodyForSignature = '';
+				if (method === 'POST' || method === 'PUT') {
+					if (Object.keys(body).length > 0) {
+						// Match official OVH SDK: JSON.stringify + unicode escaping
+						bodyForSignature = JSON.stringify(body).replace(/[\u0080-\uFFFF]/g, (m) => {
+							return '\\u' + ('0000' + m.charCodeAt(0).toString(16)).slice(-4);
+						});
+					}
+				}
+				
+				// Generate signature exactly like official OVH SDK
+				const signatureElements = [
 					applicationSecret,
 					consumerKey,
 					method,
 					fullUrl,
-					JSON.stringify(body),
+					bodyForSignature,
 					timestamp,
-				].join('+');
+				];
 				
-				// Generate OVH signature
-				const signature = '$1$' + sha1(toSign);
+				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+				// Build headers - only add Content-Type for requests with body
+				const headers: any = {
+					'X-Ovh-Application': applicationKey,
+					'X-Ovh-Consumer': consumerKey,
+					'X-Ovh-Signature': signature,
+					'X-Ovh-Timestamp': timestamp.toString(),
+				};
 
 				const options: IRequestOptions = {
 					method,
 					url: fullUrl,
-					headers: {
-						'X-Ovh-Application': applicationKey,
-						'X-Ovh-Consumer': consumerKey,
-						'X-Ovh-Signature': signature,
-						'X-Ovh-Timestamp': timestamp.toString(),
-						'Content-Type': 'application/json',
-					},
-					body,
-					json: true,
+					headers,
 				};
+
+				// Only add body and content-type for POST/PUT requests
+				if (method === 'POST' || method === 'PUT') {
+					if (Object.keys(body).length > 0) {
+						options.body = body;
+						options.json = true;
+						headers['Content-Type'] = 'application/json';
+					}
+				}
 
 				responseData = await this.helpers.request(options);
 
