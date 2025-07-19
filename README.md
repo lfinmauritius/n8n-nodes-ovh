@@ -1,48 +1,393 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+# n8n-nodes-ovh
 
-# n8n-nodes-starter
+This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, Web PaaS, and private network tasks.
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](https://n8n.io). It includes the node linter and other dependencies.
+**Developed by [Ascenzia](https://ascenzia.fr)** - Your trusted partner for AI agent creation and automation.
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+## Installation
 
-If you would like your node to be available on n8n cloud you can also [submit your node for verification](https://docs.n8n.io/integrations/creating-nodes/deploy/submit-community-nodes/).
+Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-## Prerequisites
+## Nodes
 
-You need the following installed on your development machine:
+### OVH Domain Node
 
-* [git](https://git-scm.com/downloads)
-* Node.js and npm. Minimum version Node 20. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-  ```
-  npm install n8n -g
-  ```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+#### Domain Operations
+- **Get**: Retrieve information about a specific domain
+- **Get Many**: List all your domains
+- **Update**: Update domain settings (e.g., transfer lock status)
 
-## Using this starter
+#### DNS Zone Operations
+- **Export**: Export a DNS zone
+- **Import**: Import a DNS zone from a zone file
+- **Refresh**: Refresh a DNS zone
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+#### DNS Record Operations
+- **Get**: Get information about a specific DNS record
+- **Get Many**: List DNS records filtered by type (A, AAAA, CNAME, MX, NS, PTR, SRV, TXT)
+- **Create**: Create a new DNS record with subdomain, target, TTL, and priority (for MX/SRV)
+- **Update**: Update existing DNS record properties
+- **Delete**: Delete a DNS record
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-   ```
-   git clone https://github.com/<your organization>/<your-repo-name>.git
-   ```
-3. Run `npm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `npm run lint` to check for errors or `npm run lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+### OVH Dedicated Server Node
 
-## More information
+#### Server Operations
+- **Get**: Get server information
+- **Get Many**: List all your dedicated servers
+- **Get Hardware**: Get server hardware specifications
+- **Get Network**: Get server network specifications
+- **Get Service Info**: Get server service information
+- **Reboot**: Reboot the server
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+#### Task Operations
+- **Get**: Get task information
+- **Get Many**: List server tasks (with optional status filter)
+- **Cancel**: Cancel a running task
+
+#### IP Operations
+- **Get**: Get information about a specific IP
+- **Get Many**: List all IPs associated with a server
+
+### OVH Private Cloud Node
+
+#### Service Operations
+- **Get**: Get service information
+- **Get Many**: List all your private cloud services
+- **Get Service Info**: Get service subscription information
+
+#### Datacenter Operations
+- **Get**: Get datacenter information
+- **Get Many**: List all datacenters in a service
+
+#### Virtual Machine Operations
+- **Get**: Get virtual machine information
+- **Get Many**: List all virtual machines in a datacenter
+- **Power Off**: Power off a virtual machine
+- **Power On**: Power on a virtual machine
+- **Reset**: Reset a virtual machine
+- **Revert Snapshot**: Revert VM to a specific snapshot
+
+#### User Operations
+- **Get**: Get user information
+- **Get Many**: List all users in a service
+- **Create**: Create a new user
+- **Update**: Update user information
+- **Delete**: Delete a user
+
+#### Task Operations
+- **Get**: Get task information
+- **Get Many**: List all tasks for a service
+
+### OVH AI Node
+
+#### Project Operations
+- **Get**: Get cloud project information
+- **Get Many**: List all your cloud projects
+
+#### AI App Operations
+- **Get**: Get AI application information
+- **Get Many**: List all AI applications in a project
+- **Create**: Create a new AI application
+- **Update**: Update AI application settings (replicas, auto-scaling)
+- **Delete**: Delete an AI application
+
+#### Training Job Operations
+- **Get**: Get training job information
+- **Get Many**: List all training jobs in a project
+- **Create**: Create a new training job
+- **Stop**: Stop a running training job
+- **Delete**: Delete a training job
+
+#### Model Operations
+- **Get**: Get model information
+- **Get Many**: List all deployed models in a project
+- **Delete**: Delete a deployed model
+
+#### Notebook Operations
+- **Get**: Get notebook information
+- **Get Many**: List all notebooks in a project
+- **Create**: Create a new notebook (Jupyter, JupyterLab, VSCode)
+- **Start**: Start a notebook instance
+- **Stop**: Stop a notebook instance
+- **Delete**: Delete a notebook
+
+### OVH Data Processing Node
+
+#### Job Operations
+- **Get**: Get data processing job information
+- **Get Many**: List all data processing jobs in a project (with optional status filter)
+- **Create**: Create a new data processing job (Spark with configurable resources)
+- **Stop**: Stop a running data processing job
+- **Delete**: Delete a data processing job
+- **Get Logs**: Retrieve job execution logs
+
+#### Capability Operations
+- **Get Many**: List available data processing capabilities
+
+#### Metrics Operations
+- **Get**: Get job execution metrics and performance data
+
+### OVH Database Node
+
+#### Service Operations
+- **Get**: Get database service information
+- **Get Many**: List all database services in a project
+- **Create**: Create a new managed database service (MySQL, PostgreSQL, Redis, MongoDB)
+- **Update**: Update database service settings (description, maintenance time, backup time)
+- **Delete**: Delete a database service
+
+#### Database Operations
+- **Get**: Get database information
+- **Get Many**: List all databases in a service
+- **Create**: Create a new database in a service
+- **Delete**: Delete a database
+
+#### User Operations
+- **Get**: Get database user information
+- **Get Many**: List all database users in a service
+- **Create**: Create a new database user
+- **Reset Password**: Reset a user's password
+- **Delete**: Delete a database user
+
+#### Backup Operations
+- **Get**: Get backup information
+- **Get Many**: List all backups for a service
+- **Create**: Create a manual backup
+- **Restore**: Restore from a backup
+- **Delete**: Delete a backup
+
+#### Capability Operations
+- **Get Many**: List database service capabilities and available engines
+
+#### Availability Operations
+- **Get Many**: List database service availability by region
+
+### OVH Kubernetes Node
+
+#### Cluster Operations
+- **Get**: Get Kubernetes cluster information
+- **Get Many**: List all Kubernetes clusters in a project
+- **Create**: Create a new Kubernetes cluster with specified version and region
+- **Update**: Update cluster settings (name, version)
+- **Reset**: Reset cluster to default configuration
+- **Delete**: Delete a Kubernetes cluster
+
+#### Node Pool Operations
+- **Get**: Get node pool information
+- **Get Many**: List all node pools in a cluster
+- **Create**: Create a new node pool with autoscaling configuration
+- **Update**: Update node pool settings (desired nodes, min/max nodes, autoscaling)
+- **Delete**: Delete a node pool
+
+#### Kubeconfig Operations
+- **Get**: Get kubeconfig file for cluster access
+- **Reset**: Reset kubeconfig credentials
+
+### OVH Container Registry Node
+
+#### Registry Operations
+- **Get**: Get container registry information
+- **Get Many**: List all container registries in a project
+- **Create**: Create a new managed container registry with specified plan and region
+- **Update**: Update registry settings (name)
+- **Delete**: Delete a container registry
+
+#### User Operations
+- **Get**: Get registry user information
+- **Get Many**: List all users with access to a registry
+- **Create**: Create a new registry user with email and login
+- **Update**: Update user settings (email)
+- **Delete**: Delete a registry user
+
+#### Plan Operations
+- **Get Many**: List available container registry plans and pricing
+
+### OVH Public Cloud Compute Node
+
+#### Instance Operations
+- **Get**: Get compute instance information
+- **Get Many**: List all compute instances in a project
+- **Create**: Create a new compute instance with specified flavor, image, and region
+- **Update**: Update instance settings (name)
+- **Delete**: Delete a compute instance
+- **Start**: Start a stopped compute instance
+- **Stop**: Stop a running compute instance
+- **Reboot**: Reboot a compute instance (soft or hard reboot)
+- **Reinstall**: Reinstall a compute instance with a new image
+- **Resize**: Resize a compute instance to a different flavor
+
+#### Instance Backup Operations
+- **Get**: Get instance backup information
+- **Get Many**: List all backups for an instance
+- **Create**: Create a manual backup of an instance
+- **Restore**: Restore an instance from a backup
+- **Delete**: Delete an instance backup
+
+#### SSH Key Operations
+- **Get**: Get SSH key information
+- **Get Many**: List all SSH keys in a project
+- **Create**: Create a new SSH key pair
+- **Delete**: Delete an SSH key
+
+#### Flavor Operations
+- **Get**: Get flavor (instance type) information
+- **Get Many**: List all available flavors
+
+#### Image Operations
+- **Get**: Get image information
+- **Get Many**: List all available images
+
+#### Region Operations
+- **Get Many**: List all available regions
+
+### OVH Public Cloud Storage Node
+
+#### Container Operations
+- **Get**: Get storage container information
+- **Get Many**: List all storage containers in a project
+- **Create**: Create a new storage container with specified region
+- **Update**: Update container settings (versioning, type)
+- **Delete**: Delete a storage container
+
+#### Credential Operations
+- **Get**: Get storage credentials information
+- **Get Many**: List all storage credentials for a project
+- **Create**: Create new storage access credentials
+- **Delete**: Delete storage credentials
+
+#### User Operations
+- **Get**: Get storage user information
+- **Get Many**: List all storage users in a project
+- **Create**: Create a new storage user with description
+- **Delete**: Delete a storage user
+
+#### Presigned URL Operations
+- **Create**: Create presigned URLs for secure object access (GET/PUT operations)
+
+#### Storage Operations
+- **Get Many**: List all storage services in a project
+
+#### Region Operations
+- **Get Many**: List all available storage regions
+
+### OVH Web PaaS Node
+
+#### Project Operations
+- **Get**: Get Web PaaS project information
+- **Get Many**: List all Web PaaS projects
+- **Create**: Create a new Web PaaS project with specified plan and region
+- **Update**: Update project settings (title, default branch)
+- **Delete**: Delete a Web PaaS project
+
+#### Subscription Operations
+- **Get**: Get subscription information and service details
+- **Get Many**: List all Web PaaS subscriptions
+
+#### Environment Operations
+- **Get**: Get environment information
+- **Get Many**: List all environments in a project
+- **Activate**: Activate an environment
+- **Deactivate**: Deactivate an environment
+
+#### Deployment Operations
+- **Get**: Get deployment information
+- **Get Many**: List all deployments for an environment
+- **Trigger**: Trigger a new deployment
+
+#### User Operations
+- **Get**: Get user information
+- **Get Many**: List all users in a project
+- **Add**: Add a new user to the project with specified role
+- **Update**: Update user permissions and role
+- **Remove**: Remove a user from the project
+
+#### Certificate Operations
+- **Get**: Get SSL certificate information
+- **Get Many**: List all certificates for an environment
+- **Add**: Add a new SSL certificate with private key
+- **Delete**: Delete an SSL certificate
+
+#### Capability Operations
+- **Get Many**: List all available Web PaaS capabilities and features
+
+### OVH Private Network Node
+
+#### vRack Operations
+- **Get**: Get vRack information and configuration
+- **Get Many**: List all vRacks available
+- **Update**: Update vRack settings (name, description)
+
+#### Service Operations
+- **Get Many**: List all services allowed in vRack
+- **Add**: Add a service to vRack (assign)
+- **Remove**: Remove a service from vRack (unassign)
+
+#### Cloud Project Operations
+- **Get Many**: List all cloud projects in vRack
+- **Add**: Add a cloud project to vRack
+- **Remove**: Remove a cloud project from vRack
+
+#### Dedicated Server Operations
+- **Get Many**: List all dedicated servers in vRack
+- **Add**: Add a dedicated server to vRack
+- **Remove**: Remove a dedicated server from vRack
+
+#### IP Block Operations
+- **Get Many**: List all IP blocks in vRack
+- **Add**: Add an IP block to vRack
+- **Remove**: Remove an IP block from vRack
+
+#### Private Network Operations
+- **Get**: Get private network information
+- **Get Many**: List all private networks in a project
+- **Create**: Create a new private network with VLAN configuration
+- **Update**: Update private network settings (name)
+- **Delete**: Delete a private network
+
+#### Task Operations
+- **Get**: Get task information
+- **Get Many**: List all tasks for vRack operations
+
+## Credentials
+
+To use this node, you need to create OVH API credentials:
+
+1. Go to the OVH API token creation page for your region:
+   - EU: https://eu.api.ovh.com/createToken/
+   - CA: https://ca.api.ovh.com/createToken/
+   - US: https://api.us.ovhcloud.com/createToken/
+
+2. Set the required rights for your application (e.g., GET/PUT/POST/DELETE on /domain/*)
+
+3. You'll receive:
+   - Application Key
+   - Application Secret
+   - Consumer Key
+
+4. Add these credentials in n8n when configuring the OVH node
+
+## About Ascenzia
+
+[Ascenzia](https://ascenzia.fr) is a French technology company specializing in AI agent creation and intelligent automation solutions. We help businesses build and deploy sophisticated AI agents that can interact with various APIs and automate complex workflows.
+
+### Our Services
+- **AI Agent Development**: Design and creation of custom AI agents for business automation
+- **Intelligent Workflow Automation**: Building smart workflows with AI decision-making capabilities
+- **API Integration**: Connecting AI agents with external services and platforms
+- **Custom AI Solutions**: Tailored artificial intelligence solutions for specific business needs
+
+Contact us at [contact@ascenzia.fr](mailto:contact@ascenzia.fr) for your AI agent development projects.
+
+## Resources
+
+- [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
+- [OVH API documentation](https://api.ovh.com/)
+- [Ascenzia website](https://ascenzia.fr)
 
 ## License
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+[MIT](LICENSE.md)
+
+---
+
+**© 2025 Ascenzia - Powering AI Agent Innovation**

@@ -1,19 +1,35 @@
 {
-  "name": "n8n-nodes-<...>",
+  "name": "n8n-nodes-ovh",
   "version": "0.1.0",
-  "description": "",
+  "description": "Comprehensive n8n nodes for OVH API integration - Developed by Ascenzia, experts in AI agent creation",
   "keywords": [
-    "n8n-community-node-package"
+    "n8n-community-node-package",
+    "ovh",
+    "domain",
+    "dns",
+    "cloud",
+    "automation",
+    "ascenzia",
+    "ai-agent",
+    "artificial-intelligence",
+    "workflow-automation",
+    "api-integration",
+    "kubernetes",
+    "storage",
+    "compute",
+    "database",
+    "networking"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://ascenzia.fr",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "Ascenzia",
+    "email": "contact@ascenzia.fr",
+    "url": "https://ascenzia.fr"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/<...>/n8n-nodes-<...>.git"
+    "url": "https://github.com/lfinmauritius/n8n-nodes-ovh.git"
   },
   "engines": {
     "node": ">=20.15"
@@ -33,12 +49,21 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/ExampleCredentialsApi.credentials.js",
-      "dist/credentials/HttpBinApi.credentials.js"
+      "dist/credentials/OvhApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/ExampleNode/ExampleNode.node.js",
-      "dist/nodes/HttpBin/HttpBin.node.js"
+      "dist/nodes/OvhDomain/OvhDomain.node.js",
+      "dist/nodes/OvhDedicatedServer/OvhDedicatedServer.node.js",
+      "dist/nodes/OvhPrivateCloud/OvhPrivateCloud.node.js",
+      "dist/nodes/OvhAi/OvhAi.node.js",
+      "dist/nodes/OvhDataProcessing/OvhDataProcessing.node.js",
+      "dist/nodes/OvhDatabase/OvhDatabase.node.js",
+      "dist/nodes/OvhKubernetes/OvhKubernetes.node.js",
+      "dist/nodes/OvhContainerRegistry/OvhContainerRegistry.node.js",
+      "dist/nodes/OvhCompute/OvhCompute.node.js",
+      "dist/nodes/OvhStorage/OvhStorage.node.js",
+      "dist/nodes/OvhWebPaas/OvhWebPaas.node.js",
+      "dist/nodes/OvhPrivateNetwork/OvhPrivateNetwork.node.js"
     ]
   },
   "devDependencies": {
