@@ -10,7 +10,6 @@ import {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
-
 export class OvhContainerRegistry implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH Container Registry',
@@ -384,7 +383,7 @@ export class OvhContainerRegistry implements INodeType {
 						const name = this.getNodeParameter('name', i) as string;
 						const planId = this.getNodeParameter('planId', i) as string;
 						const region = this.getNodeParameter('region', i) as string;
-						
+
 						path = `/cloud/project/${projectId}/containerRegistry`;
 						body = {
 							name,
@@ -400,12 +399,12 @@ export class OvhContainerRegistry implements INodeType {
 						const registryId = this.getNodeParameter('registryId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/containerRegistry/${registryId}`;
-						
+
 						if (updateFields.name) body.name = updateFields.name;
 					}
 				} else if (resource === 'user') {
 					const registryId = this.getNodeParameter('registryId', i) as string;
-					
+
 					if (operation === 'get') {
 						const userId = this.getNodeParameter('userId', i) as string;
 						path = `/cloud/project/${projectId}/containerRegistry/${registryId}/users/${userId}`;
@@ -429,7 +428,7 @@ export class OvhContainerRegistry implements INodeType {
 						const userId = this.getNodeParameter('userId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/containerRegistry/${registryId}/users/${userId}`;
-						
+
 						if (updateFields.email) body.email = updateFields.email;
 					}
 				} else if (resource === 'plan') {
@@ -441,7 +440,7 @@ export class OvhContainerRegistry implements INodeType {
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
-				
+
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
 				if (method === 'POST' || method === 'PUT') {
@@ -463,7 +462,8 @@ export class OvhContainerRegistry implements INodeType {
 					timestamp,
 				];
 
-				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+				const signature =
+					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const headers: any = {
 					'X-Ovh-Application': applicationKey,

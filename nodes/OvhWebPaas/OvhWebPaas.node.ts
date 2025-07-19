@@ -10,7 +10,6 @@ import {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
-
 export class OvhWebPaas implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH Web PaaS',
@@ -359,7 +358,17 @@ export class OvhWebPaas implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['environment', 'deployment', 'user', 'certificate'],
-						operation: ['get', 'getAll', 'activate', 'deactivate', 'trigger', 'add', 'remove', 'update', 'delete'],
+						operation: [
+							'get',
+							'getAll',
+							'activate',
+							'deactivate',
+							'trigger',
+							'add',
+							'remove',
+							'update',
+							'delete',
+						],
 					},
 				},
 			},
@@ -656,7 +665,7 @@ export class OvhWebPaas implements INodeType {
 						const projectName = this.getNodeParameter('projectName', i) as string;
 						const planId = this.getNodeParameter('planId', i) as string;
 						const region = this.getNodeParameter('region', i) as string;
-						
+
 						path = '/order/webPaaS/new';
 						body = {
 							projectName,
@@ -672,7 +681,7 @@ export class OvhWebPaas implements INodeType {
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/webPaaS/${serviceName}`;
-						
+
 						if (updateFields.title) body.title = updateFields.title;
 						if (updateFields.defaultBranch) body.default_branch = updateFields.defaultBranch;
 					}
@@ -686,7 +695,7 @@ export class OvhWebPaas implements INodeType {
 				} else if (resource === 'environment') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
 					const projectId = this.getNodeParameter('projectId', i) as string;
-					
+
 					if (operation === 'get') {
 						const environmentId = this.getNodeParameter('environmentId', i) as string;
 						path = `/webPaaS/${serviceName}/project/${projectId}/environment/${environmentId}`;
@@ -704,7 +713,7 @@ export class OvhWebPaas implements INodeType {
 				} else if (resource === 'deployment') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
 					const projectId = this.getNodeParameter('projectId', i) as string;
-					
+
 					if (operation === 'get') {
 						const deploymentId = this.getNodeParameter('deploymentId', i) as string;
 						path = `/webPaaS/${serviceName}/project/${projectId}/deployment/${deploymentId}`;
@@ -719,7 +728,7 @@ export class OvhWebPaas implements INodeType {
 				} else if (resource === 'user') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
 					const projectId = this.getNodeParameter('projectId', i) as string;
-					
+
 					if (operation === 'get') {
 						const userId = this.getNodeParameter('userId', i) as string;
 						path = `/webPaaS/${serviceName}/project/${projectId}/user/${userId}`;
@@ -749,7 +758,7 @@ export class OvhWebPaas implements INodeType {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
 					const projectId = this.getNodeParameter('projectId', i) as string;
 					const environmentId = this.getNodeParameter('environmentId', i) as string;
-					
+
 					if (operation === 'get') {
 						const certificateId = this.getNodeParameter('certificateId', i) as string;
 						path = `/webPaaS/${serviceName}/project/${projectId}/environment/${environmentId}/certificate/${certificateId}`;
@@ -760,7 +769,7 @@ export class OvhWebPaas implements INodeType {
 						const certificate = this.getNodeParameter('certificate', i) as string;
 						const privateKey = this.getNodeParameter('privateKey', i) as string;
 						const certificateChain = this.getNodeParameter('certificateChain', i) as string;
-						
+
 						path = `/webPaaS/${serviceName}/project/${projectId}/environment/${environmentId}/certificate`;
 						body = {
 							certificate,
@@ -781,7 +790,7 @@ export class OvhWebPaas implements INodeType {
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
-				
+
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
 				if (method === 'POST' || method === 'PUT') {
@@ -803,7 +812,8 @@ export class OvhWebPaas implements INodeType {
 					timestamp,
 				];
 
-				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+				const signature =
+					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const headers: any = {
 					'X-Ovh-Application': applicationKey,

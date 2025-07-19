@@ -10,7 +10,6 @@ import {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
-
 export class OvhDataProcessing implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH Data Processing',
@@ -403,9 +402,9 @@ export class OvhDataProcessing implements INodeType {
 						const name = this.getNodeParameter('name', i) as string;
 						const region = this.getNodeParameter('region', i) as string;
 						const engineParameters = this.getNodeParameter('engineParameters', i) as IDataObject;
-						
+
 						path = `/cloud/project/${projectId}/dataProcessing/jobs`;
-						
+
 						body = {
 							engine,
 							engineVersion,
@@ -460,7 +459,7 @@ export class OvhDataProcessing implements INodeType {
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
-				
+
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
 				if (method === 'POST') {
@@ -482,7 +481,8 @@ export class OvhDataProcessing implements INodeType {
 					timestamp,
 				];
 
-				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+				const signature =
+					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const headers: any = {
 					'X-Ovh-Application': applicationKey,

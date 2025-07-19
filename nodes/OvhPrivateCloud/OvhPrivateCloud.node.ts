@@ -10,7 +10,6 @@ import {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
-
 export class OvhPrivateCloud implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH Private Cloud',
@@ -331,7 +330,6 @@ export class OvhPrivateCloud implements INodeType {
 						operation: ['get', 'delete', 'update'],
 					},
 				},
-
 			},
 			// Task ID field
 			{
@@ -346,7 +344,6 @@ export class OvhPrivateCloud implements INodeType {
 						operation: ['get'],
 					},
 				},
-
 			},
 			// User creation fields
 			{
@@ -467,7 +464,7 @@ export class OvhPrivateCloud implements INodeType {
 					}
 				} else if (resource === 'datacenter') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
-					
+
 					if (operation === 'get') {
 						const datacenterId = this.getNodeParameter('datacenterId', i) as number;
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}`;
@@ -477,7 +474,7 @@ export class OvhPrivateCloud implements INodeType {
 				} else if (resource === 'vm') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
 					const datacenterId = this.getNodeParameter('datacenterId', i) as number;
-					
+
 					if (operation === 'get') {
 						const vmId = this.getNodeParameter('vmId', i) as number;
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}`;
@@ -504,7 +501,7 @@ export class OvhPrivateCloud implements INodeType {
 					}
 				} else if (resource === 'user') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
-					
+
 					if (operation === 'get') {
 						const userId = this.getNodeParameter('userId', i) as number;
 						path = `/dedicatedCloud/${serviceName}/user/${userId}`;
@@ -525,14 +522,14 @@ export class OvhPrivateCloud implements INodeType {
 						const userId = this.getNodeParameter('userId', i) as number;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/dedicatedCloud/${serviceName}/user/${userId}`;
-						
+
 						if (updateFields.email) body.email = updateFields.email;
 						if (updateFields.fullName) body.fullName = updateFields.fullName;
 						if (updateFields.phoneNumber) body.phoneNumber = updateFields.phoneNumber;
 					}
 				} else if (resource === 'task') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
-					
+
 					if (operation === 'get') {
 						const taskId = this.getNodeParameter('taskId', i) as number;
 						path = `/dedicatedCloud/${serviceName}/task/${taskId}`;
@@ -544,7 +541,7 @@ export class OvhPrivateCloud implements INodeType {
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
-				
+
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
 				if (method === 'POST' || method === 'PUT') {
@@ -566,7 +563,8 @@ export class OvhPrivateCloud implements INodeType {
 					timestamp,
 				];
 
-				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+				const signature =
+					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const headers: any = {
 					'X-Ovh-Application': applicationKey,

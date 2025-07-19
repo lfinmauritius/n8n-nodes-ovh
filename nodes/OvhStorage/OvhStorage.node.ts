@@ -10,7 +10,6 @@ import {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
-
 export class OvhStorage implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH Public Cloud Storage',
@@ -506,7 +505,7 @@ export class OvhStorage implements INodeType {
 						method = 'POST';
 						const containerName = this.getNodeParameter('containerName', i) as string;
 						const region = this.getNodeParameter('region', i) as string;
-						
+
 						path = `/cloud/project/${projectId}/storage`;
 						body = {
 							containerName,
@@ -521,7 +520,7 @@ export class OvhStorage implements INodeType {
 						const containerId = this.getNodeParameter('containerId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/storage/${containerId}`;
-						
+
 						if (updateFields.versioning !== undefined) body.versioning = updateFields.versioning;
 						if (updateFields.containerType) body.containerType = updateFields.containerType;
 					}
@@ -562,7 +561,7 @@ export class OvhStorage implements INodeType {
 						const objectName = this.getNodeParameter('objectName', i) as string;
 						const expire = this.getNodeParameter('expire', i) as number;
 						const urlMethod = this.getNodeParameter('method', i) as string;
-						
+
 						path = `/cloud/project/${projectId}/storage/${containerId}/presign`;
 						body = {
 							expire,
@@ -583,7 +582,7 @@ export class OvhStorage implements INodeType {
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
-				
+
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
 				if (method === 'POST' || method === 'PUT') {
@@ -605,7 +604,8 @@ export class OvhStorage implements INodeType {
 					timestamp,
 				];
 
-				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+				const signature =
+					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const headers: any = {
 					'X-Ovh-Application': applicationKey,

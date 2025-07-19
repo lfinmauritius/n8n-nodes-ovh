@@ -10,7 +10,6 @@ import {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
-
 export class OvhDatabase implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH Database',
@@ -550,7 +549,7 @@ export class OvhDatabase implements INodeType {
 						const version = this.getNodeParameter('version', i) as string;
 						const plan = this.getNodeParameter('plan', i) as string;
 						const flavor = this.getNodeParameter('flavor', i) as string;
-						
+
 						path = `/cloud/project/${projectId}/database/${engine}`;
 						body = {
 							version,
@@ -566,14 +565,14 @@ export class OvhDatabase implements INodeType {
 						const serviceId = this.getNodeParameter('serviceId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/database/service/${serviceId}`;
-						
+
 						if (updateFields.description) body.description = updateFields.description;
 						if (updateFields.maintenanceTime) body.maintenanceTime = updateFields.maintenanceTime;
 						if (updateFields.backupTime) body.backupTime = updateFields.backupTime;
 					}
 				} else if (resource === 'database') {
 					const serviceId = this.getNodeParameter('serviceId', i) as string;
-					
+
 					if (operation === 'get') {
 						const databaseId = this.getNodeParameter('databaseId', i) as string;
 						path = `/cloud/project/${projectId}/database/service/${serviceId}/database/${databaseId}`;
@@ -591,7 +590,7 @@ export class OvhDatabase implements INodeType {
 					}
 				} else if (resource === 'user') {
 					const serviceId = this.getNodeParameter('serviceId', i) as string;
-					
+
 					if (operation === 'get') {
 						const userId = this.getNodeParameter('userId', i) as string;
 						path = `/cloud/project/${projectId}/database/service/${serviceId}/user/${userId}`;
@@ -613,7 +612,7 @@ export class OvhDatabase implements INodeType {
 					}
 				} else if (resource === 'backup') {
 					const serviceId = this.getNodeParameter('serviceId', i) as string;
-					
+
 					if (operation === 'get') {
 						const backupId = this.getNodeParameter('backupId', i) as string;
 						path = `/cloud/project/${projectId}/database/service/${serviceId}/backup/${backupId}`;
@@ -644,7 +643,7 @@ export class OvhDatabase implements INodeType {
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
-				
+
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
 				if (method === 'POST' || method === 'PUT') {
@@ -666,7 +665,8 @@ export class OvhDatabase implements INodeType {
 					timestamp,
 				];
 
-				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+				const signature =
+					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const headers: any = {
 					'X-Ovh-Application': applicationKey,

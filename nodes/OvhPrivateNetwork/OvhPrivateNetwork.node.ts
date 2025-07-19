@@ -10,7 +10,6 @@ import {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
-
 export class OvhPrivateNetwork implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH Private Network',
@@ -317,7 +316,15 @@ export class OvhPrivateNetwork implements INodeType {
 				description: 'The vRack service name',
 				displayOptions: {
 					show: {
-						resource: ['vrack', 'service', 'cloudProject', 'dedicatedServer', 'ipBlock', 'privateNetwork', 'task'],
+						resource: [
+							'vrack',
+							'service',
+							'cloudProject',
+							'dedicatedServer',
+							'ipBlock',
+							'privateNetwork',
+							'task',
+						],
 					},
 					hide: {
 						resource: ['vrack'],
@@ -533,13 +540,13 @@ export class OvhPrivateNetwork implements INodeType {
 						const vrackId = this.getNodeParameter('vrackId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/vrack/${vrackId}`;
-						
+
 						if (updateFields.name) body.name = updateFields.name;
 						if (updateFields.description) body.description = updateFields.description;
 					}
 				} else if (resource === 'service') {
 					const vrackId = this.getNodeParameter('vrackId', i) as string;
-					
+
 					if (operation === 'getAll') {
 						path = `/vrack/${vrackId}/allowedServices`;
 					} else if (operation === 'add') {
@@ -555,7 +562,7 @@ export class OvhPrivateNetwork implements INodeType {
 					}
 				} else if (resource === 'cloudProject') {
 					const vrackId = this.getNodeParameter('vrackId', i) as string;
-					
+
 					if (operation === 'getAll') {
 						path = `/vrack/${vrackId}/cloudProject`;
 					} else if (operation === 'add') {
@@ -570,7 +577,7 @@ export class OvhPrivateNetwork implements INodeType {
 					}
 				} else if (resource === 'dedicatedServer') {
 					const vrackId = this.getNodeParameter('vrackId', i) as string;
-					
+
 					if (operation === 'getAll') {
 						path = `/vrack/${vrackId}/dedicatedServer`;
 					} else if (operation === 'add') {
@@ -585,7 +592,7 @@ export class OvhPrivateNetwork implements INodeType {
 					}
 				} else if (resource === 'ipBlock') {
 					const vrackId = this.getNodeParameter('vrackId', i) as string;
-					
+
 					if (operation === 'getAll') {
 						path = `/vrack/${vrackId}/ip`;
 					} else if (operation === 'add') {
@@ -600,7 +607,7 @@ export class OvhPrivateNetwork implements INodeType {
 					}
 				} else if (resource === 'privateNetwork') {
 					const projectId = this.getNodeParameter('projectId', i) as string;
-					
+
 					if (operation === 'get') {
 						const privateNetworkId = this.getNodeParameter('privateNetworkId', i) as string;
 						path = `/cloud/project/${projectId}/network/private/${privateNetworkId}`;
@@ -612,7 +619,7 @@ export class OvhPrivateNetwork implements INodeType {
 						const vlanId = this.getNodeParameter('vlanId', i) as number;
 						const regions = this.getNodeParameter('regions', i) as string[];
 						const vrackId = this.getNodeParameter('vrackId', i) as string;
-						
+
 						path = `/cloud/project/${projectId}/network/private`;
 						body = {
 							name: networkName,
@@ -629,12 +636,12 @@ export class OvhPrivateNetwork implements INodeType {
 						const privateNetworkId = this.getNodeParameter('privateNetworkId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/network/private/${privateNetworkId}`;
-						
+
 						if (updateFields.name) body.name = updateFields.name;
 					}
 				} else if (resource === 'task') {
 					const vrackId = this.getNodeParameter('vrackId', i) as string;
-					
+
 					if (operation === 'get') {
 						const taskId = this.getNodeParameter('taskId', i) as number;
 						path = `/vrack/${vrackId}/task/${taskId}`;
@@ -646,7 +653,7 @@ export class OvhPrivateNetwork implements INodeType {
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
-				
+
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
 				if (method === 'POST' || method === 'PUT') {
@@ -668,7 +675,8 @@ export class OvhPrivateNetwork implements INodeType {
 					timestamp,
 				];
 
-				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+				const signature =
+					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const headers: any = {
 					'X-Ovh-Application': applicationKey,

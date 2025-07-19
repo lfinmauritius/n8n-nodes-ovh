@@ -1,8 +1,4 @@
-import {
-	ICredentialType,
-	INodeProperties,
-	ICredentialTestRequest,
-} from 'n8n-workflow';
+import { ICredentialType, INodeProperties, ICredentialTestRequest } from 'n8n-workflow';
 
 export class OvhApi implements ICredentialType {
 	name = 'ovhApi';
@@ -90,7 +86,8 @@ export class OvhApi implements ICredentialType {
 				type: 'responseCode',
 				properties: {
 					value: 200,
-					message: 'Connection successful! Authentication will be verified when using the nodes. Make sure your Application Key, Application Secret, and Consumer Key are correct.',
+					message:
+						'Connection successful! Authentication will be verified when using the nodes. Make sure your Application Key, Application Secret, and Consumer Key are correct.',
 				},
 			},
 		],

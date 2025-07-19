@@ -1,10 +1,10 @@
 # n8n-nodes-ovh
 
-**⚠️ BETA VERSION - Currently only OVH Dedicated Server node is active**
+**⚠️ BETA VERSION - Currently OVH Dedicated Server and OVH Domain nodes are active**
 
 This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, Web PaaS, and private network tasks.
 
-**Note**: This is a beta release. Only the OVH Dedicated Server node is currently enabled. Other nodes will be activated in future releases after thorough testing.
+**Note**: This is a beta release. Currently enabled nodes are OVH Dedicated Server and OVH Domain. Other nodes will be activated in future releases after thorough testing.
 
 **Developed by [Ascenzia](https://ascenzia.fr)** - Your trusted partner for AI agent creation and automation.
 
@@ -51,6 +51,32 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 #### IP Operations
 - **Get**: Get information about a specific IP
 - **Get Many**: List all IPs associated with a server
+
+#### Installation Operations
+- **Get Status**: Get server installation/reinstallation status (gracefully handles "no installation in progress")
+- **Get Templates**: Get available OS templates compatible with the server
+- **Start**: Start OS installation with template and partition scheme selection
+
+#### Network Operations
+- **Get Virtual MACs**: List virtual MAC addresses associated with the server
+- **Create Virtual MAC**: Create a new virtual MAC address (OVH or VMware type)
+- **Delete Virtual MAC**: Remove a virtual MAC address
+- **Get Secondary DNS**: List secondary DNS domains configured for the server
+- **Add Secondary DNS**: Add a domain to secondary DNS configuration
+- **Delete Secondary DNS**: Remove a domain from secondary DNS configuration
+- **IP Block Merge**: Merge IP blocks for network management
+
+#### Security Operations
+- **Get Firewall**: Get firewall configuration (gracefully handles servers without firewall)
+- **Update Firewall**: Configure firewall settings (enabled/disabled, routed/transparent mode)
+- **Get IP Spoof**: Get IP spoof protection status
+
+#### Options Operations
+- **Get Available Options**: List available server options and add-ons
+
+#### Intervention Operations
+- **Get**: Get information about a specific intervention
+- **Get Many**: List all interventions for the server
 
 ### OVH Private Cloud Node
 
@@ -351,6 +377,26 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 #### Task Operations
 - **Get**: Get task information
 - **Get Many**: List all tasks for vRack operations
+
+## Latest Features & Updates
+
+### Version 0.5.8 - January 2025
+- **🚀 OVH Domain node now active** - Full domain and DNS management capabilities
+- **✨ Enhanced OVH Dedicated Server** with comprehensive server management:
+  - **Installation management**: OS template installation with status monitoring
+  - **Network management**: Virtual MAC, secondary DNS, IP block operations
+  - **Security management**: Firewall and IP spoof protection configuration
+  - **Server options**: Available options and add-ons management
+  - **Interventions**: Hardware intervention tracking and management
+- **🛡️ Improved error handling** with graceful handling of unavailable features
+- **🔧 Smart API endpoint validation** preventing 404 errors for server-specific features
+- **📊 Better response formatting** for array data with meaningful object structures
+
+### Key Improvements
+- **Graceful degradation**: Features unavailable on specific servers return informative messages instead of errors
+- **Enhanced data presentation**: Array responses now include descriptive field names (e.g., `{taskId: 123, id: 123}` instead of just `123`)
+- **Robust validation**: Empty field validation with clear error messages
+- **Optimized API calls**: Proper content-type handling and signature generation
 
 ## Credentials
 

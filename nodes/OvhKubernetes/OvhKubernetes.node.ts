@@ -10,7 +10,6 @@ import {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
-
 export class OvhKubernetes implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH Kubernetes',
@@ -484,7 +483,7 @@ export class OvhKubernetes implements INodeType {
 						const name = this.getNodeParameter('name', i) as string;
 						const version = this.getNodeParameter('version', i) as string;
 						const region = this.getNodeParameter('region', i) as string;
-						
+
 						path = `/cloud/project/${projectId}/kube`;
 						body = {
 							name,
@@ -500,7 +499,7 @@ export class OvhKubernetes implements INodeType {
 						const clusterId = this.getNodeParameter('clusterId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/kube/${clusterId}`;
-						
+
 						if (updateFields.name) body.name = updateFields.name;
 						if (updateFields.version) body.version = updateFields.version;
 					} else if (operation === 'reset') {
@@ -510,7 +509,7 @@ export class OvhKubernetes implements INodeType {
 					}
 				} else if (resource === 'nodePool') {
 					const clusterId = this.getNodeParameter('clusterId', i) as string;
-					
+
 					if (operation === 'get') {
 						const nodePoolId = this.getNodeParameter('nodePoolId', i) as string;
 						path = `/cloud/project/${projectId}/kube/${clusterId}/nodepool/${nodePoolId}`;
@@ -524,7 +523,7 @@ export class OvhKubernetes implements INodeType {
 						const minNodes = this.getNodeParameter('minNodes', i) as number;
 						const maxNodes = this.getNodeParameter('maxNodes', i) as number;
 						const autoscale = this.getNodeParameter('autoscale', i) as boolean;
-						
+
 						path = `/cloud/project/${projectId}/kube/${clusterId}/nodepool`;
 						body = {
 							name: nodePoolName,
@@ -543,7 +542,7 @@ export class OvhKubernetes implements INodeType {
 						const nodePoolId = this.getNodeParameter('nodePoolId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/kube/${clusterId}/nodepool/${nodePoolId}`;
-						
+
 						if (updateFields.desiredNodes) body.desiredNodes = updateFields.desiredNodes;
 						if (updateFields.minNodes) body.minNodes = updateFields.minNodes;
 						if (updateFields.maxNodes) body.maxNodes = updateFields.maxNodes;
@@ -551,7 +550,7 @@ export class OvhKubernetes implements INodeType {
 					}
 				} else if (resource === 'kubeconfig') {
 					const clusterId = this.getNodeParameter('clusterId', i) as string;
-					
+
 					if (operation === 'get') {
 						method = 'POST';
 						path = `/cloud/project/${projectId}/kube/${clusterId}/kubeconfig`;
@@ -564,7 +563,7 @@ export class OvhKubernetes implements INodeType {
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
-				
+
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
 				if (method === 'POST' || method === 'PUT') {
@@ -586,7 +585,8 @@ export class OvhKubernetes implements INodeType {
 					timestamp,
 				];
 
-				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+				const signature =
+					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const headers: any = {
 					'X-Ovh-Application': applicationKey,

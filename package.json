@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-ovh",
-  "version": "0.4.4",
+  "version": "0.7.6",
   "description": "Comprehensive n8n nodes for OVH API integration - Developed by Ascenzia, experts in AI agent creation",
   "keywords": [
     "n8n-community-node-package",
@@ -51,7 +51,8 @@
       "dist/credentials/OvhApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/OvhDedicatedServer/OvhDedicatedServer.node.js"
+      "dist/nodes/OvhDedicatedServer/OvhDedicatedServer.node.js",
+      "dist/nodes/OvhDomain/OvhDomain.node.js"
     ]
   },
   "devDependencies": {

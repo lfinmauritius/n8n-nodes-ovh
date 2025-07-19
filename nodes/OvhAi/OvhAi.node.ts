@@ -10,7 +10,6 @@ import {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
-
 export class OvhAi implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH AI',
@@ -544,7 +543,7 @@ export class OvhAi implements INodeType {
 					}
 				} else if (resource === 'app') {
 					const projectId = this.getNodeParameter('projectId', i) as string;
-					
+
 					if (operation === 'get') {
 						const appId = this.getNodeParameter('appId', i) as string;
 						path = `/cloud/project/${projectId}/ai/app/${appId}`;
@@ -555,7 +554,7 @@ export class OvhAi implements INodeType {
 						const image = this.getNodeParameter('image', i) as string;
 						const resources = this.getNodeParameter('resources', i) as IDataObject;
 						path = `/cloud/project/${projectId}/ai/app`;
-						
+
 						body = { image };
 						if (resources.cpu) body.cpu = resources.cpu;
 						if (resources.memory) body.memory = resources.memory;
@@ -569,13 +568,14 @@ export class OvhAi implements INodeType {
 						const appId = this.getNodeParameter('appId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/ai/app/${appId}`;
-						
+
 						if (updateFields.replicas) body.replicas = updateFields.replicas;
-						if (updateFields.autoScalingEnabled !== undefined) body.autoScalingEnabled = updateFields.autoScalingEnabled;
+						if (updateFields.autoScalingEnabled !== undefined)
+							body.autoScalingEnabled = updateFields.autoScalingEnabled;
 					}
 				} else if (resource === 'job') {
 					const projectId = this.getNodeParameter('projectId', i) as string;
-					
+
 					if (operation === 'get') {
 						const jobId = this.getNodeParameter('jobId', i) as string;
 						path = `/cloud/project/${projectId}/ai/job/${jobId}`;
@@ -586,7 +586,7 @@ export class OvhAi implements INodeType {
 						const image = this.getNodeParameter('image', i) as string;
 						const command = this.getNodeParameter('command', i) as string;
 						path = `/cloud/project/${projectId}/ai/job`;
-						
+
 						body = { image };
 						if (command) body.command = command;
 					} else if (operation === 'delete') {
@@ -600,7 +600,7 @@ export class OvhAi implements INodeType {
 					}
 				} else if (resource === 'model') {
 					const projectId = this.getNodeParameter('projectId', i) as string;
-					
+
 					if (operation === 'get') {
 						const modelId = this.getNodeParameter('modelId', i) as string;
 						path = `/cloud/project/${projectId}/ai/serving/model/${modelId}`;
@@ -613,7 +613,7 @@ export class OvhAi implements INodeType {
 					}
 				} else if (resource === 'notebook') {
 					const projectId = this.getNodeParameter('projectId', i) as string;
-					
+
 					if (operation === 'get') {
 						const notebookId = this.getNodeParameter('notebookId', i) as string;
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}`;
@@ -624,7 +624,7 @@ export class OvhAi implements INodeType {
 						const framework = this.getNodeParameter('framework', i) as string;
 						const environment = this.getNodeParameter('environment', i) as string;
 						path = `/cloud/project/${projectId}/ai/notebook`;
-						
+
 						body = { framework, environment };
 					} else if (operation === 'delete') {
 						method = 'DELETE';
@@ -644,7 +644,7 @@ export class OvhAi implements INodeType {
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
-				
+
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
 				if (method === 'POST' || method === 'PUT') {
@@ -666,7 +666,8 @@ export class OvhAi implements INodeType {
 					timestamp,
 				];
 
-				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+				const signature =
+					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const headers: any = {
 					'X-Ovh-Application': applicationKey,

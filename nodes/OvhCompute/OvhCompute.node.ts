@@ -10,7 +10,6 @@ import {
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
-
 export class OvhCompute implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH Public Cloud Compute',
@@ -319,7 +318,16 @@ export class OvhCompute implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['instance'],
-						operation: ['get', 'delete', 'update', 'start', 'stop', 'reboot', 'reinstall', 'resize'],
+						operation: [
+							'get',
+							'delete',
+							'update',
+							'start',
+							'stop',
+							'reboot',
+							'reinstall',
+							'resize',
+						],
 					},
 				},
 			},
@@ -644,7 +652,7 @@ export class OvhCompute implements INodeType {
 						const imageId = this.getNodeParameter('imageId', i) as string;
 						const region = this.getNodeParameter('region', i) as string;
 						const sshKeyId = this.getNodeParameter('sshKeyId', i) as string;
-						
+
 						path = `/cloud/project/${projectId}/instance`;
 						body = {
 							name,
@@ -662,7 +670,7 @@ export class OvhCompute implements INodeType {
 						const instanceId = this.getNodeParameter('instanceId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/instance/${instanceId}`;
-						
+
 						if (updateFields.instanceName) body.instanceName = updateFields.instanceName;
 					} else if (operation === 'start') {
 						method = 'POST';
@@ -693,7 +701,7 @@ export class OvhCompute implements INodeType {
 					}
 				} else if (resource === 'instanceBackup') {
 					const instanceId = this.getNodeParameter('instanceId', i) as string;
-					
+
 					if (operation === 'get') {
 						const backupId = this.getNodeParameter('backupId', i) as string;
 						path = `/cloud/project/${projectId}/instance/${instanceId}/backup/${backupId}`;
@@ -756,7 +764,7 @@ export class OvhCompute implements INodeType {
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
 				const fullUrl = `${endpoint}${path}`;
-				
+
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
 				if (method === 'POST' || method === 'PUT') {
@@ -778,7 +786,8 @@ export class OvhCompute implements INodeType {
 					timestamp,
 				];
 
-				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+				const signature =
+					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				const headers: any = {
 					'X-Ovh-Application': applicationKey,
