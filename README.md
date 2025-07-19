@@ -1,6 +1,10 @@
 # n8n-nodes-ovh
 
+**⚠️ BETA VERSION - Currently only OVH Dedicated Server node is active**
+
 This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, Web PaaS, and private network tasks.
+
+**Note**: This is a beta release. Only the OVH Dedicated Server node is currently enabled. Other nodes will be activated in future releases after thorough testing.
 
 **Developed by [Ascenzia](https://ascenzia.fr)** - Your trusted partner for AI agent creation and automation.
 
