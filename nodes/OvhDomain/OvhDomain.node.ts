@@ -447,7 +447,7 @@ export class OvhDomain implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				let responseData;
-				let method: IHttpRequestMethods = 'GET';
+				let method = 'GET' as IHttpRequestMethods;
 				let path = '';
 				let body: IDataObject = {};
 
@@ -602,8 +602,32 @@ export class OvhDomain implements INodeType {
 
 				responseData = await this.helpers.request(options);
 
+				// Parse JSON manually for GET requests
+				if (method === 'GET' && typeof responseData === 'string') {
+					try {
+						responseData = JSON.parse(responseData);
+					} catch (error) {
+						// If JSON parsing fails, keep the original response
+					}
+				}
+
 				if (Array.isArray(responseData)) {
-					returnData.push(...responseData);
+					// For arrays, create proper objects based on the operation
+					if (operation === 'getAll' && resource === 'domain') {
+						// For domain list, wrap each domain name in an object
+						responseData.forEach((domainName: string) => {
+							returnData.push({ json: { domain: domainName } });
+						});
+					} else {
+						// For other array operations, use the item directly
+						responseData.forEach((item) => {
+							if (typeof item === 'string' || typeof item === 'number') {
+								returnData.push({ json: { value: item } });
+							} else {
+								returnData.push({ json: item });
+							}
+						});
+					}
 				} else {
 					returnData.push(responseData as IDataObject);
 				}

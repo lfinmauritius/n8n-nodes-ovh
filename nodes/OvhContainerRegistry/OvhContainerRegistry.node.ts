@@ -358,7 +358,7 @@ export class OvhContainerRegistry implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				let responseData;
-				let method: IHttpRequestMethods = 'GET';
+				let method = 'GET' as IHttpRequestMethods;
 				let path = '';
 				let body: IDataObject = {};
 
@@ -456,26 +456,50 @@ export class OvhContainerRegistry implements INodeType {
 
 				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
+				const headers: any = {
+					'X-Ovh-Application': applicationKey,
+					'X-Ovh-Consumer': consumerKey,
+					'X-Ovh-Signature': signature,
+					'X-Ovh-Timestamp': timestamp.toString(),
+				};
+
 				const options: IRequestOptions = {
 					method,
 					url: fullUrl,
-					headers: {
-						'X-Ovh-Application': applicationKey,
-						'X-Ovh-Consumer': consumerKey,
-						'X-Ovh-Signature': signature,
-						'X-Ovh-Timestamp': timestamp.toString(),
-						'Content-Type': 'application/json',
-					},
-					body,
-					json: true,
+					headers,
+					json: true, // Always parse JSON responses
 				};
+
+				// Only add body and content-type for POST/PUT requests
+				if (method === 'POST' || method === 'PUT') {
+					if (Object.keys(body).length > 0) {
+						options.body = body;
+						headers['Content-Type'] = 'application/json';
+					}
+				}
 
 				responseData = await this.helpers.request(options);
 
+				// Parse JSON manually for GET requests
+				if (method === 'GET' && typeof responseData === 'string') {
+					try {
+						responseData = JSON.parse(responseData);
+					} catch (error) {
+						// If JSON parsing fails, keep the original response
+					}
+				}
+
 				if (Array.isArray(responseData)) {
-					returnData.push(...responseData);
+					// For arrays, create proper objects based on the operation
+					responseData.forEach((item) => {
+						if (typeof item === 'string' || typeof item === 'number') {
+							returnData.push({ json: { value: item } });
+						} else {
+							returnData.push({ json: item });
+						}
+					});
 				} else {
-					returnData.push(responseData);
+					returnData.push(responseData as IDataObject);
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {
