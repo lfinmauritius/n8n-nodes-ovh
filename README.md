@@ -426,6 +426,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.21 - July 2025
+- **🔧 OVH AI node fix** - Removed spec wrapper completely:
+  - **No spec object**: API expects all properties directly at root level
+  - **Matches curl example**: Structure now matches the official API documentation
+  - **All properties at root**: name, region, env, resources, volumes, etc. all at root
+  - **Resolves "[spec] Unknown parameter" error**: Correct request structure
+
 ### Version 0.9.20 - July 2025
 - **🔧 OVH AI node fix** - Added all required properties at root level:
   - **All properties at root**: name, region, env, resources, plus all optional ones

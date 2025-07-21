@@ -1534,8 +1534,8 @@ export class OvhAi implements INodeType {
 							resources.gpu = notebookGpu;
 						}
 						
-						// Build spec object with all parameters
-						const spec: any = {
+						// Build the request body directly at root level (no spec wrapper)
+						body = {
 							name: notebookName,
 							region: notebookRegion,
 							env: {
@@ -1552,20 +1552,21 @@ export class OvhAi implements INodeType {
 							resources: resources
 						};
 						
-						// Add flavor to spec if specified
+						// Add flavor if specified
 						if (additionalFields.flavor) {
-							spec.flavor = (additionalFields.flavor as string).trim();
+							const flavorValue = (additionalFields.flavor as string).trim();
+							body.flavor = flavorValue;
 							// Also add to resources if not already there
 							if (!resources.flavor) {
-								resources.flavor = spec.flavor;
+								resources.flavor = flavorValue;
 							}
 						}
 						
-						// Add volumes to spec if specified
+						// Add volumes if specified
 						if (additionalFields.volumes) {
 							const volumesArray = (additionalFields.volumes as any).volume || [];
 							if (volumesArray.length > 0) {
-								spec.volumes = volumesArray.map((vol: any) => ({
+								body.volumes = volumesArray.map((vol: any) => ({
 									container: vol.container,
 									mountPath: vol.mountPath,
 									permission: 'RW'
@@ -1573,39 +1574,22 @@ export class OvhAi implements INodeType {
 							}
 						}
 						
-						// Add SSH public keys to spec if specified  
+						// Add SSH public keys if specified  
 						if (additionalFields.sshPublicKeys) {
 							const sshKeys = (additionalFields.sshPublicKeys as string).split('\n').filter(key => key.trim());
 							if (sshKeys.length > 0) {
-								spec.sshPublicKeys = sshKeys;
+								body.sshPublicKeys = sshKeys;
 							}
 						}
 						
-						// Add labels to spec if specified
+						// Add labels if specified
 						if (additionalFields.labels) {
 							try {
-								spec.labels = JSON.parse(additionalFields.labels as string);
+								body.labels = JSON.parse(additionalFields.labels as string);
 							} catch (error) {
 								// If parsing fails, ignore labels
 							}
 						}
-						
-						// Build the final request body with all required properties at root level
-						body = {
-							// All required properties at root level for API validation
-							name: spec.name,
-							region: spec.region,
-							env: spec.env,
-							resources: spec.resources,
-							// Keep spec for any additional properties
-							spec: spec
-						};
-						
-						// Add optional properties at root if they exist in spec
-						if (spec.flavor) body.flavor = spec.flavor;
-						if (spec.volumes) body.volumes = spec.volumes;
-						if (spec.sshPublicKeys) body.sshPublicKeys = spec.sshPublicKeys;
-						if (spec.labels) body.labels = spec.labels;
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
