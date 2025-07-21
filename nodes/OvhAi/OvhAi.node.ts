@@ -1135,6 +1135,14 @@ export class OvhAi implements INodeType {
 				},
 				options: [
 					{
+						displayName: 'Flavor',
+						name: 'flavor',
+						type: 'string',
+						default: '',
+						placeholder: 'ai1-1-gpu',
+						description: 'The flavor ID for the notebook (e.g., ai1-1-gpu, ai1-4-cpu)',
+					},
+					{
 						displayName: 'Labels',
 						name: 'labels',
 						type: 'json',
@@ -1526,8 +1534,8 @@ export class OvhAi implements INodeType {
 							resources.gpu = notebookGpu;
 						}
 						
-						// Build the request body with env at root level (required by API)
-						body = {
+						// Build spec object with all parameters
+						const spec: any = {
 							name: notebookName,
 							region: notebookRegion,
 							env: {
@@ -1544,11 +1552,20 @@ export class OvhAi implements INodeType {
 							resources: resources
 						};
 						
-						// Add volumes if specified
+						// Add flavor to spec if specified
+						if (additionalFields.flavor) {
+							spec.flavor = (additionalFields.flavor as string).trim();
+							// Also add to resources if not already there
+							if (!resources.flavor) {
+								resources.flavor = spec.flavor;
+							}
+						}
+						
+						// Add volumes to spec if specified
 						if (additionalFields.volumes) {
 							const volumesArray = (additionalFields.volumes as any).volume || [];
 							if (volumesArray.length > 0) {
-								body.volumes = volumesArray.map((vol: any) => ({
+								spec.volumes = volumesArray.map((vol: any) => ({
 									container: vol.container,
 									mountPath: vol.mountPath,
 									permission: 'RW'
@@ -1556,22 +1573,27 @@ export class OvhAi implements INodeType {
 							}
 						}
 						
-						// Add SSH public keys if specified  
+						// Add SSH public keys to spec if specified  
 						if (additionalFields.sshPublicKeys) {
 							const sshKeys = (additionalFields.sshPublicKeys as string).split('\n').filter(key => key.trim());
 							if (sshKeys.length > 0) {
-								body.sshPublicKeys = sshKeys;
+								spec.sshPublicKeys = sshKeys;
 							}
 						}
 						
-						// Add labels if specified
+						// Add labels to spec if specified
 						if (additionalFields.labels) {
 							try {
-								body.labels = JSON.parse(additionalFields.labels as string);
+								spec.labels = JSON.parse(additionalFields.labels as string);
 							} catch (error) {
 								// If parsing fails, ignore labels
 							}
 						}
+						
+						// Build the final request body with spec
+						body = {
+							spec: spec
+						};
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();

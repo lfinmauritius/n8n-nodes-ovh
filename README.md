@@ -426,6 +426,14 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.17 - July 2025
+- **🔧 OVH AI node fix** - Fixed notebook create structure based on actual API response:
+  - **Correct spec structure**: Everything goes inside a spec object at root level
+  - **Name and region inside spec**: Not at root level but inside spec
+  - **Flavor restored**: Added back flavor parameter, goes in both spec and resources
+  - **All parameters in spec**: env, resources, volumes, sshPublicKeys, labels all inside spec
+  - **Matches API documentation**: Structure now matches the JSON example from OVH API
+
 ### Version 0.9.16 - July 2025
 - **🔧 OVH AI node fix** - Fixed notebook create parameter types:
   - **Removed flavor parameter**: This parameter is not supported by the API
