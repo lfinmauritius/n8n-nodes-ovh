@@ -405,6 +405,9 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.8.2 - January 2025
+- **🔧 OVH AI node fix** - Fixed "Could not get parameter" error on App Get Many operation
+
 ### Version 0.8.1 - January 2025
 - **🔧 OVH AI node fix** - Fixed resources parameter structure for app creation
 - **📝 Documentation update** - Added required API permissions for each OVH service

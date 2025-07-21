@@ -285,7 +285,7 @@ export class OvhAi implements INodeType {
 				],
 				default: 'get',
 			},
-			// Project name field
+			// Project ID for cloud resources
 			{
 				displayName: 'Project ID',
 				name: 'projectId',
@@ -294,11 +294,23 @@ export class OvhAi implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['project', 'app', 'job', 'model', 'notebook'],
+						resource: ['app', 'job', 'model', 'notebook'],
 					},
-					hide: {
+				},
+				placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+				description: 'The cloud project ID',
+			},
+			// Project ID for project resource (only for get operation)
+			{
+				displayName: 'Project ID',
+				name: 'projectId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
 						resource: ['project'],
-						operation: ['getAll'],
+						operation: ['get'],
 					},
 				},
 				placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
