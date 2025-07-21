@@ -859,29 +859,29 @@ export class OvhAi implements INodeType {
 
 				if (resource === 'project') {
 					if (operation === 'get') {
-						const projectId = this.getNodeParameter('projectId', i) as string;
+						const projectId = (this.getNodeParameter('projectId', i) as string).trim();
 						path = `/cloud/project/${projectId}`;
 					} else if (operation === 'getAll') {
 						path = '/cloud/project';
 					}
 				} else if (resource === 'app') {
-					const projectId = this.getNodeParameter('projectId', i) as string;
+					const projectId = (this.getNodeParameter('projectId', i) as string).trim();
 
 					if (operation === 'get') {
-						const appId = this.getNodeParameter('appId', i) as string;
+						const appId = (this.getNodeParameter('appId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/app/${appId}`;
 					} else if (operation === 'getAll') {
 						path = `/cloud/project/${projectId}/ai/app`;
 					} else if (operation === 'getLogs') {
-						const appId = this.getNodeParameter('appId', i) as string;
+						const appId = (this.getNodeParameter('appId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/app/${appId}/log`;
 					} else if (operation === 'start') {
 						method = 'PUT';
-						const appId = this.getNodeParameter('appId', i) as string;
+						const appId = (this.getNodeParameter('appId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/app/${appId}/start`;
 					} else if (operation === 'stop') {
 						method = 'PUT';
-						const appId = this.getNodeParameter('appId', i) as string;
+						const appId = (this.getNodeParameter('appId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/app/${appId}/stop`;
 					} else if (operation === 'create') {
 						method = 'POST';
@@ -940,11 +940,11 @@ export class OvhAi implements INodeType {
 						}
 					} else if (operation === 'delete') {
 						method = 'DELETE';
-						const appId = this.getNodeParameter('appId', i) as string;
+						const appId = (this.getNodeParameter('appId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/app/${appId}`;
 					}
 				} else if (resource === 'job') {
-					const projectId = this.getNodeParameter('projectId', i) as string;
+					const projectId = (this.getNodeParameter('projectId', i) as string).trim();
 
 					if (operation === 'get') {
 						const jobId = this.getNodeParameter('jobId', i) as string;
@@ -1002,39 +1002,27 @@ export class OvhAi implements INodeType {
 						}
 					} else if (operation === 'delete') {
 						method = 'DELETE';
-						const jobId = this.getNodeParameter('jobId', i) as string;
+						const jobId = (this.getNodeParameter('jobId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/job/${jobId}`;
-						
-						// Return debug info instead of trying to delete
-						returnData.push({
-							debug: true,
-							operation: 'delete',
-							projectId: projectId,
-							jobId: jobId,
-							path: path,
-							method: method,
-							message: 'Debug mode - showing parameters instead of executing delete'
-						});
-						continue; // Skip the actual request for debugging
 					}
 				} else if (resource === 'model') {
-					const projectId = this.getNodeParameter('projectId', i) as string;
+					const projectId = (this.getNodeParameter('projectId', i) as string).trim();
 
 					if (operation === 'get') {
-						const modelId = this.getNodeParameter('modelId', i) as string;
+						const modelId = (this.getNodeParameter('modelId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/model/${modelId}`;
 					} else if (operation === 'getAll') {
 						path = `/cloud/project/${projectId}/ai/model`;
 					} else if (operation === 'delete') {
 						method = 'DELETE';
-						const modelId = this.getNodeParameter('modelId', i) as string;
+						const modelId = (this.getNodeParameter('modelId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/model/${modelId}`;
 					}
 				} else if (resource === 'notebook') {
-					const projectId = this.getNodeParameter('projectId', i) as string;
+					const projectId = (this.getNodeParameter('projectId', i) as string).trim();
 
 					if (operation === 'get') {
-						const notebookId = this.getNodeParameter('notebookId', i) as string;
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}`;
 					} else if (operation === 'getAll') {
 						path = `/cloud/project/${projectId}/ai/notebook`;
@@ -1047,15 +1035,15 @@ export class OvhAi implements INodeType {
 						body = { framework, environment };
 					} else if (operation === 'delete') {
 						method = 'DELETE';
-						const notebookId = this.getNodeParameter('notebookId', i) as string;
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}`;
 					} else if (operation === 'start') {
 						method = 'POST';
-						const notebookId = this.getNodeParameter('notebookId', i) as string;
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/start`;
 					} else if (operation === 'stop') {
 						method = 'POST';
-						const notebookId = this.getNodeParameter('notebookId', i) as string;
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/stop`;
 					}
 				}
