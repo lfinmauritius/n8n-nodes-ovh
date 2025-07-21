@@ -1590,13 +1590,22 @@ export class OvhAi implements INodeType {
 							}
 						}
 						
-						// Build the final request body with spec, env and region at root
+						// Build the final request body with all required properties at root level
 						body = {
-							spec: spec,
-							// Also add env and region at root level as API requires them here for creation
+							// All required properties at root level for API validation
+							name: spec.name,
+							region: spec.region,
 							env: spec.env,
-							region: spec.region
+							resources: spec.resources,
+							// Keep spec for any additional properties
+							spec: spec
 						};
+						
+						// Add optional properties at root if they exist in spec
+						if (spec.flavor) body.flavor = spec.flavor;
+						if (spec.volumes) body.volumes = spec.volumes;
+						if (spec.sshPublicKeys) body.sshPublicKeys = spec.sshPublicKeys;
+						if (spec.labels) body.labels = spec.labels;
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();

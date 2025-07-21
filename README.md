@@ -426,6 +426,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.20 - July 2025
+- **🔧 OVH AI node fix** - Added all required properties at root level:
+  - **All properties at root**: name, region, env, resources, plus all optional ones
+  - **Dual structure**: Properties exist both at root and in spec
+  - **API validation**: Satisfies all mandatory property requirements
+  - **Resolves "[resources] Property is mandatory" error**: Complete structure
+
 ### Version 0.9.19 - July 2025
 - **🔧 OVH AI node fix** - Added region at root level along with env:
   - **Region at root level**: API also requires region at root for creation
