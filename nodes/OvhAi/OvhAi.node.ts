@@ -598,7 +598,22 @@ export class OvhAi implements INodeType {
 			},
 			// Job creation fields
 			{
-				displayName: 'Job Image',
+				displayName: 'Name',
+				name: 'name',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['job'],
+						operation: ['create'],
+					},
+				},
+				placeholder: 'my-training-job',
+				description: 'Name of the training job',
+			},
+			{
+				displayName: 'Image',
 				name: 'image',
 				type: 'string',
 				default: '',
@@ -613,18 +628,159 @@ export class OvhAi implements INodeType {
 				description: 'Docker image to use for the training job',
 			},
 			{
-				displayName: 'Command',
-				name: 'command',
+				displayName: 'Region',
+				name: 'region',
 				type: 'string',
 				default: '',
+				required: true,
 				displayOptions: {
 					show: {
 						resource: ['job'],
 						operation: ['create'],
 					},
 				},
-				placeholder: 'python train.py',
-				description: 'Command to run in the job',
+				placeholder: 'GRA',
+				description: 'Region where to run the job (e.g., GRA, BHS, etc.)',
+			},
+			{
+				displayName: 'Resources',
+				name: 'resources',
+				type: 'collection',
+				placeholder: 'Add Resource',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['job'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						displayName: 'CPU',
+						name: 'cpu',
+						type: 'number',
+						default: 1,
+						description: 'Number of CPU cores',
+					},
+					{
+						displayName: 'Memory',
+						name: 'memory',
+						type: 'string',
+						default: '1Gi',
+						placeholder: '1Gi',
+						description: 'Memory allocation (e.g., 1Gi, 512Mi)',
+					},
+					{
+						displayName: 'GPU',
+						name: 'gpu',
+						type: 'number',
+						default: 0,
+						description: 'Number of GPU units',
+					},
+				],
+			},
+			{
+				displayName: 'Additional Fields',
+				name: 'additionalFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['job'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Command',
+						name: 'command',
+						type: 'string',
+						default: '',
+						placeholder: 'python train.py',
+						description: 'Command to run in the job',
+					},
+					{
+						displayName: 'Environment Variables',
+						name: 'env',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						placeholder: 'Add Environment Variable',
+						options: [
+							{
+								name: 'variable',
+								displayName: 'Variable',
+								values: [
+									{
+										displayName: 'Name',
+										name: 'name',
+										type: 'string',
+										default: '',
+										description: 'Environment variable name',
+									},
+									{
+										displayName: 'Value',
+										name: 'value',
+										type: 'string',
+										default: '',
+										description: 'Environment variable value',
+									},
+								],
+							},
+						],
+					},
+					{
+						displayName: 'Partner ID',
+						name: 'partnerId',
+						type: 'string',
+						default: '',
+						description: 'Partner ID (optional)',
+					},
+					{
+						displayName: 'Timeout',
+						name: 'timeout',
+						type: 'number',
+						default: 3600,
+						description: 'Job timeout in seconds',
+					},
+					{
+						displayName: 'Volumes',
+						name: 'volumes',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						placeholder: 'Add Volume',
+						options: [
+							{
+								name: 'volume',
+								displayName: 'Volume',
+								values: [
+									{
+										displayName: 'Mount Path',
+										name: 'mountPath',
+										type: 'string',
+										default: '',
+										placeholder: '/data',
+										description: 'Path where to mount the volume',
+									},
+									{
+										displayName: 'Size',
+										name: 'size',
+										type: 'string',
+										default: '10Gi',
+										placeholder: '10Gi',
+										description: 'Size of the volume',
+									},
+								],
+							},
+						],
+					},
+				],
 			},
 			// Notebook creation fields
 			{
@@ -803,12 +959,53 @@ export class OvhAi implements INodeType {
 						path = `/cloud/project/${projectId}/ai/job`;
 					} else if (operation === 'create') {
 						method = 'POST';
+						const name = this.getNodeParameter('name', i) as string;
 						const image = this.getNodeParameter('image', i) as string;
-						const command = this.getNodeParameter('command', i) as string;
+						const region = this.getNodeParameter('region', i) as string;
+						const resources = this.getNodeParameter('resources', i) as IDataObject;
+						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/ai/job`;
 
-						body = { image };
-						if (command) body.command = command;
+						body = { name, image, region };
+						
+						// Add resources as a nested object
+						const resourcesObj: IDataObject = {};
+						if (resources.cpu !== undefined) resourcesObj.cpu = resources.cpu;
+						if (resources.memory) resourcesObj.memory = resources.memory;
+						if (resources.gpu !== undefined) resourcesObj.gpu = resources.gpu;
+						
+						// Always include resources object (required by API)
+						body.resources = resourcesObj;
+						
+						// Add additional fields
+						if (additionalFields.command) body.command = additionalFields.command;
+						if (additionalFields.timeout) body.timeout = additionalFields.timeout;
+						if (additionalFields.partnerId) body.partnerId = additionalFields.partnerId;
+						
+						// Handle environment variables
+						if (additionalFields.env) {
+							const envVars = (additionalFields.env as any).variable || [];
+							if (envVars.length > 0) {
+								const envObject: IDataObject = {};
+								envVars.forEach((envVar: any) => {
+									if (envVar.name && envVar.value) {
+										envObject[envVar.name] = envVar.value;
+									}
+								});
+								body.env = envObject;
+							}
+						}
+						
+						// Handle volumes
+						if (additionalFields.volumes) {
+							const volumes = (additionalFields.volumes as any).volume || [];
+							if (volumes.length > 0) {
+								body.volumes = volumes.map((vol: any) => ({
+									mountPath: vol.mountPath,
+									size: vol.size,
+								}));
+							}
+						}
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const jobId = this.getNodeParameter('jobId', i) as string;
