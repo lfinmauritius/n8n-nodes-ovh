@@ -411,7 +411,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
-### Version 0.8.20 - July 2025
+### Version 0.9.0 - July 2025
 - **🚀 OVH AI node enhancement** - Replace non-existent Model resource with Data resource:
   - Removed Model operations (endpoints don't exist in OVH AI API)
   - Added Data resource with 6 operations: Get Regions, Get Aliases, Get Alias, Get Alias Auth, Create Alias, Delete Alias

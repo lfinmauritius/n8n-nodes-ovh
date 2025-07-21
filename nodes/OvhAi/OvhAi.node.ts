@@ -1061,6 +1061,16 @@ export class OvhAi implements INodeType {
 
 					if (operation === 'getRegions') {
 						path = `/cloud/project/${projectId}/ai/data/region`;
+						// Debug: Return debug info for Get Regions operation
+						returnData.push({
+							debug: true,
+							resource: 'data',
+							operation: operation,
+							projectId: projectId,
+							path: path,
+							message: 'Debug mode - checking Get Regions endpoint'
+						});
+						continue;
 					} else if (operation === 'getAliases') {
 						const region = (this.getNodeParameter('region', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/data/region/${region}/alias`;
