@@ -408,6 +408,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.8.17 - July 2025
+- **🔧 OVH AI node fix** - Fixed Invalid signature error caused by whitespace in parameters:
+  - Add .trim() to all ID parameters (projectId, jobId, appId, modelId, notebookId) 
+  - Removes leading/trailing whitespace including tabs that corrupt OVH signatures
+  - Prevents malformed URLs in API calls
+  - Root cause: jobId contained trailing tab character causing signature mismatch
+
 ### Version 0.8.14 - July 2025
 - **🔧 OVH AI node fix** - Aligned request options with OvhDedicatedServer for consistent signature generation:
   - Always use json: true for all requests (matches working OvhDedicatedServer pattern)

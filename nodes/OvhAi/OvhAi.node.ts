@@ -1103,7 +1103,28 @@ export class OvhAi implements INodeType {
 				responseData = await this.helpers.request(options);
 
 				// Handle different response types based on operation
-				if (operation === 'start' || operation === 'stop') {
+				if (operation === 'delete') {
+					// Delete operations typically return empty response on success
+					if (!responseData || (Array.isArray(responseData) && responseData.length === 0) || 
+						(typeof responseData === 'string' && responseData.trim() === '')) {
+						// Empty response means successful deletion
+						const resourceType = resource === 'job' ? 'training job' : resource;
+						const resourceId = resource === 'job' ? (this.getNodeParameter('jobId', i) as string).trim() : 
+											resource === 'app' ? (this.getNodeParameter('appId', i) as string).trim() :
+											resource === 'model' ? (this.getNodeParameter('modelId', i) as string).trim() :
+											resource === 'notebook' ? (this.getNodeParameter('notebookId', i) as string).trim() : 'resource';
+						returnData.push({ 
+							success: true, 
+							message: `${resourceType} deleted successfully`,
+							operation: operation,
+							resource: resource,
+							id: resourceId
+						});
+					} else {
+						// If we get actual data back, return it
+						returnData.push(responseData);
+					}
+				} else if (operation === 'start' || operation === 'stop') {
 					// Start/Stop operations typically return success message or empty response
 					if (typeof responseData === 'string' && responseData.trim() === '') {
 						// Empty response means success
