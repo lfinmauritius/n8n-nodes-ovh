@@ -426,6 +426,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.19 - July 2025
+- **🔧 OVH AI node fix** - Added region at root level along with env:
+  - **Region at root level**: API also requires region at root for creation
+  - **Both env and region at root**: API validation requires these at root level
+  - **Keep spec structure intact**: All parameters still maintained inside spec
+  - **Resolves "[region] Property is mandatory" error**: Complete API validation
+
 ### Version 0.9.18 - July 2025
 - **🔧 OVH AI node fix** - Added env at both root and spec levels:
   - **Env at root level**: API requires env at root for creation requests

@@ -1590,11 +1590,12 @@ export class OvhAi implements INodeType {
 							}
 						}
 						
-						// Build the final request body with spec and env at root
+						// Build the final request body with spec, env and region at root
 						body = {
 							spec: spec,
-							// Also add env at root level as API seems to require it here for creation
-							env: spec.env
+							// Also add env and region at root level as API requires them here for creation
+							env: spec.env,
+							region: spec.region
 						};
 					} else if (operation === 'delete') {
 						method = 'DELETE';
