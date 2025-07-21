@@ -128,6 +128,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 #### AI App Operations
 - **Get**: Get AI application information (includes status)
 - **Get Many**: List all AI applications in a project
+- **Get Logs**: Retrieve AI application logs
 - **Create**: Create a new AI application with:
   - Docker image configuration
   - Resource allocation (CPU, Memory, GPU)
@@ -137,6 +138,8 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
   - Port configuration
   - Health check probes
   - Scaling strategy (fixed/automatic)
+- **Start**: Start a stopped AI application
+- **Stop**: Stop a running AI application
 - **Update**: Update AI application settings (replicas, auto-scaling)
 - **Delete**: Delete an AI application
 
@@ -400,6 +403,9 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Get Many**: List all tasks for vRack operations
 
 ## Latest Features & Updates
+
+### Version 0.8.4 - January 2025
+- **🔧 OVH AI node update** - Re-added Start, Stop and Get Logs operations with corrected endpoint paths
 
 ### Version 0.8.3 - January 2025
 - **🔧 OVH AI node fix** - Removed unsupported operations (Get Logs, Get Status, Start, Stop) that don't exist in OVH API

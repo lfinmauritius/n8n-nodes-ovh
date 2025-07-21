@@ -118,10 +118,28 @@ export class OvhAi implements INodeType {
 						action: 'Get AI app information',
 					},
 					{
+						name: 'Get Logs',
+						value: 'getLogs',
+						description: 'Get AI app logs',
+						action: 'Get AI app logs',
+					},
+					{
 						name: 'Get Many',
 						value: 'getAll',
 						description: 'Get many AI apps',
 						action: 'Get many AI apps',
+					},
+					{
+						name: 'Start',
+						value: 'start',
+						description: 'Start an AI app',
+						action: 'Start an AI app',
+					},
+					{
+						name: 'Stop',
+						value: 'stop',
+						description: 'Stop an AI app',
+						action: 'Stop an AI app',
 					},
 					{
 						name: 'Update',
@@ -302,7 +320,7 @@ export class OvhAi implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['app'],
-						operation: ['get', 'delete', 'update'],
+						operation: ['get', 'delete', 'update', 'getLogs', 'start', 'stop'],
 					},
 				},
 				description: 'The AI app ID',
@@ -740,6 +758,17 @@ export class OvhAi implements INodeType {
 						path = `/cloud/project/${projectId}/ai/app/${appId}`;
 					} else if (operation === 'getAll') {
 						path = `/cloud/project/${projectId}/ai/app`;
+					} else if (operation === 'getLogs') {
+						const appId = this.getNodeParameter('appId', i) as string;
+						path = `/cloud/project/${projectId}/ai/app/${appId}/logs`;
+					} else if (operation === 'start') {
+						method = 'POST';
+						const appId = this.getNodeParameter('appId', i) as string;
+						path = `/cloud/project/${projectId}/ai/app/${appId}/start`;
+					} else if (operation === 'stop') {
+						method = 'POST';
+						const appId = this.getNodeParameter('appId', i) as string;
+						path = `/cloud/project/${projectId}/ai/app/${appId}/stop`;
 					} else if (operation === 'create') {
 						method = 'POST';
 						const name = this.getNodeParameter('name', i) as string;
