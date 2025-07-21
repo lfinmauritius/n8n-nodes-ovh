@@ -1087,7 +1087,6 @@ export class OvhAi implements INodeType {
 					method,
 					url: fullUrl,
 					headers,
-					json: true, // Always parse JSON responses
 				};
 
 				// Add body and content-type for POST/PUT requests
@@ -1095,8 +1094,12 @@ export class OvhAi implements INodeType {
 					// Only add body if we have content
 					if (Object.keys(body).length > 0) {
 						options.body = body;
+						options.json = true;
 						headers['Content-Type'] = 'application/json';
 					}
+				} else {
+					// For GET/DELETE requests, enable JSON parsing
+					options.json = true;
 				}
 
 				responseData = await this.helpers.request(options);
