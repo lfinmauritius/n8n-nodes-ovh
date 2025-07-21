@@ -126,10 +126,8 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Get Many**: List all your cloud projects
 
 #### AI App Operations
-- **Get**: Get AI application information
+- **Get**: Get AI application information (includes status)
 - **Get Many**: List all AI applications in a project
-- **Get Logs**: Retrieve AI application logs
-- **Get Status**: Get detailed AI application status
 - **Create**: Create a new AI application with:
   - Docker image configuration
   - Resource allocation (CPU, Memory, GPU)
@@ -140,8 +138,6 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
   - Health check probes
   - Scaling strategy (fixed/automatic)
 - **Update**: Update AI application settings (replicas, auto-scaling)
-- **Start**: Start a stopped AI application
-- **Stop**: Stop a running AI application
 - **Delete**: Delete an AI application
 
 #### Training Job Operations
@@ -405,6 +401,9 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.8.3 - January 2025
+- **🔧 OVH AI node fix** - Removed unsupported operations (Get Logs, Get Status, Start, Stop) that don't exist in OVH API
+
 ### Version 0.8.2 - January 2025
 - **🔧 OVH AI node fix** - Fixed "Could not get parameter" error on App Get Many operation
 
@@ -418,7 +417,6 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
   - **Training Jobs**: Create and manage ML training jobs with Docker containers
   - **Models**: Deploy and manage AI models
   - **Notebooks**: Create and control Jupyter/VSCode notebooks for development
-  - **Enhanced operations**: Added Get Logs, Get Status, Start/Stop for AI apps
   - **Comprehensive parameters**: Support for GPU allocation, custom ports, probe configuration
 
 ### Version 0.7.6 - July 2025
