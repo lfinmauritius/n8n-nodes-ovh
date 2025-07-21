@@ -769,10 +769,14 @@ export class OvhAi implements INodeType {
 
 						body = { name, image, region };
 						
-						// Add resources
-						if (resources.cpu) body.cpu = resources.cpu;
-						if (resources.memory) body.memory = resources.memory;
-						if (resources.gpu) body.gpu = resources.gpu;
+						// Add resources as a nested object
+						const resourcesObj: IDataObject = {};
+						if (resources.cpu !== undefined) resourcesObj.cpu = resources.cpu;
+						if (resources.memory) resourcesObj.memory = resources.memory;
+						if (resources.gpu !== undefined) resourcesObj.gpu = resources.gpu;
+						
+						// Always include resources object (required by API)
+						body.resources = resourcesObj;
 						
 						// Add additional fields
 						if (additionalFields.port) body.port = additionalFields.port;

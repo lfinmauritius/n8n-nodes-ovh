@@ -405,6 +405,10 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.8.1 - January 2025
+- **🔧 OVH AI node fix** - Fixed resources parameter structure for app creation
+- **📝 Documentation update** - Added required API permissions for each OVH service
+
 ### Version 0.8.0 - January 2025
 - **🤖 New OVH AI node** - Complete AI/ML services management:
   - **AI Applications**: Full lifecycle management with enhanced creation options (environment variables, volumes, health checks, scaling strategies)
@@ -446,7 +450,11 @@ To use this node, you need to create OVH API credentials:
    - CA: https://ca.api.ovh.com/createToken/
    - US: https://api.us.ovhcloud.com/createToken/
 
-2. Set the required rights for your application (e.g., GET/PUT/POST/DELETE on /domain/*)
+2. Set the required rights for your application based on the nodes you want to use:
+   - **OVH Domain**: GET/PUT/POST/DELETE on `/domain/*`
+   - **OVH Dedicated Server**: GET/PUT/POST/DELETE on `/dedicated/server/*`
+   - **OVH AI**: GET/PUT/POST/DELETE on `/cloud/project/*/ai/*`
+   - For all cloud services: GET on `/cloud/project` and `/cloud/project/*`
 
 3. You'll receive:
    - Application Key
