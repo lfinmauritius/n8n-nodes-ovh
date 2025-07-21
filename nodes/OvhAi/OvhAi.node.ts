@@ -1135,14 +1135,6 @@ export class OvhAi implements INodeType {
 				},
 				options: [
 					{
-						displayName: 'Flavor',
-						name: 'flavor',
-						type: 'string',
-						default: '',
-						placeholder: 'ai1-1-gpu',
-						description: 'The flavor ID for the notebook (e.g., ai1-1-gpu, ai1-4-cpu)',
-					},
-					{
 						displayName: 'Labels',
 						name: 'labels',
 						type: 'json',
@@ -1524,10 +1516,10 @@ export class OvhAi implements INodeType {
 						
 						path = `/cloud/project/${projectId}/ai/notebook`;
 						
-						// Build resources object - try with memory in GB string format
+						// Build resources object with memory as number in MB
 						const resources: any = {
 							cpu: notebookCpu,
-							memory: `${notebookMemory}Gi` // Use Kubernetes-style memory format
+							memory: notebookMemory * 1024 // Convert GB to MB as a number
 						};
 						
 						if (notebookGpu > 0) {
@@ -1551,11 +1543,6 @@ export class OvhAi implements INodeType {
 							},
 							resources: resources
 						};
-						
-						// Add flavor if specified
-						if (additionalFields.flavor) {
-							body.flavor = (additionalFields.flavor as string).trim();
-						}
 						
 						// Add volumes if specified
 						if (additionalFields.volumes) {

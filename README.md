@@ -426,6 +426,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.16 - July 2025
+- **🔧 OVH AI node fix** - Fixed notebook create parameter types:
+  - **Removed flavor parameter**: This parameter is not supported by the API
+  - **Fixed memory type**: Changed from string "8Gi" to number in MB (e.g., 8192 for 8GB)
+  - **Memory is now a long type**: Converts GB input to MB as required by API
+  - **Resolves "Unknown parameter" and "not valid for type long" errors**
+
 ### Version 0.9.15 - July 2025
 - **🔧 OVH AI node fix** - Final fix for Notebook Create structure:
   - **Moved env back to root level**: API requires env at root, not in spec
