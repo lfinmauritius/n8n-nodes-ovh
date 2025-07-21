@@ -168,7 +168,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Create**: Create a new notebook with:
   - Framework selection (Jupyter, JupyterLab, VSCode)
   - Environment selection (TensorFlow, PyTorch, Scikit-Learn, R)
-  - Resource allocation (CPU cores 1-12, GPU units 0-4)
+  - Resource allocation (CPU cores 1-28, GPU units 0-4)
   - Region selection and deployment
   - Custom notebook naming
   - Optional timeout configuration
@@ -425,6 +425,12 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Get Many**: List all tasks for vRack operations
 
 ## Latest Features & Updates
+
+### Version 0.9.23 - July 2025
+- **🔧 OVH AI node fix** - Extended CPU limit for notebooks:
+  - **Increased CPU limit**: Maximum CPU cores increased from 12 to 28
+  - **Better resource allocation**: Support for more powerful notebook configurations
+  - **Matches OVH capabilities**: Now supports all available CPU configurations
 
 ### Version 0.9.22 - July 2025
 - **🚀 OVH AI node enhancement** - Added missing notebook creation parameters:

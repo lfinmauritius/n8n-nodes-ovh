@@ -1085,9 +1085,9 @@ export class OvhAi implements INodeType {
 				},
 				typeOptions: {
 					minValue: 1,
-					maxValue: 12,
+					maxValue: 28,
 				},
-				description: 'Number of CPU cores (1-12)',
+				description: 'Number of CPU cores (1-28)',
 			},
 			{
 				displayName: 'GPU',
