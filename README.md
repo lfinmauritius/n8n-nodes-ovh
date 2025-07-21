@@ -408,6 +408,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.8.18 - July 2025
+- **🚀 OVH AI node enhancement** - Improved DELETE operation response with success confirmation:
+  - Replace empty array response with informative success message
+  - Show resource type (training job, app, model, notebook) and ID in response
+  - Better user experience for DELETE operations
+  - Returns: `{success: true, message: 'training job deleted successfully', operation: 'delete', resource: 'job', id: 'xxx'}`
+
 ### Version 0.8.17 - July 2025
 - **🔧 OVH AI node fix** - Fixed Invalid signature error caused by whitespace in parameters:
   - Add .trim() to all ID parameters (projectId, jobId, appId, modelId, notebookId) 

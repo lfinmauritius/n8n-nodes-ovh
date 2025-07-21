@@ -1008,16 +1008,20 @@ export class OvhAi implements INodeType {
 				} else if (resource === 'model') {
 					const projectId = (this.getNodeParameter('projectId', i) as string).trim();
 
-					if (operation === 'get') {
-						const modelId = (this.getNodeParameter('modelId', i) as string).trim();
-						path = `/cloud/project/${projectId}/ai/model/${modelId}`;
-					} else if (operation === 'getAll') {
-						path = `/cloud/project/${projectId}/ai/model`;
-					} else if (operation === 'delete') {
-						method = 'DELETE';
-						const modelId = (this.getNodeParameter('modelId', i) as string).trim();
-						path = `/cloud/project/${projectId}/ai/model/${modelId}`;
-					}
+					// Debug: Return debug info for Model operations
+					returnData.push({
+						debug: true,
+						resource: 'model',
+						operation: operation,
+						projectId: projectId,
+						modelId: operation === 'get' || operation === 'delete' ? 
+							(this.getNodeParameter('modelId', i) as string).trim() : 'N/A',
+						message: 'Debug mode - Model operations may not exist in OVH AI API',
+						expectedPath: operation === 'get' || operation === 'delete' ? 
+							`/cloud/project/${projectId}/ai/model/${(this.getNodeParameter('modelId', i) as string).trim()}` :
+							`/cloud/project/${projectId}/ai/model`
+					});
+					continue;
 				} else if (resource === 'notebook') {
 					const projectId = (this.getNodeParameter('projectId', i) as string).trim();
 
