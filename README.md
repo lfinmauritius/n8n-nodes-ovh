@@ -426,6 +426,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.24 - July 2025
+- **🚀 OVH AI node enhancement** - Added custom framework version support:
+  - **Custom Framework Version**: New field to specify exact framework versions (e.g., 2.7.1-py312-cudadevel128-gpu)
+  - **Full flexibility**: Override default versions with any OVH-supported framework version
+  - **GPU-optimized versions**: Support for CUDA-enabled and development versions
+  - **Better compatibility**: Use specific Python versions and GPU configurations
+
 ### Version 0.9.23 - July 2025
 - **🔧 OVH AI node fix** - Extended CPU limit for notebooks:
   - **Increased CPU limit**: Maximum CPU cores increased from 12 to 28

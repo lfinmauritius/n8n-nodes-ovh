@@ -1146,6 +1146,14 @@ export class OvhAi implements INodeType {
 						description: 'Authorized IP addresses or CIDR blocks (one per line)',
 					},
 					{
+						displayName: 'Custom Framework Version',
+						name: 'customFrameworkVersion',
+						type: 'string',
+						default: '',
+						placeholder: '2.7.1-py312-cudadevel128-gpu',
+						description: 'Override the default framework version with a specific version (e.g., 2.7.1-py312-cudadevel128-gpu). Leave empty to use default.',
+					},
+					{
 						displayName: 'Environment Variables',
 						name: 'envVars',
 						type: 'fixedCollection',
@@ -1600,20 +1608,28 @@ export class OvhAi implements INodeType {
 						}
 						
 						// Build the request body directly at root level (no spec wrapper)
+						const envObject: any = {
+							editorId: framework,
+							frameworkId: environment === 'tensorflow' ? 'tensorflow' : 
+										 environment === 'pytorch' ? 'pytorch' :
+										 environment === 'sklearn' ? 'conda' : 
+										 environment === 'r' ? 'conda' : 'conda'
+						};
+						
+						// Use custom framework version if provided, otherwise use defaults
+						if (additionalFields.customFrameworkVersion && (additionalFields.customFrameworkVersion as string).trim()) {
+							envObject.frameworkVersion = (additionalFields.customFrameworkVersion as string).trim();
+						} else {
+							envObject.frameworkVersion = environment === 'tensorflow' ? 'tensorflow-2.11.0' :
+														 environment === 'pytorch' ? 'pytorch-1.13.1' :
+														 environment === 'sklearn' ? 'conda-py39-v22-4' :
+														 environment === 'r' ? 'conda-r42-v22-4' : 'conda-py39-v22-4';
+						}
+						
 						body = {
 							name: notebookName,
 							region: notebookRegion,
-							env: {
-								editorId: framework,
-								frameworkId: environment === 'tensorflow' ? 'tensorflow' : 
-											 environment === 'pytorch' ? 'pytorch' :
-											 environment === 'sklearn' ? 'conda' : 
-											 environment === 'r' ? 'conda' : 'conda',
-								frameworkVersion: environment === 'tensorflow' ? 'tensorflow-2.11.0' :
-												  environment === 'pytorch' ? 'pytorch-1.13.1' :
-												  environment === 'sklearn' ? 'conda-py39-v22-4' :
-												  environment === 'r' ? 'conda-r42-v22-4' : 'conda-py39-v22-4'
-							},
+							env: envObject,
 							resources: resources
 						};
 						
