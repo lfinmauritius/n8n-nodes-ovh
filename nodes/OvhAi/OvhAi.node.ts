@@ -760,13 +760,13 @@ export class OvhAi implements INodeType {
 						path = `/cloud/project/${projectId}/ai/app`;
 					} else if (operation === 'getLogs') {
 						const appId = this.getNodeParameter('appId', i) as string;
-						path = `/cloud/project/${projectId}/ai/app/${appId}/logs`;
+						path = `/cloud/project/${projectId}/ai/app/${appId}/log`;
 					} else if (operation === 'start') {
-						method = 'POST';
+						method = 'PUT';
 						const appId = this.getNodeParameter('appId', i) as string;
 						path = `/cloud/project/${projectId}/ai/app/${appId}/start`;
 					} else if (operation === 'stop') {
-						method = 'POST';
+						method = 'PUT';
 						const appId = this.getNodeParameter('appId', i) as string;
 						path = `/cloud/project/${projectId}/ai/app/${appId}/stop`;
 					} else if (operation === 'create') {
