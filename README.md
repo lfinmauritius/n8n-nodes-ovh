@@ -426,6 +426,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.25 - July 2025
+- **🔧 OVH AI node fix** - Critical fixes for notebook creation:
+  - **Memory conversion fix**: Changed from MB to bytes (memory is now correctly sent in bytes)
+  - **Flavor placement fix**: Flavor is now properly added to resources before body creation
+  - **GPU configuration**: Enhanced flavor field description - REQUIRED for GPU configurations
+  - **Memory guidance**: Updated description to suggest 80GB for GPU instances
+
 ### Version 0.9.24 - July 2025
 - **🚀 OVH AI node enhancement** - Added custom framework version support:
   - **Custom Framework Version**: New field to specify exact framework versions (e.g., 2.7.1-py312-cudadevel128-gpu)

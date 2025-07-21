@@ -1119,7 +1119,7 @@ export class OvhAi implements INodeType {
 					},
 				},
 				placeholder: '8',
-				description: 'Memory allocation in GB (e.g., 8, 16, 32)',
+				description: 'Memory allocation in GB (e.g., 8, 16, 32, 80 for GPU instances)',
 			},
 			{
 				displayName: 'Additional Fields',
@@ -1190,8 +1190,8 @@ export class OvhAi implements INodeType {
 						name: 'flavor',
 						type: 'string',
 						default: '',
-						placeholder: 'ai1-1-gpu',
-						description: 'The flavor ID for the notebook (e.g., ai1-1-gpu, ai1-4-cpu)',
+						placeholder: 'l4-1-gpu',
+						description: 'The flavor ID for the notebook (e.g., l4-1-gpu, ai1-1-gpu, ai1-4-cpu). REQUIRED for GPU configurations!.',
 					},
 					{
 						displayName: 'Labels',
@@ -1597,14 +1597,19 @@ export class OvhAi implements INodeType {
 						
 						path = `/cloud/project/${projectId}/ai/notebook`;
 						
-						// Build resources object with memory as number in MB
+						// Build resources object with memory as number in bytes
 						const resources: any = {
 							cpu: notebookCpu,
-							memory: notebookMemory * 1024 // Convert GB to MB as a number
+							memory: notebookMemory * 1024 * 1024 * 1024 // Convert GB to bytes
 						};
 						
 						if (notebookGpu > 0) {
 							resources.gpu = notebookGpu;
+						}
+						
+						// Add flavor to resources if specified (must be before body creation)
+						if (additionalFields.flavor) {
+							resources.flavor = (additionalFields.flavor as string).trim();
 						}
 						
 						// Build the request body directly at root level (no spec wrapper)
@@ -1632,11 +1637,6 @@ export class OvhAi implements INodeType {
 							env: envObject,
 							resources: resources
 						};
-						
-						// Add flavor to resources if specified
-						if (additionalFields.flavor) {
-							resources.flavor = (additionalFields.flavor as string).trim();
-						}
 						
 						// Add volumes if specified
 						if (additionalFields.volumes) {
