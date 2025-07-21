@@ -1004,8 +1004,18 @@ export class OvhAi implements INodeType {
 						method = 'DELETE';
 						const jobId = this.getNodeParameter('jobId', i) as string;
 						path = `/cloud/project/${projectId}/ai/job/${jobId}`;
-						// Log debug info for troubleshooting
-						console.log(`DEBUG Delete Job: projectId=${projectId}, jobId=${jobId}, path=${path}`);
+						
+						// Return debug info instead of trying to delete
+						returnData.push({
+							debug: true,
+							operation: 'delete',
+							projectId: projectId,
+							jobId: jobId,
+							path: path,
+							method: method,
+							message: 'Debug mode - showing parameters instead of executing delete'
+						});
+						continue; // Skip the actual request for debugging
 					}
 				} else if (resource === 'model') {
 					const projectId = this.getNodeParameter('projectId', i) as string;
@@ -1075,8 +1085,7 @@ export class OvhAi implements INodeType {
 					timestamp,
 				];
 
-				// Debug logging for signature troubleshooting
-				console.log(`DEBUG Signature Elements: method=${method}, url=${fullUrl}, body='${bodyForSignature}', timestamp=${timestamp}`);
+				// Remove debug logging since console.log doesn't work in n8n
 
 				const signature =
 					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
