@@ -403,6 +403,9 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.8.9 - July 2025
+- **🔧 OVH AI node fix** - Improved response handling for Start/Stop operations (handle non-JSON responses)
+
 ### Version 0.8.8 - July 2025
 - **🔧 OVH AI node cleanup** - Removed non-existent Update operation for AI apps
 

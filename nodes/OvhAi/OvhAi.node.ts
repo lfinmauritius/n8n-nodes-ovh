@@ -914,29 +914,60 @@ export class OvhAi implements INodeType {
 
 				responseData = await this.helpers.request(options);
 
-				// Parse JSON manually for GET requests
-				if (method === 'GET' && typeof responseData === 'string') {
-					try {
-						responseData = JSON.parse(responseData);
-					} catch (error) {
-						// If JSON parsing fails, keep the original response
-					}
-				}
-
-				if (Array.isArray(responseData)) {
-					// For arrays, add each item
-					responseData.forEach((item) => {
-						if (typeof item === 'string' || typeof item === 'number') {
-							// For simple values, wrap in an object
-							returnData.push({ value: item });
-						} else {
-							// For objects, add directly
-							returnData.push(item);
+				// Handle different response types based on operation
+				if (operation === 'start' || operation === 'stop') {
+					// Start/Stop operations typically return success message or empty response
+					if (typeof responseData === 'string' && responseData.trim() === '') {
+						// Empty response means success
+						returnData.push({ 
+							success: true, 
+							message: `${operation === 'start' ? 'Started' : 'Stopped'} successfully`,
+							operation: operation 
+						});
+					} else if (typeof responseData === 'string') {
+						try {
+							const parsed = JSON.parse(responseData);
+							returnData.push(parsed);
+						} catch (error) {
+							// If not JSON, treat as success message
+							returnData.push({ 
+								success: true, 
+								message: responseData,
+								operation: operation 
+							});
 						}
-					});
+					} else {
+						returnData.push(responseData || { 
+							success: true, 
+							message: `${operation === 'start' ? 'Started' : 'Stopped'} successfully`,
+							operation: operation 
+						});
+					}
 				} else {
-					// For single objects/values, add directly
-					returnData.push(responseData);
+					// Parse JSON manually for GET requests and other operations
+					if (method === 'GET' && typeof responseData === 'string') {
+						try {
+							responseData = JSON.parse(responseData);
+						} catch (error) {
+							// If JSON parsing fails, keep the original response
+						}
+					}
+
+					if (Array.isArray(responseData)) {
+						// For arrays, add each item
+						responseData.forEach((item) => {
+							if (typeof item === 'string' || typeof item === 'number') {
+								// For simple values, wrap in an object
+								returnData.push({ value: item });
+							} else {
+								// For objects, add directly
+								returnData.push(item);
+							}
+						});
+					} else {
+						// For single objects/values, add directly
+						returnData.push(responseData);
+					}
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {
