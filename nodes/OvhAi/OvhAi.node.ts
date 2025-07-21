@@ -1004,6 +1004,8 @@ export class OvhAi implements INodeType {
 						method = 'DELETE';
 						const jobId = this.getNodeParameter('jobId', i) as string;
 						path = `/cloud/project/${projectId}/ai/job/${jobId}`;
+						// Log debug info for troubleshooting
+						console.log(`DEBUG Delete Job: projectId=${projectId}, jobId=${jobId}, path=${path}`);
 					}
 				} else if (resource === 'model') {
 					const projectId = this.getNodeParameter('projectId', i) as string;
@@ -1072,6 +1074,9 @@ export class OvhAi implements INodeType {
 					bodyForSignature,
 					timestamp,
 				];
+
+				// Debug logging for signature troubleshooting
+				console.log(`DEBUG Signature Elements: method=${method}, url=${fullUrl}, body='${bodyForSignature}', timestamp=${timestamp}`);
 
 				const signature =
 					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');

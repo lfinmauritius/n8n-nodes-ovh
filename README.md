@@ -408,6 +408,12 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.8.14 - July 2025
+- **🔧 OVH AI node fix** - Aligned request options with OvhDedicatedServer for consistent signature generation:
+  - Always use json: true for all requests (matches working OvhDedicatedServer pattern)
+  - Only add Content-Type for POST/PUT requests with body
+  - Ensures consistent OVH signature generation across all node types
+
 ### Version 0.8.13 - July 2025
 - **🔧 OVH AI node fix** - Fixed Invalid signature error on Job Delete operations:
   - Improved request options handling for different HTTP methods
