@@ -1,10 +1,10 @@
 # n8n-nodes-ovh
 
-**⚠️ BETA VERSION - Currently OVH Dedicated Server and OVH Domain nodes are active**
+**⚠️ BETA VERSION - Currently OVH AI, OVH Dedicated Server and OVH Domain nodes are active**
 
 This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, Web PaaS, and private network tasks.
 
-**Note**: This is a beta release. Currently enabled nodes are OVH Dedicated Server and OVH Domain. Other nodes will be activated in future releases after thorough testing.
+**Note**: This is a beta release. Currently enabled nodes are OVH AI, OVH Dedicated Server and OVH Domain. Other nodes will be activated in future releases after thorough testing.
 
 **Developed by [Ascenzia](https://ascenzia.fr)** - Your trusted partner for AI agent creation and automation.
 
@@ -128,14 +128,26 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 #### AI App Operations
 - **Get**: Get AI application information
 - **Get Many**: List all AI applications in a project
-- **Create**: Create a new AI application
+- **Get Logs**: Retrieve AI application logs
+- **Get Status**: Get detailed AI application status
+- **Create**: Create a new AI application with:
+  - Docker image configuration
+  - Resource allocation (CPU, Memory, GPU)
+  - Region selection
+  - Environment variables
+  - Volume mounting
+  - Port configuration
+  - Health check probes
+  - Scaling strategy (fixed/automatic)
 - **Update**: Update AI application settings (replicas, auto-scaling)
+- **Start**: Start a stopped AI application
+- **Stop**: Stop a running AI application
 - **Delete**: Delete an AI application
 
 #### Training Job Operations
 - **Get**: Get training job information
 - **Get Many**: List all training jobs in a project
-- **Create**: Create a new training job
+- **Create**: Create a new training job with Docker image and command
 - **Stop**: Stop a running training job
 - **Delete**: Delete a training job
 
@@ -147,7 +159,9 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 #### Notebook Operations
 - **Get**: Get notebook information
 - **Get Many**: List all notebooks in a project
-- **Create**: Create a new notebook (Jupyter, JupyterLab, VSCode)
+- **Create**: Create a new notebook with:
+  - Framework selection (Jupyter, JupyterLab, VSCode)
+  - Environment selection (TensorFlow, PyTorch, Scikit-Learn, R)
 - **Start**: Start a notebook instance
 - **Stop**: Stop a notebook instance
 - **Delete**: Delete a notebook
@@ -390,6 +404,15 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Get Many**: List all tasks for vRack operations
 
 ## Latest Features & Updates
+
+### Version 0.8.0 - January 2025
+- **🤖 New OVH AI node** - Complete AI/ML services management:
+  - **AI Applications**: Full lifecycle management with enhanced creation options (environment variables, volumes, health checks, scaling strategies)
+  - **Training Jobs**: Create and manage ML training jobs with Docker containers
+  - **Models**: Deploy and manage AI models
+  - **Notebooks**: Create and control Jupyter/VSCode notebooks for development
+  - **Enhanced operations**: Added Get Logs, Get Status, Start/Stop for AI apps
+  - **Comprehensive parameters**: Support for GPU allocation, custom ports, probe configuration
 
 ### Version 0.7.6 - July 2025
 - **🚀 Complete OVH Domain node implementation** - Full domain and DNS management capabilities

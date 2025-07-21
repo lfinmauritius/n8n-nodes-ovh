@@ -39,7 +39,8 @@
       "Bash(do echo \"=== $file ===\")",
       "Bash(node:*)",
       "Bash(npm version:*)",
-      "WebFetch(domain:api.ovh.com)"
+      "WebFetch(domain:api.ovh.com)",
+      "Bash(git config:*)"
     ],
     "deny": []
   }

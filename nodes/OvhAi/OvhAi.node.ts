@@ -118,10 +118,34 @@ export class OvhAi implements INodeType {
 						action: 'Get AI app information',
 					},
 					{
+						name: 'Get Logs',
+						value: 'getLogs',
+						description: 'Get AI app logs',
+						action: 'Get AI app logs',
+					},
+					{
 						name: 'Get Many',
 						value: 'getAll',
 						description: 'Get many AI apps',
 						action: 'Get many AI apps',
+					},
+					{
+						name: 'Get Status',
+						value: 'getStatus',
+						description: 'Get AI app status',
+						action: 'Get AI app status',
+					},
+					{
+						name: 'Start',
+						value: 'start',
+						description: 'Start an AI app',
+						action: 'Start an AI app',
+					},
+					{
+						name: 'Stop',
+						value: 'stop',
+						description: 'Stop an AI app',
+						action: 'Stop an AI app',
 					},
 					{
 						name: 'Update',
@@ -290,7 +314,7 @@ export class OvhAi implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['app'],
-						operation: ['get', 'delete', 'update'],
+						operation: ['get', 'delete', 'update', 'getLogs', 'getStatus', 'start', 'stop'],
 					},
 				},
 				description: 'The AI app ID',
@@ -342,6 +366,21 @@ export class OvhAi implements INodeType {
 			},
 			// App creation fields
 			{
+				displayName: 'Name',
+				name: 'name',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['app'],
+						operation: ['create'],
+					},
+				},
+				placeholder: 'my-ai-app',
+				description: 'Name of the AI app',
+			},
+			{
 				displayName: 'Image',
 				name: 'image',
 				type: 'string',
@@ -355,6 +394,21 @@ export class OvhAi implements INodeType {
 				},
 				placeholder: 'tensorflow/tensorflow:latest',
 				description: 'Docker image to use for the app',
+			},
+			{
+				displayName: 'Region',
+				name: 'region',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['app'],
+						operation: ['create'],
+					},
+				},
+				placeholder: 'GRA',
+				description: 'Region where to deploy the app (e.g., GRA, BHS, etc.)',
 			},
 			{
 				displayName: 'Resources',
@@ -390,6 +444,155 @@ export class OvhAi implements INodeType {
 						type: 'number',
 						default: 0,
 						description: 'Number of GPU units',
+					},
+				],
+			},
+			{
+				displayName: 'Additional Fields',
+				name: 'additionalFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['app'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Default HTTP Port',
+						name: 'defaultHttpPort',
+						type: 'number',
+						default: 8080,
+						description: 'Default HTTP port for the app',
+					},
+					{
+						displayName: 'Environment Variables',
+						name: 'env',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						placeholder: 'Add Environment Variable',
+						options: [
+							{
+								name: 'variable',
+								displayName: 'Variable',
+								values: [
+									{
+										displayName: 'Name',
+										name: 'name',
+										type: 'string',
+										default: '',
+										description: 'Environment variable name',
+									},
+									{
+										displayName: 'Value',
+										name: 'value',
+										type: 'string',
+										default: '',
+										description: 'Environment variable value',
+									},
+								],
+							},
+						],
+					},
+					{
+						displayName: 'Partner ID',
+						name: 'partnerId',
+						type: 'string',
+						default: '',
+						description: 'Partner ID (optional)',
+					},
+					{
+						displayName: 'Port',
+						name: 'port',
+						type: 'number',
+						default: 8080,
+						description: 'Port to expose',
+					},
+					{
+						displayName: 'Probe',
+						name: 'probe',
+						type: 'collection',
+						default: {},
+						placeholder: 'Add Probe',
+						options: [
+							{
+								displayName: 'Path',
+								name: 'path',
+								type: 'string',
+								default: '/health',
+								description: 'Health check path',
+							},
+							{
+								displayName: 'Port',
+								name: 'port',
+								type: 'number',
+								default: 8080,
+								description: 'Health check port',
+							},
+							{
+								displayName: 'Initial Delay Seconds',
+								name: 'initialDelaySeconds',
+								type: 'number',
+								default: 30,
+								description: 'Number of seconds after the container has started before probes are initiated',
+							},
+						],
+					},
+					{
+						displayName: 'Scaling Strategy',
+						name: 'scalingStrategy',
+						type: 'options',
+						options: [
+							{
+								name: 'Fixed',
+								value: 'fixed',
+							},
+							{
+								name: 'Automatic',
+								value: 'automatic',
+							},
+						],
+						default: 'fixed',
+						description: 'Scaling strategy for the app',
+					},
+					{
+						displayName: 'Volumes',
+						name: 'volumes',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						placeholder: 'Add Volume',
+						options: [
+							{
+								name: 'volume',
+								displayName: 'Volume',
+								values: [
+									{
+										displayName: 'Mount Path',
+										name: 'mountPath',
+										type: 'string',
+										default: '',
+										placeholder: '/data',
+										description: 'Path where to mount the volume',
+									},
+									{
+										displayName: 'Size',
+										name: 'size',
+										type: 'string',
+										default: '10Gi',
+										placeholder: '10Gi',
+										description: 'Size of the volume',
+									},
+								],
+							},
+						],
 					},
 				],
 			},
@@ -549,20 +752,75 @@ export class OvhAi implements INodeType {
 						path = `/cloud/project/${projectId}/ai/app/${appId}`;
 					} else if (operation === 'getAll') {
 						path = `/cloud/project/${projectId}/ai/app`;
+					} else if (operation === 'getLogs') {
+						const appId = this.getNodeParameter('appId', i) as string;
+						path = `/cloud/project/${projectId}/ai/app/${appId}/log`;
+					} else if (operation === 'getStatus') {
+						const appId = this.getNodeParameter('appId', i) as string;
+						path = `/cloud/project/${projectId}/ai/app/${appId}/status`;
 					} else if (operation === 'create') {
 						method = 'POST';
+						const name = this.getNodeParameter('name', i) as string;
 						const image = this.getNodeParameter('image', i) as string;
+						const region = this.getNodeParameter('region', i) as string;
 						const resources = this.getNodeParameter('resources', i) as IDataObject;
+						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 						path = `/cloud/project/${projectId}/ai/app`;
 
-						body = { image };
+						body = { name, image, region };
+						
+						// Add resources
 						if (resources.cpu) body.cpu = resources.cpu;
 						if (resources.memory) body.memory = resources.memory;
 						if (resources.gpu) body.gpu = resources.gpu;
+						
+						// Add additional fields
+						if (additionalFields.port) body.port = additionalFields.port;
+						if (additionalFields.defaultHttpPort) body.defaultHttpPort = additionalFields.defaultHttpPort;
+						if (additionalFields.scalingStrategy) body.scalingStrategy = additionalFields.scalingStrategy;
+						if (additionalFields.partnerId) body.partnerId = additionalFields.partnerId;
+						
+						// Handle environment variables
+						if (additionalFields.env) {
+							const envVars = (additionalFields.env as any).variable || [];
+							if (envVars.length > 0) {
+								const envObject: IDataObject = {};
+								envVars.forEach((envVar: any) => {
+									if (envVar.name && envVar.value) {
+										envObject[envVar.name] = envVar.value;
+									}
+								});
+								body.env = envObject;
+							}
+						}
+						
+						// Handle volumes
+						if (additionalFields.volumes) {
+							const volumes = (additionalFields.volumes as any).volume || [];
+							if (volumes.length > 0) {
+								body.volumes = volumes.map((vol: any) => ({
+									mountPath: vol.mountPath,
+									size: vol.size,
+								}));
+							}
+						}
+						
+						// Handle probe
+						if (additionalFields.probe && Object.keys(additionalFields.probe).length > 0) {
+							body.probe = additionalFields.probe;
+						}
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const appId = this.getNodeParameter('appId', i) as string;
 						path = `/cloud/project/${projectId}/ai/app/${appId}`;
+					} else if (operation === 'start') {
+						method = 'POST';
+						const appId = this.getNodeParameter('appId', i) as string;
+						path = `/cloud/project/${projectId}/ai/app/${appId}/start`;
+					} else if (operation === 'stop') {
+						method = 'POST';
+						const appId = this.getNodeParameter('appId', i) as string;
+						path = `/cloud/project/${projectId}/ai/app/${appId}/stop`;
 					} else if (operation === 'update') {
 						method = 'PUT';
 						const appId = this.getNodeParameter('appId', i) as string;
@@ -603,13 +861,13 @@ export class OvhAi implements INodeType {
 
 					if (operation === 'get') {
 						const modelId = this.getNodeParameter('modelId', i) as string;
-						path = `/cloud/project/${projectId}/ai/serving/model/${modelId}`;
+						path = `/cloud/project/${projectId}/ai/model/${modelId}`;
 					} else if (operation === 'getAll') {
-						path = `/cloud/project/${projectId}/ai/serving/model`;
+						path = `/cloud/project/${projectId}/ai/model`;
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const modelId = this.getNodeParameter('modelId', i) as string;
-						path = `/cloud/project/${projectId}/ai/serving/model/${modelId}`;
+						path = `/cloud/project/${projectId}/ai/model/${modelId}`;
 					}
 				} else if (resource === 'notebook') {
 					const projectId = this.getNodeParameter('projectId', i) as string;
@@ -703,15 +961,18 @@ export class OvhAi implements INodeType {
 				}
 
 				if (Array.isArray(responseData)) {
-					// For arrays, create proper objects based on the operation
+					// For arrays, add each item
 					responseData.forEach((item) => {
 						if (typeof item === 'string' || typeof item === 'number') {
-							returnData.push({ json: { value: item } });
+							// For simple values, wrap in an object
+							returnData.push({ value: item });
 						} else {
-							returnData.push({ json: item });
+							// For objects, add directly
+							returnData.push(item);
 						}
 					});
 				} else {
+					// For single objects/values, add directly
 					returnData.push(responseData);
 				}
 			} catch (error) {
