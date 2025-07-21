@@ -42,8 +42,8 @@ export class OvhAi implements INodeType {
 						value: 'app',
 					},
 					{
-						name: 'Data',
-						value: 'data',
+						name: 'Datastore',
+						value: 'datastore',
 					},
 					{
 						name: 'Job',
@@ -183,7 +183,7 @@ export class OvhAi implements INodeType {
 				],
 				default: 'get',
 			},
-			// Data operations
+			// Datastore operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -191,48 +191,48 @@ export class OvhAi implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
-						resource: ['data'],
+						resource: ['datastore'],
 					},
 				},
 				options: [
 					{
 						name: 'Create Alias',
 						value: 'createAlias',
-						description: 'Create a new data alias',
-						action: 'Create a new data alias',
+						description: 'Create a new datastore alias',
+						action: 'Create a new datastore alias',
 					},
 					{
 						name: 'Delete Alias',
 						value: 'deleteAlias',
-						description: 'Delete a data alias',
-						action: 'Delete a data alias',
+						description: 'Delete a datastore alias',
+						action: 'Delete a datastore alias',
 					},
 					{
 						name: 'Get Alias',
 						value: 'getAlias',
-						description: 'Get data alias information',
-						action: 'Get data alias information',
+						description: 'Get datastore alias information',
+						action: 'Get datastore alias information',
 					},
 					{
 						name: 'Get Alias Auth',
 						value: 'getAliasAuth',
-						description: 'Get data alias authentication info',
-						action: 'Get data alias authentication info',
+						description: 'Get datastore alias authentication info',
+						action: 'Get datastore alias authentication info',
 					},
 					{
 						name: 'Get Aliases',
 						value: 'getAliases',
-						description: 'Get data aliases in a region',
-						action: 'Get data aliases in a region',
+						description: 'Get datastore aliases in a region',
+						action: 'Get datastore aliases in a region',
 					},
 					{
-						name: 'Get Regions',
-						value: 'getRegions',
-						description: 'Get available data regions',
-						action: 'Get available data regions',
+						name: 'Update Alias',
+						value: 'updateAlias',
+						description: 'Update datastore alias credentials',
+						action: 'Update datastore alias credentials',
 					},
 				],
-				default: 'getRegions',
+				default: 'getAliases',
 			},
 			// Notebook operations
 			{
@@ -253,10 +253,22 @@ export class OvhAi implements INodeType {
 						action: 'Create a new notebook',
 					},
 					{
+						name: 'Data Sync',
+						value: 'dataSync',
+						description: 'Synchronize notebook data',
+						action: 'Synchronize notebook data',
+					},
+					{
 						name: 'Delete',
 						value: 'delete',
 						description: 'Delete a notebook',
 						action: 'Delete a notebook',
+					},
+					{
+						name: 'Fork Backup',
+						value: 'forkBackup',
+						description: 'Fork a backup to create new notebook',
+						action: 'Fork a backup to create new notebook',
 					},
 					{
 						name: 'Get',
@@ -265,10 +277,46 @@ export class OvhAi implements INodeType {
 						action: 'Get notebook information',
 					},
 					{
+						name: 'Get Backup',
+						value: 'getBackup',
+						description: 'Get specific backup information',
+						action: 'Get specific backup information',
+					},
+					{
+						name: 'Get Backup Policy',
+						value: 'getBackupPolicy',
+						description: 'Get workspace backup retention policy',
+						action: 'Get workspace backup retention policy',
+					},
+					{
+						name: 'Get Backups',
+						value: 'getBackups',
+						description: 'Get notebook backups',
+						action: 'Get notebook backups',
+					},
+					{
+						name: 'Get Logs',
+						value: 'getLogs',
+						description: 'Get notebook logs',
+						action: 'Get notebook logs',
+					},
+					{
 						name: 'Get Many',
 						value: 'getAll',
 						description: 'Get many notebooks',
 						action: 'Get many notebooks',
+					},
+					{
+						name: 'Restart',
+						value: 'restart',
+						description: 'Restart a notebook',
+						action: 'Restart a notebook',
+					},
+					{
+						name: 'Run Command',
+						value: 'runCommand',
+						description: 'Run a command on notebooks',
+						action: 'Run a command on notebooks',
 					},
 					{
 						name: 'Start',
@@ -282,6 +330,18 @@ export class OvhAi implements INodeType {
 						description: 'Stop a notebook',
 						action: 'Stop a notebook',
 					},
+					{
+						name: 'Update Backup Policy',
+						value: 'updateBackupPolicy',
+						description: 'Update workspace backup retention policy',
+						action: 'Update workspace backup retention policy',
+					},
+					{
+						name: 'Update Labels',
+						value: 'updateLabels',
+						description: 'Update notebook labels',
+						action: 'Update notebook labels',
+					},
 				],
 				default: 'get',
 			},
@@ -294,7 +354,7 @@ export class OvhAi implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['app', 'job', 'notebook', 'data'],
+						resource: ['app', 'job', 'notebook', 'datastore'],
 					},
 				},
 				placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
@@ -356,7 +416,7 @@ export class OvhAi implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['notebook'],
-						operation: ['get', 'delete', 'start', 'stop'],
+						operation: ['get', 'delete', 'start', 'stop', 'getBackups', 'getBackup', 'forkBackup', 'dataSync', 'updateLabels', 'getLogs', 'restart', 'getBackupPolicy', 'updateBackupPolicy'],
 					},
 				},
 				description: 'The notebook ID to operate on',
@@ -779,7 +839,7 @@ export class OvhAi implements INodeType {
 					},
 				],
 			},
-			// Data region field
+			// Datastore region field
 			{
 				displayName: 'Region',
 				name: 'region',
@@ -788,14 +848,14 @@ export class OvhAi implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['data'],
-						operation: ['createAlias', 'deleteAlias', 'getAlias', 'getAliasAuth', 'getAliases'],
+						resource: ['datastore'],
+						operation: ['createAlias', 'deleteAlias', 'getAlias', 'getAliasAuth', 'getAliases', 'updateAlias'],
 					},
 				},
 				placeholder: 'GRA',
 				description: 'The region where data is stored (e.g., GRA, BHS)',
 			},
-			// Data alias field
+			// Datastore alias field
 			{
 				displayName: 'Alias',
 				name: 'alias',
@@ -804,14 +864,14 @@ export class OvhAi implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['data'],
+						resource: ['datastore'],
 						operation: ['deleteAlias', 'getAlias', 'getAliasAuth'],
 					},
 				},
 				placeholder: 'my-data-alias',
-				description: 'The data alias name',
+				description: 'The datastore alias name',
 			},
-			// Data alias creation fields
+			// Datastore alias creation fields
 			{
 				displayName: 'Alias Name',
 				name: 'aliasName',
@@ -820,12 +880,107 @@ export class OvhAi implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['data'],
+						resource: ['datastore'],
 						operation: ['createAlias'],
 					},
 				},
 				placeholder: 'my-data-alias',
-				description: 'Name of the data alias to create',
+				description: 'Name of the datastore alias to create',
+			},
+			{
+				displayName: 'Access Key',
+				name: 'accessKey',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['datastore'],
+						operation: ['createAlias'],
+					},
+				},
+				placeholder: 'your-access-key',
+				description: 'Access key for the storage credentials',
+			},
+			{
+				displayName: 'Secret Key',
+				name: 'secretKey',
+				type: 'string',
+				typeOptions: {
+					password: true,
+				},
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['datastore'],
+						operation: ['createAlias'],
+					},
+				},
+				placeholder: 'your-secret-key',
+				description: 'Secret key for the storage credentials',
+			},
+			{
+				displayName: 'Endpoint (Optional)',
+				name: 'storageEndpoint',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['datastore'],
+						operation: ['createAlias'],
+					},
+				},
+				placeholder: 's3.region.cloud.ovh.net',
+				description: 'Custom storage endpoint (optional)',
+			},
+			// Datastore alias update fields
+			{
+				displayName: 'Access Key',
+				name: 'updateAccessKey',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['datastore'],
+						operation: ['updateAlias'],
+					},
+				},
+				placeholder: 'your-new-access-key',
+				description: 'New access key for the storage credentials',
+			},
+			{
+				displayName: 'Secret Key',
+				name: 'updateSecretKey',
+				type: 'string',
+				typeOptions: {
+					password: true,
+				},
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['datastore'],
+						operation: ['updateAlias'],
+					},
+				},
+				placeholder: 'your-new-secret-key',
+				description: 'New secret key for the storage credentials',
+			},
+			{
+				displayName: 'Endpoint (Optional)',
+				name: 'updateStorageEndpoint',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['datastore'],
+						operation: ['updateAlias'],
+					},
+				},
+				placeholder: 's3.region.cloud.ovh.net',
+				description: 'New custom storage endpoint (optional)',
 			},
 			// Notebook creation fields
 			{
@@ -885,6 +1040,238 @@ export class OvhAi implements INodeType {
 				],
 				default: 'tensorflow',
 				description: 'The ML environment to use',
+			},
+			// Notebook additional parameters
+			{
+				displayName: 'Notebook Name',
+				name: 'notebookName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['create'],
+					},
+				},
+				placeholder: 'my-notebook',
+				description: 'Name of the notebook to create',
+			},
+			{
+				displayName: 'Region',
+				name: 'notebookRegion',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['create'],
+					},
+				},
+				placeholder: 'GRA',
+				description: 'The region where to deploy the notebook (e.g., GRA, BHS)',
+			},
+			{
+				displayName: 'CPU',
+				name: 'notebookCpu',
+				type: 'number',
+				default: 1,
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['create'],
+					},
+				},
+				typeOptions: {
+					minValue: 1,
+					maxValue: 12,
+				},
+				description: 'Number of CPU cores (1-12)',
+			},
+			{
+				displayName: 'GPU',
+				name: 'notebookGpu',
+				type: 'number',
+				default: 0,
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['create'],
+					},
+				},
+				typeOptions: {
+					minValue: 0,
+					maxValue: 4,
+				},
+				description: 'Number of GPU units (0-4)',
+			},
+			{
+				displayName: 'Memory (GB)',
+				name: 'notebookMemory',
+				type: 'number',
+				default: 8,
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['create'],
+					},
+				},
+				placeholder: '8',
+				description: 'Memory allocation in GB (e.g., 8, 16, 32)',
+			},
+			{
+				displayName: 'Timeout (Optional)',
+				name: 'notebookTimeout',
+				type: 'number',
+				default: 0,
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['create'],
+					},
+				},
+				description: 'Maximum runtime in seconds (0 = no timeout)',
+			},
+			{
+				displayName: 'Additional Fields',
+				name: 'notebookAdditionalFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Labels',
+						name: 'labels',
+						type: 'json',
+						default: '{}',
+						placeholder: '{"key": "value"}',
+						description: 'Labels to add to the notebook as JSON object',
+					},
+					{
+						displayName: 'SSH Public Keys',
+						name: 'sshPublicKeys',
+						type: 'string',
+						typeOptions: {
+							rows: 3,
+						},
+						default: '',
+						placeholder: 'ssh-rsa AAAAB3NzaC1...',
+						description: 'SSH public keys (one per line) for SSH access',
+					},
+					{
+						displayName: 'Volumes',
+						name: 'volumes',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						description: 'Volumes to mount in the notebook',
+						options: [
+							{
+								name: 'volume',
+								displayName: 'Volume',
+								values: [
+									{
+										displayName: 'Mount Path',
+										name: 'mountPath',
+										type: 'string',
+										default: '',
+										placeholder: '/workspace/data',
+										description: 'Mount path inside the notebook',
+									},
+									{
+										displayName: 'Container',
+										name: 'container',
+										type: 'string',
+										default: '',
+										placeholder: 'my-container',
+										description: 'Object storage container name',
+									},
+								],
+							},
+						],
+					},
+				],
+			},
+			// Notebook backup fields
+			{
+				displayName: 'Backup ID',
+				name: 'backupId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['getBackup', 'forkBackup'],
+					},
+				},
+			},
+			// Notebook labels field
+			{
+				displayName: 'Labels',
+				name: 'labels',
+				type: 'json',
+				default: '{}',
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['updateLabels'],
+					},
+				},
+				placeholder: '{"key": "value"}',
+				description: 'Labels to update as JSON object',
+			},
+			// Backup retention policy fields
+			{
+				displayName: 'Policy Days',
+				name: 'policyDays',
+				type: 'number',
+				default: 7,
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['updateBackupPolicy'],
+					},
+				},
+				description: 'Number of days to retain backups',
+			},
+			// Command fields
+			{
+				displayName: 'Command',
+				name: 'command',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['runCommand'],
+					},
+				},
+				options: [
+					{
+						name: 'Start All',
+						value: 'startAll',
+					},
+					{
+						name: 'Stop All',
+						value: 'stopAll',
+					},
+					{
+						name: 'Restart All',
+						value: 'restartAll',
+					},
+				],
+				default: 'startAll',
+				description: 'Command to run on notebooks',
 			},
 		],
 	};
@@ -1056,22 +1443,10 @@ export class OvhAi implements INodeType {
 						const jobId = (this.getNodeParameter('jobId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/job/${jobId}`;
 					}
-				} else if (resource === 'data') {
+				} else if (resource === 'datastore') {
 					const projectId = (this.getNodeParameter('projectId', i) as string).trim();
 
-					if (operation === 'getRegions') {
-						path = `/cloud/project/${projectId}/ai/data/region`;
-						// Debug: Return debug info for Get Regions operation
-						returnData.push({
-							debug: true,
-							resource: 'data',
-							operation: operation,
-							projectId: projectId,
-							path: path,
-							message: 'Debug mode - checking Get Regions endpoint'
-						});
-						continue;
-					} else if (operation === 'getAliases') {
+					if (operation === 'getAliases') {
 						const region = (this.getNodeParameter('region', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/data/region/${region}/alias`;
 					} else if (operation === 'getAlias') {
@@ -1086,13 +1461,52 @@ export class OvhAi implements INodeType {
 						method = 'POST';
 						const region = (this.getNodeParameter('region', i) as string).trim();
 						const aliasName = (this.getNodeParameter('aliasName', i) as string).trim();
+						const accessKey = (this.getNodeParameter('accessKey', i) as string).trim();
+						const secretKey = (this.getNodeParameter('secretKey', i) as string).trim();
+						const storageEndpoint = this.getNodeParameter('storageEndpoint', i, '') as string;
+						
 						path = `/cloud/project/${projectId}/ai/data/region/${region}/alias`;
-						body = { name: aliasName };
+						
+						const credentials: any = {
+							accessKey: accessKey,
+							secretKey: secretKey,
+						};
+						
+						if (storageEndpoint && storageEndpoint.trim() !== '') {
+							credentials.endpoint = storageEndpoint.trim();
+						}
+						
+						body = { 
+							alias: aliasName,
+							credentials: credentials
+						};
 					} else if (operation === 'deleteAlias') {
 						method = 'DELETE';
 						const region = (this.getNodeParameter('region', i) as string).trim();
 						const alias = (this.getNodeParameter('alias', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/data/region/${region}/alias/${alias}`;
+					} else if (operation === 'updateAlias') {
+						method = 'PUT';
+						const region = (this.getNodeParameter('region', i) as string).trim();
+						const alias = (this.getNodeParameter('alias', i) as string).trim();
+						const updateAccessKey = (this.getNodeParameter('updateAccessKey', i) as string).trim();
+						const updateSecretKey = (this.getNodeParameter('updateSecretKey', i) as string).trim();
+						const updateStorageEndpoint = this.getNodeParameter('updateStorageEndpoint', i, '') as string;
+						
+						path = `/cloud/project/${projectId}/ai/data/region/${region}/alias/${alias}`;
+						
+						const credentials: any = {
+							accessKey: updateAccessKey,
+							secretKey: updateSecretKey,
+						};
+						
+						if (updateStorageEndpoint && updateStorageEndpoint.trim() !== '') {
+							credentials.endpoint = updateStorageEndpoint.trim();
+						}
+						
+						body = { 
+							credentials: credentials
+						};
 					}
 				} else if (resource === 'notebook') {
 					const projectId = (this.getNodeParameter('projectId', i) as string).trim();
@@ -1106,9 +1520,82 @@ export class OvhAi implements INodeType {
 						method = 'POST';
 						const framework = this.getNodeParameter('framework', i) as string;
 						const environment = this.getNodeParameter('environment', i) as string;
+						const notebookName = (this.getNodeParameter('notebookName', i) as string).trim();
+						const notebookRegion = (this.getNodeParameter('notebookRegion', i) as string).trim();
+						const notebookCpu = this.getNodeParameter('notebookCpu', i) as number;
+						const notebookGpu = this.getNodeParameter('notebookGpu', i) as number;
+						const notebookMemory = this.getNodeParameter('notebookMemory', i) as number;
+						const notebookTimeout = this.getNodeParameter('notebookTimeout', i, 0) as number;
+						const additionalFields = this.getNodeParameter('notebookAdditionalFields', i) as IDataObject;
+						
 						path = `/cloud/project/${projectId}/ai/notebook`;
-
-						body = { framework, environment };
+						
+						// Build resources object with memory in MB
+						const resources: any = {
+							cpu: notebookCpu,
+							memory: notebookMemory * 1024 // Convert GB to MB
+						};
+						
+						if (notebookGpu > 0) {
+							resources.gpu = notebookGpu;
+						}
+						
+						// Build spec object with all required parameters
+						const spec: any = {
+							env: {
+								editorId: framework,
+								frameworkId: environment === 'tensorflow' ? 'tensorflow' : 
+											 environment === 'pytorch' ? 'pytorch' :
+											 environment === 'sklearn' ? 'conda' : 
+											 environment === 'r' ? 'conda' : 'conda',
+								frameworkVersion: environment === 'tensorflow' ? 'tensorflow-2.11.0' :
+												  environment === 'pytorch' ? 'pytorch-1.13.1' :
+												  environment === 'sklearn' ? 'conda-py39-v22-4' :
+												  environment === 'r' ? 'conda-r42-v22-4' : 'conda-py39-v22-4'
+							},
+							resources: resources
+						};
+						
+						// Add volumes if specified
+						if (additionalFields.volumes) {
+							const volumesArray = (additionalFields.volumes as any).volume || [];
+							if (volumesArray.length > 0) {
+								spec.volumes = volumesArray.map((vol: any) => ({
+									container: vol.container,
+									mountPath: vol.mountPath,
+									permission: 'RW'
+								}));
+							}
+						}
+						
+						// Add SSH public keys if specified
+						if (additionalFields.sshPublicKeys) {
+							const sshKeys = (additionalFields.sshPublicKeys as string).split('\n').filter(key => key.trim());
+							if (sshKeys.length > 0) {
+								spec.sshPublicKeys = sshKeys;
+							}
+						}
+						
+						// Build the final request body
+						body = {
+							name: notebookName,
+							region: notebookRegion,
+							spec: spec
+						};
+						
+						// Add timeout at root level if specified
+						if (notebookTimeout > 0) {
+							body.timeout = notebookTimeout;
+						}
+						
+						// Add labels at root level if specified
+						if (additionalFields.labels) {
+							try {
+								body.labels = JSON.parse(additionalFields.labels as string);
+							} catch (error) {
+								// If parsing fails, ignore labels
+							}
+						}
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
@@ -1121,6 +1608,58 @@ export class OvhAi implements INodeType {
 						method = 'POST';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/stop`;
+					} else if (operation === 'getBackups') {
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/backup`;
+					} else if (operation === 'getBackup') {
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						const backupId = (this.getNodeParameter('backupId', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/backup/${backupId}`;
+					} else if (operation === 'forkBackup') {
+						method = 'POST';
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						const backupId = (this.getNodeParameter('backupId', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/backup/${backupId}/fork`;
+					} else if (operation === 'dataSync') {
+						method = 'POST';
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/backup/datasync`;
+					} else if (operation === 'updateLabels') {
+						method = 'PUT';
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						const labels = (this.getNodeParameter('labels', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/label`;
+						
+						// Parse labels JSON string to object
+						try {
+							body = { labels: JSON.parse(labels) };
+						} catch (error) {
+							throw new NodeOperationError(this.getNode(), 'Labels must be valid JSON format', {
+								itemIndex: i,
+							});
+						}
+					} else if (operation === 'getLogs') {
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/log`;
+					} else if (operation === 'restart') {
+						method = 'PUT';
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/restart`;
+					} else if (operation === 'getBackupPolicy') {
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/workspace_backup_retention`;
+					} else if (operation === 'updateBackupPolicy') {
+						method = 'PUT';
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						const policyDays = this.getNodeParameter('policyDays', i) as number;
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/workspace_backup_retention`;
+						body = { days: policyDays };
+					} else if (operation === 'runCommand') {
+						method = 'POST';
+						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						const command = (this.getNodeParameter('command', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/command`;
+						body = { command: command };
 					}
 				}
 
@@ -1185,11 +1724,11 @@ export class OvhAi implements INodeType {
 						(typeof responseData === 'string' && responseData.trim() === '')) {
 						// Empty response means successful deletion
 						const resourceType = resource === 'job' ? 'training job' : 
-											  resource === 'data' ? 'data alias' : resource;
+											  resource === 'datastore' ? 'datastore alias' : resource;
 						const resourceId = resource === 'job' ? (this.getNodeParameter('jobId', i) as string).trim() : 
 											resource === 'app' ? (this.getNodeParameter('appId', i) as string).trim() :
 											resource === 'notebook' ? (this.getNodeParameter('notebookId', i) as string).trim() :
-											resource === 'data' ? (this.getNodeParameter('alias', i) as string).trim() : 'resource';
+											resource === 'datastore' ? (this.getNodeParameter('alias', i) as string).trim() : 'resource';
 						returnData.push({ 
 							success: true, 
 							message: `${resourceType} deleted successfully`,

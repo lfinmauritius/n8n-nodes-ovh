@@ -154,13 +154,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
   - Timeout settings
 - **Delete**: Delete a training job
 
-#### Data Operations
-- **Get Regions**: Get available data regions
-- **Get Aliases**: Get data aliases in a region
-- **Get Alias**: Get specific data alias information
-- **Get Alias Auth**: Get data alias authentication info
-- **Create Alias**: Create a new data alias
-- **Delete Alias**: Delete a data alias
+#### Datastore Operations
+- **Get Aliases**: Get datastore aliases in a region
+- **Get Alias**: Get specific datastore alias information
+- **Get Alias Auth**: Get datastore alias authentication info
+- **Create Alias**: Create a new datastore alias with storage credentials
+- **Update Alias**: Update datastore alias credentials
+- **Delete Alias**: Delete a datastore alias
 
 #### Notebook Operations
 - **Get**: Get notebook information
@@ -168,9 +168,24 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Create**: Create a new notebook with:
   - Framework selection (Jupyter, JupyterLab, VSCode)
   - Environment selection (TensorFlow, PyTorch, Scikit-Learn, R)
+  - Resource allocation (CPU cores 1-12, GPU units 0-4)
+  - Region selection and deployment
+  - Custom notebook naming
+  - Optional timeout configuration
+  - Proper OVH API spec structure
 - **Start**: Start a notebook instance
 - **Stop**: Stop a notebook instance
 - **Delete**: Delete a notebook
+- **Get Backups**: List all backups for a notebook
+- **Get Backup**: Get specific backup information
+- **Fork Backup**: Create a new notebook from a backup
+- **Data Sync**: Synchronize notebook data with backup
+- **Update Labels**: Update notebook labels for organization
+- **Get Logs**: Retrieve notebook execution logs
+- **Restart**: Restart a notebook instance
+- **Get Backup Policy**: Get workspace backup retention policy
+- **Update Backup Policy**: Set backup retention days
+- **Run Command**: Execute a command in the notebook
 
 ### OVH Data Processing Node
 
@@ -411,12 +426,100 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.12 - July 2025
+- **🔧 OVH AI node fix** - Complete Notebook Create implementation with spec structure:
+  - **Added memory parameter**: Required memory allocation in GB (converts to MB for API)
+  - **Proper spec structure**: Wrapped env and resources in spec object as required by API
+  - **Additional fields**: Support for labels, SSH public keys, and volume mounting
+  - **Volume configuration**: Mount object storage containers with read/write permissions
+  - **SSH access**: Add multiple SSH public keys for notebook access
+  - **Complete parameter set**: All required and optional parameters now supported
+  - **Fixes capability matching error**: Resolves "notebook spec did not match with notebook capabilities"
+
+### Version 0.9.11 - July 2025
+- **🚀 OVH AI node enhancement** - Complete Notebook backup and management operations:
+  - **Backup operations**: Get backups list, get specific backup, fork from backup
+  - **Data sync**: Synchronize notebook workspace data
+  - **Label management**: Update notebook labels for better organization
+  - **Advanced operations**: Get logs, restart instance, run commands
+  - **Backup policy**: Get and update workspace backup retention settings
+  - **Complete notebook lifecycle**: 10 new operations for comprehensive notebook management
+  - **API endpoints**: Full implementation of all notebook API endpoints
+  - **Enhanced productivity**: Better notebook management and backup capabilities
+
+### Version 0.9.10 - July 2025
+- **🔧 OVH AI node fix** - Fixed Notebook Create request structure:
+  - **Restructured request body**: Moved `env` to root level (not inside `spec`)
+  - **Removed spec wrapper**: Direct properties at root level as expected by OVH API
+  - **Simplified structure**: name, env, resources, region at root level
+  - **Resolves "[env] Property is mandatory" error**: Correct request body structure
+
+### Version 0.9.9 - July 2025
+- **🔧 OVH AI node fix** - Fixed Notebook Create framework mapping:
+  - **Fixed frameworkId mapping**: TensorFlow → "tensorflow", PyTorch → "pytorch" (instead of always "conda")
+  - **Updated framework versions**: TensorFlow → "tensorflow-2.11.0", PyTorch → "pytorch-1.13.1"
+  - **Resolves "[env] Property is mandatory" error**: Proper framework identification for OVH API
+  - **Better environment handling**: Accurate mapping between UI selections and OVH framework IDs
+
+### Version 0.9.8 - July 2025
+- **🚀 OVH AI node enhancement** - Complete Notebook Create implementation:
+  - **Added missing parameters**: Notebook Name, Region, CPU/GPU allocation, Timeout
+  - **Fixed API structure**: Request body now uses proper "spec" object structure
+  - **Resource configuration**: CPU (1-12 cores), GPU (0-4 units) selection
+  - **Framework versions**: Automatic mapping to OVH framework versions
+  - **Enhanced functionality**: Complete notebook creation with all required OVH parameters
+  - **API compliance**: Fully aligned with OVH AI Notebook API requirements
+
+### Version 0.9.7 - July 2025
+- **🔧 OVH AI node fix** - Removed non-existent Datastore region operations:
+  - **Removed Get Regions**: This endpoint doesn't exist in OVH AI API (was causing 404 errors)
+  - **Removed Get Region**: This endpoint doesn't exist in OVH AI API (was causing 404 errors)
+  - **Working operations**: 6 confirmed working Datastore operations remain
+  - **API alignment**: Now accurately reflects actual OVH AI Datastore API capabilities
+  - **Error resolution**: Fixes 404 "Not Found" errors on region-specific operations
+
+### Version 0.9.6 - July 2025
+- **🚀 OVH AI node enhancement** - Complete Datastore API implementation:
+  - **Fixed broken operations**: Corrected resource references from 'data' to 'datastore'
+  - **Added missing operations**: Get Regions, Get Region, Update Alias
+  - **Complete API coverage**: Now supports all 8 OVH AI Datastore API endpoints
+  - **Proper parameter structure**: Fixed Create/Update alias credential parameters
+  - **Enhanced functionality**: Update existing aliases with new credentials
+  - All operations now properly functional after fixing resource reference bug
+
+### Version 0.9.5 - July 2025
+- **🔄 OVH AI node refactoring** - Renamed Data resource to Datastore:
+  - Renamed "Data" resource to "Datastore" for better alignment with OVH AI terminology
+  - Updated all operation descriptions to use "datastore alias" instead of "data alias"
+  - Maintained backward compatibility with existing API endpoints
+  - Clearer terminology reflects the actual OVH AI Datastore service functionality
+
+### Version 0.9.4 - July 2025
+- **🚀 OVH AI node enhancement** - Complete Datastore Create Alias implementation:
+  - Added missing storage credentials parameters (Access Key, Secret Key, Optional Endpoint)
+  - Fixed request body structure to include required credentials object
+  - Request now sends: `{alias: aliasName, credentials: {accessKey, secretKey, endpoint?}}`
+  - Resolves "[credentials] Property is mandatory" error when creating datastore aliases
+  - Secret key field properly masked for security
+
+### Version 0.9.3 - July 2025
+- **🔧 OVH AI node fix** - Fixed Datastore Create Alias operation parameter:
+  - Fixed Create Alias parameter structure: API expects `alias` field, not `name` field
+  - Corrected request body from `{name: aliasName}` to `{alias: aliasName}`
+  - Resolves "Property is mandatory" error when creating datastore aliases
+
+### Version 0.9.2 - July 2025
+- **🔧 OVH AI node fix** - Removed non-existent Datastore Get Regions operation:
+  - Removed Get Regions operation (endpoint doesn't exist in OVH AI API)
+  - Datastore resource now has 5 working operations: Get Aliases, Get Alias, Get Alias Auth, Create Alias, Delete Alias
+  - All operations tested and confirmed working with actual OVH API
+
 ### Version 0.9.0 - July 2025
-- **🚀 OVH AI node enhancement** - Replace non-existent Model resource with Data resource:
+- **🚀 OVH AI node enhancement** - Replace non-existent Model resource with Datastore resource:
   - Removed Model operations (endpoints don't exist in OVH AI API)
-  - Added Data resource with 6 operations: Get Regions, Get Aliases, Get Alias, Get Alias Auth, Create Alias, Delete Alias
-  - Proper implementation of OVH AI Data API endpoints
-  - Support for data alias management across regions
+  - Added Datastore resource with operations for datastore alias management
+  - Proper implementation of OVH AI Datastore API endpoints
+  - Support for datastore alias management across regions
 
 ### Version 0.8.18 - July 2025
 - **🚀 OVH AI node enhancement** - Improved DELETE operation response with success confirmation:

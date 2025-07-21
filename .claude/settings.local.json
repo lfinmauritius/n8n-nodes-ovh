@@ -40,7 +40,9 @@
       "Bash(node:*)",
       "Bash(npm version:*)",
       "WebFetch(domain:api.ovh.com)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "WebFetch(domain:ca.api.ovh.com)",
+      "WebFetch(domain:gra.ai.cloud.ovh.net)"
     ],
     "deny": []
   }
