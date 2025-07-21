@@ -154,10 +154,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
   - Timeout settings
 - **Delete**: Delete a training job
 
-#### Model Operations
-- **Get**: Get model information
-- **Get Many**: List all deployed models in a project
-- **Delete**: Delete a deployed model
+#### Data Operations
+- **Get Regions**: Get available data regions
+- **Get Aliases**: Get data aliases in a region
+- **Get Alias**: Get specific data alias information
+- **Get Alias Auth**: Get data alias authentication info
+- **Create Alias**: Create a new data alias
+- **Delete Alias**: Delete a data alias
 
 #### Notebook Operations
 - **Get**: Get notebook information
@@ -408,10 +411,17 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.8.20 - July 2025
+- **🚀 OVH AI node enhancement** - Replace non-existent Model resource with Data resource:
+  - Removed Model operations (endpoints don't exist in OVH AI API)
+  - Added Data resource with 6 operations: Get Regions, Get Aliases, Get Alias, Get Alias Auth, Create Alias, Delete Alias
+  - Proper implementation of OVH AI Data API endpoints
+  - Support for data alias management across regions
+
 ### Version 0.8.18 - July 2025
 - **🚀 OVH AI node enhancement** - Improved DELETE operation response with success confirmation:
   - Replace empty array response with informative success message
-  - Show resource type (training job, app, model, notebook) and ID in response
+  - Show resource type (training job, app, data alias, notebook) and ID in response
   - Better user experience for DELETE operations
   - Returns: `{success: true, message: 'training job deleted successfully', operation: 'delete', resource: 'job', id: 'xxx'}`
 

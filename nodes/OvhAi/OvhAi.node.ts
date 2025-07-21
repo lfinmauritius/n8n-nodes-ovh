@@ -42,12 +42,12 @@ export class OvhAi implements INodeType {
 						value: 'app',
 					},
 					{
-						name: 'Job',
-						value: 'job',
+						name: 'Data',
+						value: 'data',
 					},
 					{
-						name: 'Model',
-						value: 'model',
+						name: 'Job',
+						value: 'job',
 					},
 					{
 						name: 'Notebook',
@@ -183,7 +183,7 @@ export class OvhAi implements INodeType {
 				],
 				default: 'get',
 			},
-			// Model operations
+			// Data operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -191,30 +191,48 @@ export class OvhAi implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
-						resource: ['model'],
+						resource: ['data'],
 					},
 				},
 				options: [
 					{
-						name: 'Delete',
-						value: 'delete',
-						description: 'Delete a model',
-						action: 'Delete a model',
+						name: 'Create Alias',
+						value: 'createAlias',
+						description: 'Create a new data alias',
+						action: 'Create a new data alias',
 					},
 					{
-						name: 'Get',
-						value: 'get',
-						description: 'Get model information',
-						action: 'Get model information',
+						name: 'Delete Alias',
+						value: 'deleteAlias',
+						description: 'Delete a data alias',
+						action: 'Delete a data alias',
 					},
 					{
-						name: 'Get Many',
-						value: 'getAll',
-						description: 'Get many models',
-						action: 'Get many models',
+						name: 'Get Alias',
+						value: 'getAlias',
+						description: 'Get data alias information',
+						action: 'Get data alias information',
+					},
+					{
+						name: 'Get Alias Auth',
+						value: 'getAliasAuth',
+						description: 'Get data alias authentication info',
+						action: 'Get data alias authentication info',
+					},
+					{
+						name: 'Get Aliases',
+						value: 'getAliases',
+						description: 'Get data aliases in a region',
+						action: 'Get data aliases in a region',
+					},
+					{
+						name: 'Get Regions',
+						value: 'getRegions',
+						description: 'Get available data regions',
+						action: 'Get available data regions',
 					},
 				],
-				default: 'get',
+				default: 'getRegions',
 			},
 			// Notebook operations
 			{
@@ -276,7 +294,7 @@ export class OvhAi implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['app', 'job', 'model', 'notebook'],
+						resource: ['app', 'job', 'notebook', 'data'],
 					},
 				},
 				placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
@@ -327,21 +345,6 @@ export class OvhAi implements INodeType {
 					},
 				},
 				description: 'The training job ID',
-			},
-			// Model ID field
-			{
-				displayName: 'Model ID',
-				name: 'modelId',
-				type: 'string',
-				default: '',
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['model'],
-						operation: ['get', 'delete'],
-					},
-				},
-				description: 'The model ID to operate on',
 			},
 			// Notebook ID field
 			{
@@ -776,6 +779,54 @@ export class OvhAi implements INodeType {
 					},
 				],
 			},
+			// Data region field
+			{
+				displayName: 'Region',
+				name: 'region',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['data'],
+						operation: ['createAlias', 'deleteAlias', 'getAlias', 'getAliasAuth', 'getAliases'],
+					},
+				},
+				placeholder: 'GRA',
+				description: 'The region where data is stored (e.g., GRA, BHS)',
+			},
+			// Data alias field
+			{
+				displayName: 'Alias',
+				name: 'alias',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['data'],
+						operation: ['deleteAlias', 'getAlias', 'getAliasAuth'],
+					},
+				},
+				placeholder: 'my-data-alias',
+				description: 'The data alias name',
+			},
+			// Data alias creation fields
+			{
+				displayName: 'Alias Name',
+				name: 'aliasName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['data'],
+						operation: ['createAlias'],
+					},
+				},
+				placeholder: 'my-data-alias',
+				description: 'Name of the data alias to create',
+			},
 			// Notebook creation fields
 			{
 				displayName: 'Notebook Framework',
@@ -1005,23 +1056,34 @@ export class OvhAi implements INodeType {
 						const jobId = (this.getNodeParameter('jobId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/job/${jobId}`;
 					}
-				} else if (resource === 'model') {
+				} else if (resource === 'data') {
 					const projectId = (this.getNodeParameter('projectId', i) as string).trim();
 
-					// Debug: Return debug info for Model operations
-					returnData.push({
-						debug: true,
-						resource: 'model',
-						operation: operation,
-						projectId: projectId,
-						modelId: operation === 'get' || operation === 'delete' ? 
-							(this.getNodeParameter('modelId', i) as string).trim() : 'N/A',
-						message: 'Debug mode - Model operations may not exist in OVH AI API',
-						expectedPath: operation === 'get' || operation === 'delete' ? 
-							`/cloud/project/${projectId}/ai/model/${(this.getNodeParameter('modelId', i) as string).trim()}` :
-							`/cloud/project/${projectId}/ai/model`
-					});
-					continue;
+					if (operation === 'getRegions') {
+						path = `/cloud/project/${projectId}/ai/data/region`;
+					} else if (operation === 'getAliases') {
+						const region = (this.getNodeParameter('region', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/data/region/${region}/alias`;
+					} else if (operation === 'getAlias') {
+						const region = (this.getNodeParameter('region', i) as string).trim();
+						const alias = (this.getNodeParameter('alias', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/data/region/${region}/alias/${alias}`;
+					} else if (operation === 'getAliasAuth') {
+						const region = (this.getNodeParameter('region', i) as string).trim();
+						const alias = (this.getNodeParameter('alias', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/data/region/${region}/alias/${alias}/auth`;
+					} else if (operation === 'createAlias') {
+						method = 'POST';
+						const region = (this.getNodeParameter('region', i) as string).trim();
+						const aliasName = (this.getNodeParameter('aliasName', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/data/region/${region}/alias`;
+						body = { name: aliasName };
+					} else if (operation === 'deleteAlias') {
+						method = 'DELETE';
+						const region = (this.getNodeParameter('region', i) as string).trim();
+						const alias = (this.getNodeParameter('alias', i) as string).trim();
+						path = `/cloud/project/${projectId}/ai/data/region/${region}/alias/${alias}`;
+					}
 				} else if (resource === 'notebook') {
 					const projectId = (this.getNodeParameter('projectId', i) as string).trim();
 
@@ -1112,11 +1174,12 @@ export class OvhAi implements INodeType {
 					if (!responseData || (Array.isArray(responseData) && responseData.length === 0) || 
 						(typeof responseData === 'string' && responseData.trim() === '')) {
 						// Empty response means successful deletion
-						const resourceType = resource === 'job' ? 'training job' : resource;
+						const resourceType = resource === 'job' ? 'training job' : 
+											  resource === 'data' ? 'data alias' : resource;
 						const resourceId = resource === 'job' ? (this.getNodeParameter('jobId', i) as string).trim() : 
 											resource === 'app' ? (this.getNodeParameter('appId', i) as string).trim() :
-											resource === 'model' ? (this.getNodeParameter('modelId', i) as string).trim() :
-											resource === 'notebook' ? (this.getNodeParameter('notebookId', i) as string).trim() : 'resource';
+											resource === 'notebook' ? (this.getNodeParameter('notebookId', i) as string).trim() :
+											resource === 'data' ? (this.getNodeParameter('alias', i) as string).trim() : 'resource';
 						returnData.push({ 
 							success: true, 
 							message: `${resourceType} deleted successfully`,
