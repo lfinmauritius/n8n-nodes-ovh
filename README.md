@@ -145,7 +145,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 #### Training Job Operations
 - **Get**: Get training job information
 - **Get Many**: List all training jobs in a project
-- **Create**: Create a new training job with Docker image and command
+- **Create**: Create a new training job with:
+  - Docker image and region selection
+  - Resource allocation (CPU, Memory, GPU)
+  - Command execution configuration
+  - Environment variables
+  - Volume mounting
+  - Timeout settings
 - **Stop**: Stop a running training job
 - **Delete**: Delete a training job
 
@@ -402,6 +408,12 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Get Many**: List all tasks for vRack operations
 
 ## Latest Features & Updates
+
+### Version 0.8.10 - July 2025
+- **🚀 OVH AI node enhancement** - Complete Job Create operation with resources and additional parameters:
+  - Added required parameters: name, image, region, resources (CPU, Memory, GPU)
+  - Added additional fields: command, environment variables, volumes, timeout, partner ID
+  - Properly structured resource allocation object for OVH API compliance
 
 ### Version 0.8.9 - July 2025
 - **🔧 OVH AI node fix** - Improved response handling for Start/Stop operations (handle non-JSON responses)
