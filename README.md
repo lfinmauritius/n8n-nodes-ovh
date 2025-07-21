@@ -408,6 +408,12 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.8.13 - July 2025
+- **🔧 OVH AI node fix** - Fixed Invalid signature error on Job Delete operations:
+  - Improved request options handling for different HTTP methods
+  - Separated json option and Content-Type handling for POST/PUT vs GET/DELETE requests
+  - Ensures correct OVH signature generation for all request types
+
 ### Version 0.8.12 - July 2025
 - **🔧 OVH AI node fix** - Removed non-existent Job Stop operation:
   - Removed Stop operation from Job operations (not supported by OVH AI Job API)
