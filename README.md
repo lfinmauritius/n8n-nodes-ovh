@@ -426,6 +426,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.18 - July 2025
+- **🔧 OVH AI node fix** - Added env at both root and spec levels:
+  - **Env at root level**: API requires env at root for creation requests
+  - **Keep spec structure**: Maintain all parameters inside spec as documented
+  - **Dual placement**: env appears both at root and inside spec
+  - **Resolves "[env] Property is mandatory" error**: API validation now passes
+
 ### Version 0.9.17 - July 2025
 - **🔧 OVH AI node fix** - Fixed notebook create structure based on actual API response:
   - **Correct spec structure**: Everything goes inside a spec object at root level
