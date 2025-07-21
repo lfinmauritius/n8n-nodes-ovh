@@ -1135,6 +1135,49 @@ export class OvhAi implements INodeType {
 				},
 				options: [
 					{
+						displayName: 'Authorized IPs',
+						name: 'authorizedIps',
+						type: 'string',
+						typeOptions: {
+							rows: 3,
+						},
+						default: '',
+						placeholder: '192.168.1.0/24\n10.0.0.0/8',
+						description: 'Authorized IP addresses or CIDR blocks (one per line)',
+					},
+					{
+						displayName: 'Environment Variables',
+						name: 'envVars',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						description: 'Environment variables to set in the notebook',
+						options: [
+							{
+								name: 'variable',
+								displayName: 'Variable',
+								values: [
+									{
+										displayName: 'Name',
+										name: 'name',
+										type: 'string',
+										default: '',
+										description: 'Variable name',
+									},
+									{
+										displayName: 'Value',
+										name: 'value',
+										type: 'string',
+										default: '',
+										description: 'Variable value',
+									},
+								],
+							},
+						],
+					},
+					{
 						displayName: 'Flavor',
 						name: 'flavor',
 						type: 'string',
@@ -1160,6 +1203,28 @@ export class OvhAi implements INodeType {
 						default: '',
 						placeholder: 'ssh-rsa AAAAB3NzaC1...',
 						description: 'SSH public keys (one per line) for SSH access',
+					},
+					{
+						displayName: 'Timeout',
+						name: 'timeout',
+						type: 'number',
+						default: 0,
+						placeholder: '3600',
+						description: 'Timeout in seconds (0 for no timeout)',
+					},
+					{
+						displayName: 'Timeout Auto Restart',
+						name: 'timeoutAutoRestart',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to auto-restart on timeout',
+					},
+					{
+						displayName: 'Unsecure HTTP',
+						name: 'unsecureHttp',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to allow unsecure HTTP connections',
 					},
 					{
 						displayName: 'Volumes',
@@ -1552,14 +1617,9 @@ export class OvhAi implements INodeType {
 							resources: resources
 						};
 						
-						// Add flavor if specified
+						// Add flavor to resources if specified
 						if (additionalFields.flavor) {
-							const flavorValue = (additionalFields.flavor as string).trim();
-							body.flavor = flavorValue;
-							// Also add to resources if not already there
-							if (!resources.flavor) {
-								resources.flavor = flavorValue;
-							}
+							resources.flavor = (additionalFields.flavor as string).trim();
 						}
 						
 						// Add volumes if specified
@@ -1588,6 +1648,37 @@ export class OvhAi implements INodeType {
 								body.labels = JSON.parse(additionalFields.labels as string);
 							} catch (error) {
 								// If parsing fails, ignore labels
+							}
+						}
+						
+						// Add environment variables if specified
+						if (additionalFields.envVars) {
+							const envVarsArray = (additionalFields.envVars as any).variable || [];
+							if (envVarsArray.length > 0) {
+								body.envVars = envVarsArray;
+							}
+						}
+						
+						// Add timeout if specified
+						if (additionalFields.timeout) {
+							body.timeout = additionalFields.timeout as number;
+						}
+						
+						// Add timeout auto restart if specified
+						if (additionalFields.timeoutAutoRestart !== undefined) {
+							body.timeoutAutoRestart = additionalFields.timeoutAutoRestart as boolean;
+						}
+						
+						// Add unsecure HTTP if specified
+						if (additionalFields.unsecureHttp !== undefined) {
+							body.unsecureHttp = additionalFields.unsecureHttp as boolean;
+						}
+						
+						// Add authorized IPs if specified
+						if (additionalFields.authorizedIps) {
+							const ips = (additionalFields.authorizedIps as string).split('\n').filter(ip => ip.trim());
+							if (ips.length > 0) {
+								body.authorizedIps = ips;
 							}
 						}
 					} else if (operation === 'delete') {

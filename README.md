@@ -426,6 +426,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.22 - July 2025
+- **🚀 OVH AI node enhancement** - Added missing notebook creation parameters:
+  - **Timeout configuration**: Added timeout parameter for notebook session duration
+  - **IP restrictions**: Added authorizedIps parameter for access control
+  - **Complete API coverage**: All parameters from the full OVH API specification now supported
+  - **Security enhancements**: Control access with IP whitelisting
+
 ### Version 0.9.21 - July 2025
 - **🔧 OVH AI node fix** - Removed spec wrapper completely:
   - **No spec object**: API expects all properties directly at root level
