@@ -426,6 +426,15 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.15 - July 2025
+- **🔧 OVH AI node fix** - Final fix for Notebook Create structure:
+  - **Moved env back to root level**: API requires env at root, not in spec
+  - **Removed timeout parameter**: This parameter doesn't exist in the OVH API
+  - **Removed spec wrapper completely**: No spec object needed
+  - **Correct structure**: name, region, env, resources, volumes, sshPublicKeys, labels, flavor all at root
+  - **Memory format**: Kept Kubernetes-style format (e.g., "8Gi")
+  - **Resolves all API errors**: Final working structure based on API requirements
+
 ### Version 0.9.14 - July 2025
 - **🔧 OVH AI node fix** - Fixed Notebook Create with proper spec structure:
   - **Restored spec wrapper**: env and resources must be inside spec object

@@ -1122,19 +1122,6 @@ export class OvhAi implements INodeType {
 				description: 'Memory allocation in GB (e.g., 8, 16, 32)',
 			},
 			{
-				displayName: 'Timeout (Optional)',
-				name: 'notebookTimeout',
-				type: 'number',
-				default: 0,
-				displayOptions: {
-					show: {
-						resource: ['notebook'],
-						operation: ['create'],
-					},
-				},
-				description: 'Maximum runtime in seconds (0 = no timeout)',
-			},
-			{
 				displayName: 'Additional Fields',
 				name: 'notebookAdditionalFields',
 				type: 'collection',
@@ -1533,7 +1520,6 @@ export class OvhAi implements INodeType {
 						const notebookCpu = this.getNodeParameter('notebookCpu', i) as number;
 						const notebookGpu = this.getNodeParameter('notebookGpu', i) as number;
 						const notebookMemory = this.getNodeParameter('notebookMemory', i) as number;
-						const notebookTimeout = this.getNodeParameter('notebookTimeout', i, 0) as number;
 						const additionalFields = this.getNodeParameter('notebookAdditionalFields', i) as IDataObject;
 						
 						path = `/cloud/project/${projectId}/ai/notebook`;
@@ -1548,8 +1534,10 @@ export class OvhAi implements INodeType {
 							resources.gpu = notebookGpu;
 						}
 						
-						// Build spec object
-						const spec: any = {
+						// Build the request body with env at root level (required by API)
+						body = {
+							name: notebookName,
+							region: notebookRegion,
 							env: {
 								editorId: framework,
 								frameworkId: environment === 'tensorflow' ? 'tensorflow' : 
@@ -1564,11 +1552,16 @@ export class OvhAi implements INodeType {
 							resources: resources
 						};
 						
-						// Add volumes to spec if specified
+						// Add flavor if specified
+						if (additionalFields.flavor) {
+							body.flavor = (additionalFields.flavor as string).trim();
+						}
+						
+						// Add volumes if specified
 						if (additionalFields.volumes) {
 							const volumesArray = (additionalFields.volumes as any).volume || [];
 							if (volumesArray.length > 0) {
-								spec.volumes = volumesArray.map((vol: any) => ({
+								body.volumes = volumesArray.map((vol: any) => ({
 									container: vol.container,
 									mountPath: vol.mountPath,
 									permission: 'RW'
@@ -1576,32 +1569,15 @@ export class OvhAi implements INodeType {
 							}
 						}
 						
-						// Add SSH public keys to spec if specified  
+						// Add SSH public keys if specified  
 						if (additionalFields.sshPublicKeys) {
 							const sshKeys = (additionalFields.sshPublicKeys as string).split('\n').filter(key => key.trim());
 							if (sshKeys.length > 0) {
-								spec.sshPublicKeys = sshKeys;
+								body.sshPublicKeys = sshKeys;
 							}
 						}
 						
-						// Build the final request body with spec
-						body = {
-							name: notebookName,
-							region: notebookRegion,
-							spec: spec
-						};
-						
-						// Add flavor if specified
-						if (additionalFields.flavor) {
-							body.flavor = (additionalFields.flavor as string).trim();
-						}
-						
-						// Add timeout at root level if specified
-						if (notebookTimeout > 0) {
-							body.timeout = notebookTimeout;
-						}
-						
-						// Add labels at root level if specified
+						// Add labels if specified
 						if (additionalFields.labels) {
 							try {
 								body.labels = JSON.parse(additionalFields.labels as string);
