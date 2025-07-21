@@ -1702,11 +1702,11 @@ export class OvhAi implements INodeType {
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}`;
 					} else if (operation === 'start') {
-						method = 'POST';
+						method = 'PUT';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/start`;
 					} else if (operation === 'stop') {
-						method = 'POST';
+						method = 'PUT';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/stop`;
 					} else if (operation === 'getBackups') {

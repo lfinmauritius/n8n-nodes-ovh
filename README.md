@@ -426,6 +426,12 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.9.26 - July 2025
+- **🔧 OVH AI node fix** - Fixed HTTP methods for notebook operations:
+  - **Start/Stop operations**: Changed from POST to PUT for notebook start/stop operations
+  - **Correct API compliance**: Now matches OVH API requirements for state change operations
+  - **Consistent behavior**: Already correct for AI apps, now fixed for notebooks
+
 ### Version 0.9.25 - July 2025
 - **🔧 OVH AI node fix** - Critical fixes for notebook creation:
   - **Memory conversion fix**: Changed from MB to bytes (memory is now correctly sent in bytes)
