@@ -152,7 +152,6 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
   - Environment variables
   - Volume mounting
   - Timeout settings
-- **Stop**: Stop a running training job
 - **Delete**: Delete a training job
 
 #### Model Operations
@@ -408,6 +407,18 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Get Many**: List all tasks for vRack operations
 
 ## Latest Features & Updates
+
+### Version 0.8.12 - July 2025
+- **🔧 OVH AI node fix** - Removed non-existent Job Stop operation:
+  - Removed Stop operation from Job operations (not supported by OVH AI Job API)
+  - Fixed 405 Method Not Allowed error when trying to stop training jobs
+  - Updated documentation to reflect actual available operations
+
+### Version 0.8.11 - July 2025
+- **🔧 OVH AI node fix** - Fixed parameter format errors in Job Create operation:
+  - Changed memory parameter from string (1Gi) to number (MB) - fixes proto uint64 field error
+  - Changed volume size parameter from string (10Gi) to number (GB) for API compatibility
+  - Updated parameter descriptions to clarify units (MB for memory, GB for volumes)
 
 ### Version 0.8.10 - July 2025
 - **🚀 OVH AI node enhancement** - Complete Job Create operation with resources and additional parameters:

@@ -180,12 +180,6 @@ export class OvhAi implements INodeType {
 						description: 'Get many training jobs',
 						action: 'Get many training jobs',
 					},
-					{
-						name: 'Stop',
-						value: 'stop',
-						description: 'Stop a training job',
-						action: 'Stop a training job',
-					},
 				],
 				default: 'get',
 			},
@@ -329,7 +323,7 @@ export class OvhAi implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['job'],
-						operation: ['get', 'delete', 'stop'],
+						operation: ['get', 'delete'],
 					},
 				},
 				description: 'The training job ID',
@@ -1010,10 +1004,6 @@ export class OvhAi implements INodeType {
 						method = 'DELETE';
 						const jobId = this.getNodeParameter('jobId', i) as string;
 						path = `/cloud/project/${projectId}/ai/job/${jobId}`;
-					} else if (operation === 'stop') {
-						method = 'POST';
-						const jobId = this.getNodeParameter('jobId', i) as string;
-						path = `/cloud/project/${projectId}/ai/job/${jobId}/kill`;
 					}
 				} else if (resource === 'model') {
 					const projectId = this.getNodeParameter('projectId', i) as string;
