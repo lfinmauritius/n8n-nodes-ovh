@@ -404,6 +404,9 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.8.7 - July 2025
+- **🔧 OVH AI node fix** - Fixed signature error for Start/Stop operations by not sending empty body
+
 ### Version 0.8.6 - July 2025
 - **🔧 OVH AI node fix** - Corrected Get Logs endpoint to use /log (not /logs) and Start/Stop operations to use PUT method (not POST)
 

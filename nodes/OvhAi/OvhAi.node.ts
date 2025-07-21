@@ -950,8 +950,11 @@ export class OvhAi implements INodeType {
 
 				// Add body and content-type for POST/PUT requests
 				if (method === 'POST' || method === 'PUT') {
-					options.body = body;
-					headers['Content-Type'] = 'application/json';
+					// Only add body if we have content
+					if (Object.keys(body).length > 0) {
+						options.body = body;
+						headers['Content-Type'] = 'application/json';
+					}
 				}
 
 				responseData = await this.helpers.request(options);
