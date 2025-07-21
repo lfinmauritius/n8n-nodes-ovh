@@ -1540,8 +1540,10 @@ export class OvhAi implements INodeType {
 							resources.gpu = notebookGpu;
 						}
 						
-						// Build spec object with all required parameters
-						const spec: any = {
+						// Build the final request body with env at root level (as fixed in v0.9.10)
+						body = {
+							name: notebookName,
+							region: notebookRegion,
 							env: {
 								editorId: framework,
 								frameworkId: environment === 'tensorflow' ? 'tensorflow' : 
@@ -1560,7 +1562,7 @@ export class OvhAi implements INodeType {
 						if (additionalFields.volumes) {
 							const volumesArray = (additionalFields.volumes as any).volume || [];
 							if (volumesArray.length > 0) {
-								spec.volumes = volumesArray.map((vol: any) => ({
+								body.volumes = volumesArray.map((vol: any) => ({
 									container: vol.container,
 									mountPath: vol.mountPath,
 									permission: 'RW'
@@ -1568,20 +1570,13 @@ export class OvhAi implements INodeType {
 							}
 						}
 						
-						// Add SSH public keys if specified
+						// Add SSH public keys if specified  
 						if (additionalFields.sshPublicKeys) {
 							const sshKeys = (additionalFields.sshPublicKeys as string).split('\n').filter(key => key.trim());
 							if (sshKeys.length > 0) {
-								spec.sshPublicKeys = sshKeys;
+								body.sshPublicKeys = sshKeys;
 							}
 						}
-						
-						// Build the final request body
-						body = {
-							name: notebookName,
-							region: notebookRegion,
-							spec: spec
-						};
 						
 						// Add timeout at root level if specified
 						if (notebookTimeout > 0) {
