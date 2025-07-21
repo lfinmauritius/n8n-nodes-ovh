@@ -141,12 +141,6 @@ export class OvhAi implements INodeType {
 						description: 'Stop an AI app',
 						action: 'Stop an AI app',
 					},
-					{
-						name: 'Update',
-						value: 'update',
-						description: 'Update AI app',
-						action: 'Update AI app',
-					},
 				],
 				default: 'get',
 			},
@@ -320,7 +314,7 @@ export class OvhAi implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['app'],
-						operation: ['get', 'delete', 'update', 'getLogs', 'start', 'stop'],
+						operation: ['get', 'delete', 'getLogs', 'start', 'stop'],
 					},
 				},
 				description: 'The AI app ID',
@@ -691,36 +685,6 @@ export class OvhAi implements INodeType {
 				default: 'tensorflow',
 				description: 'The ML environment to use',
 			},
-			// Update fields for apps
-			{
-				displayName: 'Update Fields',
-				name: 'updateFields',
-				type: 'collection',
-				placeholder: 'Add Field',
-				default: {},
-				displayOptions: {
-					show: {
-						resource: ['app'],
-						operation: ['update'],
-					},
-				},
-				options: [
-					{
-						displayName: 'Replicas',
-						name: 'replicas',
-						type: 'number',
-						default: 1,
-						description: 'Number of app replicas',
-					},
-					{
-						displayName: 'Auto Scaling Enabled',
-						name: 'autoScalingEnabled',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to enable auto scaling',
-					},
-				],
-			},
 		],
 	};
 
@@ -828,15 +792,6 @@ export class OvhAi implements INodeType {
 						method = 'DELETE';
 						const appId = this.getNodeParameter('appId', i) as string;
 						path = `/cloud/project/${projectId}/ai/app/${appId}`;
-					} else if (operation === 'update') {
-						method = 'PUT';
-						const appId = this.getNodeParameter('appId', i) as string;
-						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
-						path = `/cloud/project/${projectId}/ai/app/${appId}`;
-
-						if (updateFields.replicas) body.replicas = updateFields.replicas;
-						if (updateFields.autoScalingEnabled !== undefined)
-							body.autoScalingEnabled = updateFields.autoScalingEnabled;
 					}
 				} else if (resource === 'job') {
 					const projectId = this.getNodeParameter('projectId', i) as string;

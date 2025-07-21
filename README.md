@@ -140,7 +140,6 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
   - Scaling strategy (fixed/automatic)
 - **Start**: Start a stopped AI application
 - **Stop**: Stop a running AI application
-- **Update**: Update AI application settings (replicas, auto-scaling)
 - **Delete**: Delete an AI application
 
 #### Training Job Operations
@@ -403,6 +402,9 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Get Many**: List all tasks for vRack operations
 
 ## Latest Features & Updates
+
+### Version 0.8.8 - July 2025
+- **🔧 OVH AI node cleanup** - Removed non-existent Update operation for AI apps
 
 ### Version 0.8.7 - July 2025
 - **🔧 OVH AI node fix** - Fixed signature error for Start/Stop operations by not sending empty body
