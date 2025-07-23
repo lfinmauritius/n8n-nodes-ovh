@@ -1010,37 +1010,6 @@ export class OvhAi implements INodeType {
 				default: 'jupyter',
 				description: 'The notebook framework to use',
 			},
-			{
-				displayName: 'Environment',
-				name: 'environment',
-				type: 'options',
-				displayOptions: {
-					show: {
-						resource: ['notebook'],
-						operation: ['create'],
-					},
-				},
-				options: [
-					{
-						name: 'TensorFlow',
-						value: 'tensorflow',
-					},
-					{
-						name: 'PyTorch',
-						value: 'pytorch',
-					},
-					{
-						name: 'Scikit-Learn',
-						value: 'sklearn',
-					},
-					{
-						name: 'R',
-						value: 'r',
-					},
-				],
-				default: 'tensorflow',
-				description: 'The ML environment to use',
-			},
 			// Notebook additional parameters
 			{
 				displayName: 'Notebook Name',
@@ -1071,6 +1040,21 @@ export class OvhAi implements INodeType {
 				},
 				placeholder: 'GRA',
 				description: 'The region where to deploy the notebook (e.g., GRA, BHS)',
+			},
+			{
+				displayName: 'Flavor',
+				name: 'flavor',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['create'],
+					},
+				},
+				placeholder: 'l4-1-gpu',
+				description: 'The flavor ID for the notebook (e.g., l4-1-gpu, ai1-1-gpu, ai1-4-cpu)',
 			},
 			{
 				displayName: 'CPU',
@@ -1184,14 +1168,6 @@ export class OvhAi implements INodeType {
 								],
 							},
 						],
-					},
-					{
-						displayName: 'Flavor',
-						name: 'flavor',
-						type: 'string',
-						default: '',
-						placeholder: 'l4-1-gpu',
-						description: 'The flavor ID for the notebook (e.g., l4-1-gpu, ai1-1-gpu, ai1-4-cpu). REQUIRED for GPU configurations!.',
 					},
 					{
 						displayName: 'Labels',
@@ -1587,7 +1563,7 @@ export class OvhAi implements INodeType {
 					} else if (operation === 'create') {
 						method = 'POST';
 						const framework = this.getNodeParameter('framework', i) as string;
-						const environment = this.getNodeParameter('environment', i) as string;
+						const flavor = (this.getNodeParameter('flavor', i) as string).trim();
 						const notebookName = (this.getNodeParameter('notebookName', i) as string).trim();
 						const notebookRegion = (this.getNodeParameter('notebookRegion', i) as string).trim();
 						const notebookCpu = this.getNodeParameter('notebookCpu', i) as number;
@@ -1600,35 +1576,22 @@ export class OvhAi implements INodeType {
 						// Build resources object with memory as number in bytes
 						const resources: any = {
 							cpu: notebookCpu,
-							memory: notebookMemory * 1024 * 1024 * 1024 // Convert GB to bytes
+							memory: notebookMemory * 1024 * 1024 * 1024, // Convert GB to bytes
+							flavor: flavor // Flavor is now required
 						};
 						
 						if (notebookGpu > 0) {
 							resources.gpu = notebookGpu;
 						}
 						
-						// Add flavor to resources if specified (must be before body creation)
-						if (additionalFields.flavor) {
-							resources.flavor = (additionalFields.flavor as string).trim();
-						}
-						
 						// Build the request body directly at root level (no spec wrapper)
 						const envObject: any = {
-							editorId: framework,
-							frameworkId: environment === 'tensorflow' ? 'tensorflow' : 
-										 environment === 'pytorch' ? 'pytorch' :
-										 environment === 'sklearn' ? 'conda' : 
-										 environment === 'r' ? 'conda' : 'conda'
+							editorId: framework
 						};
 						
-						// Use custom framework version if provided, otherwise use defaults
+						// Use custom framework version if provided
 						if (additionalFields.customFrameworkVersion && (additionalFields.customFrameworkVersion as string).trim()) {
 							envObject.frameworkVersion = (additionalFields.customFrameworkVersion as string).trim();
-						} else {
-							envObject.frameworkVersion = environment === 'tensorflow' ? 'tensorflow-2.11.0' :
-														 environment === 'pytorch' ? 'pytorch-1.13.1' :
-														 environment === 'sklearn' ? 'conda-py39-v22-4' :
-														 environment === 'r' ? 'conda-r42-v22-4' : 'conda-py39-v22-4';
 						}
 						
 						body = {
