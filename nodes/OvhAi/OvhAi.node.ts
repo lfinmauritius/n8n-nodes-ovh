@@ -1049,7 +1049,7 @@ export class OvhAi implements INodeType {
 				type: 'options',
 				typeOptions: {
 					loadOptionsMethod: 'getNotebookFlavors',
-					loadOptionsDependsOn: ['notebookRegion'],
+					loadOptionsDependsOn: ['projectId', 'notebookRegion'],
 				},
 				default: '',
 				required: true,
