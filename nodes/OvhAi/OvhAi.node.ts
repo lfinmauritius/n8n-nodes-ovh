@@ -6,6 +6,8 @@ import {
 	IDataObject,
 	IHttpRequestMethods,
 	IRequestOptions,
+	ILoadOptionsFunctions,
+	INodePropertyOptions,
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
@@ -1042,9 +1044,13 @@ export class OvhAi implements INodeType {
 				description: 'The region where to deploy the notebook (e.g., GRA, BHS)',
 			},
 			{
-				displayName: 'Flavor',
+				displayName: 'Flavor Name or ID',
 				name: 'flavor',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getNotebookFlavors',
+					loadOptionsDependsOn: ['notebookRegion'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -1053,8 +1059,7 @@ export class OvhAi implements INodeType {
 						operation: ['create'],
 					},
 				},
-				placeholder: 'l4-1-gpu',
-				description: 'The flavor ID for the notebook (e.g., l4-1-gpu, ai1-1-gpu, ai1-4-cpu)',
+				description: 'The flavor for the notebook (automatically loaded based on region). Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'CPU',
@@ -1318,6 +1323,89 @@ export class OvhAi implements INodeType {
 				description: 'Command to run on notebooks',
 			},
 		],
+	};
+
+	methods = {
+		loadOptions: {
+			async getNotebookFlavors(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					const region = this.getNodeParameter('notebookRegion') as string;
+					
+					if (!projectId || !region) {
+						return [{
+							name: 'Please Select a Project and Region First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/ai/capabilities/region/${region}/flavor`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract flavors
+					if (Array.isArray(responseData)) {
+						for (const flavor of responseData) {
+							const name = `${flavor.id} - ${flavor.description || 'No description'}`;
+							const value = flavor.id;
+							returnData.push({
+								name,
+								value,
+							});
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading flavors:', error);
+					return [{
+						name: 'Error Loading Flavors',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
