@@ -958,6 +958,7 @@ export class OvhDedicatedServer implements INodeType {
 				};
 
 					const templates = await this.helpers.request(options);
+					console.log('Templates API response:', templates);
 					
 					if (Array.isArray(templates)) {
 						for (const template of templates) {
@@ -966,11 +967,14 @@ export class OvhDedicatedServer implements INodeType {
 								value: template,
 							});
 						}
+					} else {
+						console.error('Unexpected templates response format:', typeof templates, templates);
 					}
-				} catch (error) {
-					console.error('Error loading templates:', error);
+				} catch (error: any) {
+					console.error('Error loading templates:', error.message || error);
+					console.error('Full error:', error);
 					return [{
-						name: 'Error Loading Templates',
+						name: `Error: ${error.message || 'Failed to load templates'}`,
 						value: '',
 					}];
 				}
@@ -1031,19 +1035,36 @@ export class OvhDedicatedServer implements INodeType {
 				};
 
 					const schemes = await this.helpers.request(options);
+					console.log('Partition schemes API response:', schemes);
+					console.log('Request URL was:', fullUrl);
+					console.log('Template name used:', templateName);
 					
 					if (Array.isArray(schemes)) {
+						// Add a default option first
+						returnData.push({
+							name: 'Default',
+							value: 'default',
+						});
+						
 						for (const scheme of schemes) {
 							returnData.push({
 								name: scheme,
 								value: scheme,
 							});
 						}
+					} else {
+						console.error('Unexpected partition schemes response format:', typeof schemes, schemes);
+						// Still provide default option
+						returnData.push({
+							name: 'Default',
+							value: 'default',
+						});
 					}
-				} catch (error) {
-					console.error('Error loading partition schemes:', error);
+				} catch (error: any) {
+					console.error('Error loading partition schemes:', error.message || error);
+					console.error('Full error:', error);
 					return [{
-						name: 'Error Loading Partition Schemes',
+						name: `Error: ${error.message || 'Failed to load partition schemes'}`,
 						value: '',
 					}];
 				}
