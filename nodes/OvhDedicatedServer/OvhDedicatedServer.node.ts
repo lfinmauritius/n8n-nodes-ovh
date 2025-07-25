@@ -958,7 +958,6 @@ export class OvhDedicatedServer implements INodeType {
 				};
 
 					const templates = await this.helpers.request(options);
-					console.log('Templates API response:', templates);
 					
 					if (Array.isArray(templates)) {
 						for (const template of templates) {
@@ -967,12 +966,8 @@ export class OvhDedicatedServer implements INodeType {
 								value: template,
 							});
 						}
-					} else {
-						console.error('Unexpected templates response format:', typeof templates, templates);
 					}
 				} catch (error: any) {
-					console.error('Error loading templates:', error.message || error);
-					console.error('Full error:', error);
 					return [{
 						name: `Error: ${error.message || 'Failed to load templates'}`,
 						value: '',
@@ -1005,7 +1000,9 @@ export class OvhDedicatedServer implements INodeType {
 
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
-				const fullUrl = `${endpoint}/dedicated/server/${serverName}/install/compatibleTemplatePartitionSchemes?templateName=${encodeURIComponent(templateName)}`;
+				const path = `/dedicated/server/${serverName}/install/compatibleTemplatePartitionSchemes`;
+				const queryParams = `templateName=${templateName}`;
+				const fullUrl = `${endpoint}${path}?${queryParams}`;
 				const method = 'GET';
 
 				// Generate signature
@@ -1035,9 +1032,6 @@ export class OvhDedicatedServer implements INodeType {
 				};
 
 					const schemes = await this.helpers.request(options);
-					console.log('Partition schemes API response:', schemes);
-					console.log('Request URL was:', fullUrl);
-					console.log('Template name used:', templateName);
 					
 					if (Array.isArray(schemes)) {
 						// Add a default option first
@@ -1053,7 +1047,6 @@ export class OvhDedicatedServer implements INodeType {
 							});
 						}
 					} else {
-						console.error('Unexpected partition schemes response format:', typeof schemes, schemes);
 						// Still provide default option
 						returnData.push({
 							name: 'Default',
@@ -1061,11 +1054,10 @@ export class OvhDedicatedServer implements INodeType {
 						});
 					}
 				} catch (error: any) {
-					console.error('Error loading partition schemes:', error.message || error);
-					console.error('Full error:', error);
+					// Always provide default option even on error
 					return [{
-						name: `Error: ${error.message || 'Failed to load partition schemes'}`,
-						value: '',
+						name: 'Default',
+						value: 'default',
 					}];
 				}
 
