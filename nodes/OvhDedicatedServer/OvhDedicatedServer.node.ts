@@ -909,11 +909,16 @@ export class OvhDedicatedServer implements INodeType {
 			// Get compatible OS templates for a server
 			async getCompatibleTemplates(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const serverName = this.getCurrentNodeParameter('serverName') as string;
 				
-				if (!serverName) {
-					return returnData;
-				}
+				try {
+					const serverName = this.getNodeParameter('serverName') as string;
+					
+					if (!serverName) {
+						return [{
+							name: 'Please Select a Server First',
+							value: '',
+						}];
+					}
 
 				const credentials = await this.getCredentials('ovhApi');
 				const endpoint = credentials.endpoint as string;
@@ -952,7 +957,6 @@ export class OvhDedicatedServer implements INodeType {
 					json: true,
 				};
 
-				try {
 					const templates = await this.helpers.request(options);
 					
 					if (Array.isArray(templates)) {
@@ -965,6 +969,10 @@ export class OvhDedicatedServer implements INodeType {
 					}
 				} catch (error) {
 					console.error('Error loading templates:', error);
+					return [{
+						name: 'Error Loading Templates',
+						value: '',
+					}];
 				}
 
 				return returnData.sort((a, b) => a.name.localeCompare(b.name));
@@ -973,12 +981,17 @@ export class OvhDedicatedServer implements INodeType {
 			// Get partition schemes for a template
 			async getPartitionSchemes(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const serverName = this.getCurrentNodeParameter('serverName') as string;
-				const templateName = this.getCurrentNodeParameter('templateName') as string;
 				
-				if (!serverName || !templateName) {
-					return returnData;
-				}
+				try {
+					const serverName = this.getNodeParameter('serverName') as string;
+					const templateName = this.getNodeParameter('templateName') as string;
+					
+					if (!serverName || !templateName) {
+						return [{
+							name: 'Please Select a Server and Template First',
+							value: '',
+						}];
+					}
 
 				const credentials = await this.getCredentials('ovhApi');
 				const endpoint = credentials.endpoint as string;
@@ -1017,7 +1030,6 @@ export class OvhDedicatedServer implements INodeType {
 					json: true,
 				};
 
-				try {
 					const schemes = await this.helpers.request(options);
 					
 					if (Array.isArray(schemes)) {
@@ -1030,6 +1042,10 @@ export class OvhDedicatedServer implements INodeType {
 					}
 				} catch (error) {
 					console.error('Error loading partition schemes:', error);
+					return [{
+						name: 'Error Loading Partition Schemes',
+						value: '',
+					}];
 				}
 
 				return returnData.sort((a, b) => a.name.localeCompare(b.name));
@@ -1038,7 +1054,7 @@ export class OvhDedicatedServer implements INodeType {
 			// Get server tasks
 			async getServerTasks(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				const serverName = this.getNodeParameter('serverName') as string;
 				
 				if (!serverName) {
 					return returnData;
@@ -1102,7 +1118,7 @@ export class OvhDedicatedServer implements INodeType {
 			// Get server interventions
 			async getServerInterventions(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				const serverName = this.getNodeParameter('serverName') as string;
 				
 				if (!serverName) {
 					return returnData;
@@ -1166,7 +1182,7 @@ export class OvhDedicatedServer implements INodeType {
 			// Get server IPs
 			async getServerIPs(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				const serverName = this.getNodeParameter('serverName') as string;
 				
 				if (!serverName) {
 					return returnData;
@@ -1230,7 +1246,7 @@ export class OvhDedicatedServer implements INodeType {
 			// Get virtual MACs
 			async getVirtualMACs(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				const serverName = this.getNodeParameter('serverName') as string;
 				
 				if (!serverName) {
 					return returnData;
@@ -1294,7 +1310,7 @@ export class OvhDedicatedServer implements INodeType {
 			// Get secondary DNS domains
 			async getSecondaryDNSDomains(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				const serverName = this.getNodeParameter('serverName') as string;
 				
 				if (!serverName) {
 					return returnData;
