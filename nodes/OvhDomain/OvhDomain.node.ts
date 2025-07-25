@@ -233,7 +233,7 @@ export class OvhDomain implements INodeType {
 			},
 			// Domain operations fields
 			{
-				displayName: 'Domain Name',
+				displayName: 'Domain Name or ID',
 				name: 'domain',
 				type: 'options',
 				typeOptions: {
@@ -247,11 +247,11 @@ export class OvhDomain implements INodeType {
 						operation: ['get', 'update'],
 					},
 				},
-				description: 'The domain name to operate on',
+				description: 'The domain name to operate on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// DNS Record fields
 			{
-				displayName: 'Zone Name',
+				displayName: 'Zone Name or ID',
 				name: 'zoneName',
 				type: 'options',
 				typeOptions: {
@@ -264,10 +264,10 @@ export class OvhDomain implements INodeType {
 						resource: ['record'],
 					},
 				},
-				description: 'The DNS zone name',
+				description: 'The DNS zone name. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
-				displayName: 'Record ID',
+				displayName: 'Record Name or ID',
 				name: 'recordId',
 				type: 'options',
 				typeOptions: {
@@ -282,7 +282,7 @@ export class OvhDomain implements INodeType {
 						operation: ['get', 'update', 'delete'],
 					},
 				},
-				description: 'The DNS record ID',
+				description: 'The DNS record ID. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Record Type',
@@ -388,7 +388,7 @@ export class OvhDomain implements INodeType {
 				description: 'Priority for MX and SRV records',
 			},
 			{
-				displayName: 'Domain Name',
+				displayName: 'Domain Name or ID',
 				name: 'zoneNameForZone',
 				type: 'options',
 				typeOptions: {
@@ -401,7 +401,7 @@ export class OvhDomain implements INodeType {
 						resource: ['zone'],
 					},
 				},
-				description: 'The domain zone name',
+				description: 'The domain zone name. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// DNS Record update fields
 			{
@@ -509,7 +509,7 @@ export class OvhDomain implements INodeType {
 			},
 			// Domain name field for nameserver and contact operations
 			{
-				displayName: 'Domain Name',
+				displayName: 'Domain Name or ID',
 				name: 'domainNameNS',
 				type: 'options',
 				typeOptions: {
@@ -522,11 +522,11 @@ export class OvhDomain implements INodeType {
 						resource: ['nameserver', 'contact'],
 					},
 				},
-				description: 'The domain name to operate on',
+				description: 'The domain name to operate on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Nameserver fields
 			{
-				displayName: 'Nameserver',
+				displayName: 'Nameserver Name or ID',
 				name: 'nameserver',
 				type: 'options',
 				typeOptions: {
@@ -541,7 +541,7 @@ export class OvhDomain implements INodeType {
 						operation: ['get'],
 					},
 				},
-				description: 'The nameserver to get information for',
+				description: 'The nameserver to get information for. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Nameservers',
@@ -602,7 +602,7 @@ export class OvhDomain implements INodeType {
 				description: 'Type of contact to retrieve or update',
 			},
 			{
-				displayName: 'Contact ID',
+				displayName: 'Contact Name or ID',
 				name: 'contactId',
 				type: 'options',
 				typeOptions: {
@@ -616,7 +616,7 @@ export class OvhDomain implements INodeType {
 						operation: ['update'],
 					},
 				},
-				description: 'New contact ID to assign',
+				description: 'New contact ID to assign. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	};

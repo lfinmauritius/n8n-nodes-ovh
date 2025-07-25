@@ -358,7 +358,7 @@ export class OvhDedicatedServer implements INodeType {
 			},
 			// Server name field
 			{
-				displayName: 'Server Name',
+				displayName: 'Server Name or ID',
 				name: 'serverName',
 				type: 'options',
 				typeOptions: {
@@ -371,11 +371,11 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['get', 'getHardware', 'getNetwork', 'getServiceInfo', 'reboot'],
 					},
 				},
-				description: 'The server name to operate on',
+				description: 'The server name to operate on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Server name field for tasks
 			{
-				displayName: 'Server Name',
+				displayName: 'Server Name or ID',
 				name: 'serverName',
 				type: 'options',
 				typeOptions: {
@@ -388,11 +388,11 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['getAll', 'get', 'cancel'],
 					},
 				},
-				description: 'The server name to operate on',
+				description: 'The server name to operate on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Server name field for IPs
 			{
-				displayName: 'Server Name',
+				displayName: 'Server Name or ID',
 				name: 'serverName',
 				type: 'options',
 				typeOptions: {
@@ -405,11 +405,11 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['getAll'],
 					},
 				},
-				description: 'The server name to operate on',
+				description: 'The server name to operate on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Task ID field
 			{
-				displayName: 'Task ID',
+				displayName: 'Task Name or ID',
 				name: 'taskId',
 				type: 'options',
 				typeOptions: {
@@ -423,7 +423,7 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['get', 'cancel'],
 					},
 				},
-				description: 'The ID of the task',
+				description: 'The ID of the task. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// IP address field
 			{
@@ -490,7 +490,7 @@ export class OvhDedicatedServer implements INodeType {
 			},
 			// Server name field for new resources that need it
 			{
-				displayName: 'Server Name',
+				displayName: 'Server Name or ID',
 				name: 'serverName',
 				type: 'options',
 				typeOptions: {
@@ -502,11 +502,11 @@ export class OvhDedicatedServer implements INodeType {
 						resource: ['installation', 'network', 'security', 'options', 'intervention'],
 					},
 				},
-				description: 'The server name to operate on',
+				description: 'The server name to operate on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Installation fields
 			{
-				displayName: 'Template Name',
+				displayName: 'Template Name or ID',
 				name: 'templateName',
 				type: 'options',
 				typeOptions: {
@@ -520,10 +520,10 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['start'],
 					},
 				},
-				description: 'The OS template to install',
+				description: 'The OS template to install. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
-				displayName: 'Partition Scheme Name',
+				displayName: 'Partition Scheme Name or ID',
 				name: 'partitionSchemeName',
 				type: 'options',
 				typeOptions: {
@@ -537,11 +537,11 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['start'],
 					},
 				},
-				description: 'The partition scheme to use',
+				description: 'The partition scheme to use. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Network fields
 			{
-				displayName: 'Virtual MAC',
+				displayName: 'Virtual MAC Name or ID',
 				name: 'virtualMac',
 				type: 'options',
 				typeOptions: {
@@ -555,10 +555,10 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['deleteVirtualMac'],
 					},
 				},
-				description: 'The virtual MAC address to delete',
+				description: 'The virtual MAC address to delete. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
-				displayName: 'IP Address',
+				displayName: 'IP Address Name or ID',
 				name: 'ipAddress',
 				type: 'options',
 				typeOptions: {
@@ -572,7 +572,7 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['createVirtualMac'],
 					},
 				},
-				description: 'The IP address to assign to the virtual MAC',
+				description: 'The IP address to assign to the virtual MAC. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Virtual MAC Type',
@@ -612,7 +612,7 @@ export class OvhDedicatedServer implements INodeType {
 				description: 'The domain name to add',
 			},
 			{
-				displayName: 'Secondary DNS Domain',
+				displayName: 'Secondary DNS Domain Name or ID',
 				name: 'secondaryDnsDomain',
 				type: 'options',
 				typeOptions: {
@@ -626,7 +626,7 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['deleteSecondaryDns'],
 					},
 				},
-				description: 'The secondary DNS domain to delete',
+				description: 'The secondary DNS domain to delete. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'IP Block',
@@ -680,7 +680,7 @@ export class OvhDedicatedServer implements INodeType {
 			},
 			// Intervention fields
 			{
-				displayName: 'Intervention ID',
+				displayName: 'Intervention Name or ID',
 				name: 'interventionId',
 				type: 'options',
 				typeOptions: {
@@ -694,7 +694,7 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['get'],
 					},
 				},
-				description: 'The ID of the intervention',
+				description: 'The ID of the intervention. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 		],
 	};
