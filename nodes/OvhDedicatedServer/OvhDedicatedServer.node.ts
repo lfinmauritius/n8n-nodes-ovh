@@ -373,6 +373,64 @@ export class OvhDedicatedServer implements INodeType {
 				},
 				description: 'The server name to operate on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
+			// Reboot options
+			{
+				displayName: 'Reboot Options',
+				name: 'rebootOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['server'],
+						operation: ['reboot'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Reboot Type',
+						name: 'type',
+						type: 'options',
+						options: [
+							{
+								name: 'Hard',
+								value: 'hard',
+								description: 'Forced reboot (immediate power cycle)',
+							},
+							{
+								name: 'Hard IPMI',
+								value: 'hard_ipmi',
+								description: 'Hard reboot via IPMI',
+							},
+							{
+								name: 'IPMI Cycle',
+								value: 'ipmi_cycle',
+								description: 'Power cycle via IPMI',
+							},
+							{
+								name: 'IPMI Reset',
+								value: 'ipmi_reset',
+								description: 'Reset via IPMI',
+							},
+							{
+								name: 'Soft',
+								value: 'soft',
+								description: 'Graceful reboot (recommended)',
+							},
+						],
+						default: 'soft',
+						description: 'Type of reboot to perform',
+					},
+					{
+						displayName: 'Reason',
+						name: 'reason',
+						type: 'string',
+						default: '',
+						placeholder: 'Scheduled maintenance',
+						description: 'Reason for the reboot (for logging purposes)',
+					},
+				],
+			},
 			// Server name field for tasks
 			{
 				displayName: 'Server Name or ID',
@@ -538,6 +596,94 @@ export class OvhDedicatedServer implements INodeType {
 					},
 				},
 				description: 'The partition scheme to use. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+			// Additional installation options
+			{
+				displayName: 'Installation Options',
+				name: 'installationOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['installation'],
+						operation: ['start'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Custom Hostname',
+						name: 'customHostname',
+						type: 'string',
+						default: '',
+						description: 'Set a custom hostname',
+					},
+					{
+						displayName: 'Hostname',
+						name: 'hostname',
+						type: 'string',
+						default: '',
+						placeholder: 'server.example.com',
+						description: 'Custom hostname for the server',
+					},
+					{
+						displayName: 'Language',
+						name: 'language',
+						type: 'options',
+						options: [
+							{ name: 'Czech', value: 'cs' },
+							{ name: 'Dutch', value: 'nl' },
+							{ name: 'English', value: 'en' },
+							{ name: 'Finnish', value: 'fi' },
+							{ name: 'French', value: 'fr' },
+							{ name: 'German', value: 'de' },
+							{ name: 'Italian', value: 'it' },
+							{ name: 'Lithuanian', value: 'lt' },
+							{ name: 'Polish', value: 'pl' },
+							{ name: 'Portuguese', value: 'pt' },
+							{ name: 'Spanish', value: 'es' },
+						],
+						default: 'en',
+						description: 'Installation language',
+					},
+					{
+						displayName: 'No RAID',
+						name: 'noRaid',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to disable RAID',
+					},
+					{
+						displayName: 'Post Install Script',
+						name: 'postInstallationScriptLink',
+						type: 'string',
+						default: '',
+						placeholder: 'https://example.com/script.sh',
+						description: 'URL of script to run after installation',
+					},
+					{
+						displayName: 'Reset Hardware RAID',
+						name: 'resetHwRaid',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to reset hardware RAID configuration',
+					},
+					{
+						displayName: 'SSH Key',
+						name: 'sshKeyName',
+						type: 'string',
+						default: '',
+						placeholder: 'my-ssh-key',
+						description: 'SSH key name for authentication',
+					},
+					{
+						displayName: 'Use Distribution Kernel',
+						name: 'useDistribKernel',
+						type: 'boolean',
+						default: true,
+						description: 'Whether to use the distribution kernel',
+					},
+				],
 			},
 			// Network fields
 			{
@@ -1273,7 +1419,20 @@ export class OvhDedicatedServer implements INodeType {
 								itemIndex: i,
 							});
 						}
+						const rebootOptions = this.getNodeParameter('rebootOptions', i) as IDataObject;
+						
 						path = `/dedicated/server/${serverName.trim()}/reboot`;
+						body = {};
+						
+						// Add reboot type if specified
+						if (rebootOptions.type) {
+							body.type = rebootOptions.type;
+						}
+						
+						// Add reason if specified
+						if (rebootOptions.reason) {
+							body.reason = rebootOptions.reason;
+						}
 					}
 				} else if (resource === 'task') {
 					const serverName = this.getNodeParameter('serverName', i) as string;
@@ -1349,11 +1508,39 @@ export class OvhDedicatedServer implements INodeType {
 							});
 						}
 						const partitionSchemeName = this.getNodeParameter('partitionSchemeName', i) as string;
+						const installationOptions = this.getNodeParameter('installationOptions', i) as IDataObject;
+						
 						path = `/dedicated/server/${serverNameTrimmed}/install/start`;
 						body = {
 							templateName: templateName.trim(),
 							partitionSchemeName: partitionSchemeName || 'default',
 						};
+						
+						// Add optional installation parameters
+						if (installationOptions.sshKeyName) {
+							body.sshKeyName = installationOptions.sshKeyName;
+						}
+						if (installationOptions.hostname) {
+							body.hostname = installationOptions.hostname;
+						}
+						if (installationOptions.postInstallationScriptLink) {
+							body.postInstallationScriptLink = installationOptions.postInstallationScriptLink;
+						}
+						if (installationOptions.language) {
+							body.language = installationOptions.language;
+						}
+						if (installationOptions.useDistribKernel !== undefined) {
+							body.useDistribKernel = installationOptions.useDistribKernel;
+						}
+						if (installationOptions.noRaid !== undefined) {
+							body.noRaid = installationOptions.noRaid;
+						}
+						if (installationOptions.customHostname) {
+							body.customHostname = installationOptions.customHostname;
+						}
+						if (installationOptions.resetHwRaid !== undefined) {
+							body.resetHwRaid = installationOptions.resetHwRaid;
+						}
 					}
 				} else if (resource === 'network') {
 					const serverName = this.getNodeParameter('serverName', i) as string;
