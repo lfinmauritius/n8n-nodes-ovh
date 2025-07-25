@@ -6,11 +6,12 @@ import {
 	IDataObject,
 	IHttpRequestMethods,
 	IRequestOptions,
+	IHttpRequestOptions,
 	ILoadOptionsFunctions,
 	INodePropertyOptions,
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
-import { createHash } from 'crypto';
+import * as crypto from 'crypto';
 
 export class OvhDomain implements INodeType {
 	description: INodeTypeDescription = {
@@ -648,7 +649,7 @@ export class OvhDomain implements INodeType {
 						timestamp,
 					];
 
-					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+					const signature = '$1$' + crypto.createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 					const options: IRequestOptions = {
 						method,
@@ -713,7 +714,7 @@ export class OvhDomain implements INodeType {
 						timestamp,
 					];
 
-					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+					const signature = '$1$' + crypto.createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 					const options: IRequestOptions = {
 						method,
@@ -784,7 +785,7 @@ export class OvhDomain implements INodeType {
 						timestamp,
 					];
 
-					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+					const signature = '$1$' + crypto.createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 					const options: IRequestOptions = {
 						method,
@@ -825,7 +826,7 @@ export class OvhDomain implements INodeType {
 									detailTimestamp,
 								];
 
-								const detailSignature = '$1$' + createHash('sha1').update(detailSignatureElements.join('+')).digest('hex');
+								const detailSignature = '$1$' + crypto.createHash('sha1').update(detailSignatureElements.join('+')).digest('hex');
 
 								const detailOptions: IRequestOptions = {
 									method: 'GET',
@@ -905,7 +906,7 @@ export class OvhDomain implements INodeType {
 						timestamp,
 					];
 
-					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+					const signature = '$1$' + crypto.createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 					const options: IRequestOptions = {
 						method,
@@ -975,7 +976,7 @@ export class OvhDomain implements INodeType {
 						timestamp,
 					];
 
-					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+					const signature = '$1$' + crypto.createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 					const options: IRequestOptions = {
 						method,
@@ -1016,7 +1017,7 @@ export class OvhDomain implements INodeType {
 									detailTimestamp,
 								];
 
-								const detailSignature = '$1$' + createHash('sha1').update(detailSignatureElements.join('+')).digest('hex');
+								const detailSignature = '$1$' + crypto.createHash('sha1').update(detailSignatureElements.join('+')).digest('hex');
 
 								const detailOptions: IRequestOptions = {
 									method: 'GET',
@@ -1277,7 +1278,7 @@ export class OvhDomain implements INodeType {
 				];
 
 				const signature =
-					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+					'$1$' + crypto.createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
 				// Build headers - only add Content-Type for requests with body
 				const headers: any = {
@@ -1336,14 +1337,19 @@ export class OvhDomain implements INodeType {
 						billing: rawResponse.contactBilling?.id || null,
 					};
 
-					// Extract contact information based on selected type
+					// Extract contact ID based on selected type
+					let contactId: string | null = null;
 					if (contactType === 'owner' && contactFields.owner) {
+						contactId = contactFields.owner;
 						contactInfo.contactId = contactFields.owner;
 					} else if (contactType === 'admin' && contactFields.admin) {
+						contactId = contactFields.admin;
 						contactInfo.contactId = contactFields.admin;
 					} else if (contactType === 'tech' && contactFields.tech) {
+						contactId = contactFields.tech;
 						contactInfo.contactId = contactFields.tech;
 					} else if (contactType === 'billing' && contactFields.billing) {
+						contactId = contactFields.billing;
 						contactInfo.contactId = contactFields.billing;
 					} else {
 						// If contact type not found, include all contacts
@@ -1358,6 +1364,83 @@ export class OvhDomain implements INodeType {
 					contactInfo.transferLockStatus = rawResponse.transferLockStatus;
 					contactInfo.expirationDate = rawResponse.expirationDate;
 					contactInfo.whoisOwner = rawResponse.whoisOwner;
+
+					// If we have a contact ID, fetch the detailed contact information
+					if (contactId) {
+						try {
+							const contactPath = `/me/contact/${contactId}`;
+							const contactUrl = `${endpoint}${contactPath}`;
+
+							// Generate signature for contact detail request
+							const contactTimestamp = Math.round(Date.now() / 1000);
+							const contactSignatureElements = [
+								applicationSecret,
+								consumerKey,
+								'GET',
+								contactUrl,
+								'',
+								contactTimestamp.toString(),
+							];
+							const contactSignature = crypto
+								.createHash('sha1')
+								.update(`$1$${contactSignatureElements.join('+')}`)
+								.digest('hex');
+
+							const contactOptions: IHttpRequestOptions = {
+								method: 'GET',
+								url: contactUrl,
+								headers: {
+									'X-Ovh-Application': applicationKey,
+									'X-Ovh-Consumer': consumerKey,
+									'X-Ovh-Signature': `$1$${contactSignature}`,
+									'X-Ovh-Timestamp': contactTimestamp.toString(),
+								},
+							};
+
+							const contactDetails = await this.helpers.request(contactOptions);
+							
+							// Parse JSON if needed
+							let parsedContactDetails = contactDetails;
+							if (typeof contactDetails === 'string') {
+								try {
+									parsedContactDetails = JSON.parse(contactDetails);
+								} catch (error) {
+									// If JSON parsing fails, keep the original response
+								}
+							}
+
+							// Add the detailed contact information to the response
+							if (parsedContactDetails && typeof parsedContactDetails === 'object') {
+								const details = parsedContactDetails as any;
+								contactInfo.contactDetails = {
+									id: details.id,
+									firstName: details.firstName,
+									lastName: details.lastName,
+									email: details.email,
+									phone: details.phone,
+									cellPhone: details.cellPhone,
+									fax: details.fax,
+									address: details.address,
+									city: details.city,
+									zip: details.zip,
+									country: details.country,
+									language: details.language,
+									legalForm: details.legalForm,
+									organisationName: details.organisationName,
+									organisationType: details.organisationType,
+									nationalIdentificationNumber: details.nationalIdentificationNumber,
+									vat: details.vat,
+									birthDay: details.birthDay,
+									birthCity: details.birthCity,
+									birthCountry: details.birthCountry,
+									gender: details.gender,
+								};
+							}
+						} catch (error) {
+							// If fetching contact details fails, add error info but continue
+							contactInfo.contactDetailsError = error.message || 'Failed to fetch contact details';
+						}
+					}
 
 					responseData = contactInfo;
 				}
@@ -1402,7 +1485,7 @@ export class OvhDomain implements INodeType {
 								detailTimestamp,
 							];
 							const detailSignature =
-								'$1$' + createHash('sha1').update(detailSignatureElements.join('+')).digest('hex');
+								'$1$' + crypto.createHash('sha1').update(detailSignatureElements.join('+')).digest('hex');
 
 							const detailOptions: IRequestOptions = {
 								method: 'GET',
