@@ -911,9 +911,18 @@ export class OvhDedicatedServer implements INodeType {
 				const returnData: INodePropertyOptions[] = [];
 				
 				try {
-					const serverName = this.getNodeParameter('serverName') as string;
+					let serverName: string;
+					try {
+						serverName = this.getNodeParameter('serverName') as string;
+					} catch (error) {
+						// Parameter not yet available
+						return [{
+							name: 'Please Select a Server First',
+							value: '',
+						}];
+					}
 					
-					if (!serverName) {
+					if (!serverName || serverName.trim() === '') {
 						return [{
 							name: 'Please Select a Server First',
 							value: '',
@@ -928,7 +937,8 @@ export class OvhDedicatedServer implements INodeType {
 
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
-				const fullUrl = `${endpoint}/dedicated/server/${serverName}/install/compatibleTemplates`;
+				const serverNameTrimmed = serverName.trim();
+				const fullUrl = `${endpoint}/dedicated/server/${serverNameTrimmed}/install/compatibleTemplates`;
 				const method = 'GET';
 
 				// Generate signature
@@ -1000,8 +1010,10 @@ export class OvhDedicatedServer implements INodeType {
 
 				// Build the request
 				const timestamp = Math.round(Date.now() / 1000);
-				const path = `/dedicated/server/${serverName}/install/compatibleTemplatePartitionSchemes`;
-				const queryParams = `templateName=${templateName}`;
+				const serverNameTrimmed = serverName.trim();
+				const templateNameTrimmed = templateName.trim();
+				const path = `/dedicated/server/${serverNameTrimmed}/install/compatibleTemplatePartitionSchemes`;
+				const queryParams = `templateName=${encodeURIComponent(templateNameTrimmed)}`;
 				const fullUrl = `${endpoint}${path}?${queryParams}`;
 				const method = 'GET';
 
