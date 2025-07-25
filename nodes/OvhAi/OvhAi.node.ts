@@ -1029,9 +1029,13 @@ export class OvhAi implements INodeType {
 				description: 'Name of the notebook to create',
 			},
 			{
-				displayName: 'Region',
+				displayName: 'Region Name or ID',
 				name: 'notebookRegion',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getNotebookRegions',
+					loadOptionsDependsOn: ['projectId'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -1040,8 +1044,7 @@ export class OvhAi implements INodeType {
 						operation: ['create'],
 					},
 				},
-				placeholder: 'GRA',
-				description: 'The region where to deploy the notebook (e.g., GRA, BHS)',
+				description: 'The region where to deploy the notebook (automatically loaded based on project). Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Flavor Name or ID',
@@ -1399,6 +1402,84 @@ export class OvhAi implements INodeType {
 					console.error('Error loading flavors:', error);
 					return [{
 						name: 'Error Loading Flavors',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+			
+			async getNotebookRegions(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					
+					if (!projectId) {
+						return [{
+							name: 'Please Select a Project First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/ai/capabilities/region`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract regions
+					if (Array.isArray(responseData)) {
+						for (const region of responseData) {
+							const name = `${region.id} - ${region.name || region.id}`;
+							const value = region.id;
+							returnData.push({
+								name,
+								value,
+							});
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading regions:', error);
+					return [{
+						name: 'Error Loading Regions',
 						value: '',
 					}];
 				}
