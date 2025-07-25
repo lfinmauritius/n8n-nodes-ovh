@@ -5,6 +5,8 @@ import {
 	INodeTypeDescription,
 	IDataObject,
 	IHttpRequestMethods,
+	ILoadOptionsFunctions,
+	INodePropertyOptions,
 	IRequestOptions,
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
@@ -358,7 +360,10 @@ export class OvhDedicatedServer implements INodeType {
 			{
 				displayName: 'Server Name',
 				name: 'serverName',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getServers',
+				},
 				default: '',
 				displayOptions: {
 					show: {
@@ -366,14 +371,16 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['get', 'getHardware', 'getNetwork', 'getServiceInfo', 'reboot'],
 					},
 				},
-				placeholder: 'ns1234567.ip-1-2-3.eu',
 				description: 'The server name to operate on',
 			},
 			// Server name field for tasks
 			{
 				displayName: 'Server Name',
 				name: 'serverName',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getServers',
+				},
 				default: '',
 				displayOptions: {
 					show: {
@@ -381,14 +388,16 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['getAll', 'get', 'cancel'],
 					},
 				},
-				placeholder: 'ns1234567.ip-1-2-3.eu',
 				description: 'The server name to operate on',
 			},
 			// Server name field for IPs
 			{
 				displayName: 'Server Name',
 				name: 'serverName',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getServers',
+				},
 				default: '',
 				displayOptions: {
 					show: {
@@ -396,15 +405,18 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['getAll'],
 					},
 				},
-				placeholder: 'ns1234567.ip-1-2-3.eu',
 				description: 'The server name to operate on',
 			},
 			// Task ID field
 			{
 				displayName: 'Task ID',
 				name: 'taskId',
-				type: 'number',
-				default: 0,
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getServerTasks',
+					loadOptionsDependsOn: ['serverName'],
+				},
+				default: '',
 				displayOptions: {
 					show: {
 						resource: ['task'],
@@ -480,21 +492,27 @@ export class OvhDedicatedServer implements INodeType {
 			{
 				displayName: 'Server Name',
 				name: 'serverName',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getServers',
+				},
 				default: '',
 				displayOptions: {
 					show: {
 						resource: ['installation', 'network', 'security', 'options', 'intervention'],
 					},
 				},
-				placeholder: 'ns1234567.ip-1-2-3.eu',
 				description: 'The server name to operate on',
 			},
 			// Installation fields
 			{
 				displayName: 'Template Name',
 				name: 'templateName',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getCompatibleTemplates',
+					loadOptionsDependsOn: ['serverName'],
+				},
 				default: '',
 				displayOptions: {
 					show: {
@@ -502,13 +520,16 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['start'],
 					},
 				},
-				placeholder: 'debian11_64',
 				description: 'The OS template to install',
 			},
 			{
-				displayName: 'Partition Scheme',
-				name: 'partitionScheme',
-				type: 'string',
+				displayName: 'Partition Scheme Name',
+				name: 'partitionSchemeName',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getPartitionSchemes',
+					loadOptionsDependsOn: ['serverName', 'templateName'],
+				},
 				default: '',
 				displayOptions: {
 					show: {
@@ -516,14 +537,17 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['start'],
 					},
 				},
-				placeholder: 'default',
 				description: 'The partition scheme to use',
 			},
 			// Network fields
 			{
-				displayName: 'MAC Address',
-				name: 'macAddress',
-				type: 'string',
+				displayName: 'Virtual MAC',
+				name: 'virtualMac',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getVirtualMACs',
+					loadOptionsDependsOn: ['serverName'],
+				},
 				default: '',
 				displayOptions: {
 					show: {
@@ -531,13 +555,16 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['deleteVirtualMac'],
 					},
 				},
-				placeholder: '00:11:22:33:44:55',
-				description: 'The MAC address to delete',
+				description: 'The virtual MAC address to delete',
 			},
 			{
 				displayName: 'IP Address',
 				name: 'ipAddress',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getServerIPs',
+					loadOptionsDependsOn: ['serverName'],
+				},
 				default: '',
 				displayOptions: {
 					show: {
@@ -545,7 +572,6 @@ export class OvhDedicatedServer implements INodeType {
 						operation: ['createVirtualMac'],
 					},
 				},
-				placeholder: '1.2.3.4',
 				description: 'The IP address to assign to the virtual MAC',
 			},
 			{
@@ -579,11 +605,28 @@ export class OvhDedicatedServer implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['network'],
-						operation: ['addSecondaryDns', 'deleteSecondaryDns'],
+						operation: ['addSecondaryDns'],
 					},
 				},
 				placeholder: 'example.com',
-				description: 'The domain name',
+				description: 'The domain name to add',
+			},
+			{
+				displayName: 'Secondary DNS Domain',
+				name: 'secondaryDnsDomain',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getSecondaryDNSDomains',
+					loadOptionsDependsOn: ['serverName'],
+				},
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['network'],
+						operation: ['deleteSecondaryDns'],
+					},
+				},
+				description: 'The secondary DNS domain to delete',
 			},
 			{
 				displayName: 'IP Block',
@@ -639,16 +682,533 @@ export class OvhDedicatedServer implements INodeType {
 			{
 				displayName: 'Intervention ID',
 				name: 'interventionId',
-				type: 'number',
-				default: 0,
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getServerInterventions',
+					loadOptionsDependsOn: ['serverName'],
+				},
+				default: '',
 				displayOptions: {
 					show: {
 						resource: ['intervention'],
 						operation: ['get'],
 					},
 				},
+				description: 'The ID of the intervention',
 			},
 		],
+	};
+
+	methods = {
+		loadOptions: {
+			// Get all dedicated servers
+			async getServers(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				const credentials = await this.getCredentials('ovhApi');
+				const endpoint = credentials.endpoint as string;
+				const applicationKey = credentials.applicationKey as string;
+				const applicationSecret = credentials.applicationSecret as string;
+				const consumerKey = credentials.consumerKey as string;
+
+				// Build the request
+				const timestamp = Math.round(Date.now() / 1000);
+				const fullUrl = `${endpoint}/dedicated/server`;
+				const method = 'GET';
+
+				// Generate signature
+				const signatureElements = [
+					applicationSecret,
+					consumerKey,
+					method,
+					fullUrl,
+					'',
+					timestamp,
+				];
+
+				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+				const headers = {
+					'X-Ovh-Application': applicationKey,
+					'X-Ovh-Consumer': consumerKey,
+					'X-Ovh-Signature': signature,
+					'X-Ovh-Timestamp': timestamp.toString(),
+				};
+
+				const options: IRequestOptions = {
+					method,
+					url: fullUrl,
+					headers,
+					json: true,
+				};
+
+				try {
+					const servers = await this.helpers.request(options);
+					
+					if (Array.isArray(servers)) {
+						for (const server of servers) {
+							returnData.push({
+								name: server,
+								value: server,
+							});
+						}
+					}
+				} catch (error) {
+					console.error('Error loading servers:', error);
+				}
+
+				return returnData.sort((a, b) => a.name.localeCompare(b.name));
+			},
+
+			// Get compatible OS templates for a server
+			async getCompatibleTemplates(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				
+				if (!serverName) {
+					return returnData;
+				}
+
+				const credentials = await this.getCredentials('ovhApi');
+				const endpoint = credentials.endpoint as string;
+				const applicationKey = credentials.applicationKey as string;
+				const applicationSecret = credentials.applicationSecret as string;
+				const consumerKey = credentials.consumerKey as string;
+
+				// Build the request
+				const timestamp = Math.round(Date.now() / 1000);
+				const fullUrl = `${endpoint}/dedicated/server/${serverName}/install/compatibleTemplates`;
+				const method = 'GET';
+
+				// Generate signature
+				const signatureElements = [
+					applicationSecret,
+					consumerKey,
+					method,
+					fullUrl,
+					'',
+					timestamp,
+				];
+
+				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+				const headers = {
+					'X-Ovh-Application': applicationKey,
+					'X-Ovh-Consumer': consumerKey,
+					'X-Ovh-Signature': signature,
+					'X-Ovh-Timestamp': timestamp.toString(),
+				};
+
+				const options: IRequestOptions = {
+					method,
+					url: fullUrl,
+					headers,
+					json: true,
+				};
+
+				try {
+					const templates = await this.helpers.request(options);
+					
+					if (Array.isArray(templates)) {
+						for (const template of templates) {
+							returnData.push({
+								name: template,
+								value: template,
+							});
+						}
+					}
+				} catch (error) {
+					console.error('Error loading templates:', error);
+				}
+
+				return returnData.sort((a, b) => a.name.localeCompare(b.name));
+			},
+
+			// Get partition schemes for a template
+			async getPartitionSchemes(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				const templateName = this.getCurrentNodeParameter('templateName') as string;
+				
+				if (!serverName || !templateName) {
+					return returnData;
+				}
+
+				const credentials = await this.getCredentials('ovhApi');
+				const endpoint = credentials.endpoint as string;
+				const applicationKey = credentials.applicationKey as string;
+				const applicationSecret = credentials.applicationSecret as string;
+				const consumerKey = credentials.consumerKey as string;
+
+				// Build the request
+				const timestamp = Math.round(Date.now() / 1000);
+				const fullUrl = `${endpoint}/dedicated/server/${serverName}/install/compatibleTemplatePartitionSchemes?templateName=${encodeURIComponent(templateName)}`;
+				const method = 'GET';
+
+				// Generate signature
+				const signatureElements = [
+					applicationSecret,
+					consumerKey,
+					method,
+					fullUrl,
+					'',
+					timestamp,
+				];
+
+				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+				const headers = {
+					'X-Ovh-Application': applicationKey,
+					'X-Ovh-Consumer': consumerKey,
+					'X-Ovh-Signature': signature,
+					'X-Ovh-Timestamp': timestamp.toString(),
+				};
+
+				const options: IRequestOptions = {
+					method,
+					url: fullUrl,
+					headers,
+					json: true,
+				};
+
+				try {
+					const schemes = await this.helpers.request(options);
+					
+					if (Array.isArray(schemes)) {
+						for (const scheme of schemes) {
+							returnData.push({
+								name: scheme,
+								value: scheme,
+							});
+						}
+					}
+				} catch (error) {
+					console.error('Error loading partition schemes:', error);
+				}
+
+				return returnData.sort((a, b) => a.name.localeCompare(b.name));
+			},
+
+			// Get server tasks
+			async getServerTasks(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				
+				if (!serverName) {
+					return returnData;
+				}
+
+				const credentials = await this.getCredentials('ovhApi');
+				const endpoint = credentials.endpoint as string;
+				const applicationKey = credentials.applicationKey as string;
+				const applicationSecret = credentials.applicationSecret as string;
+				const consumerKey = credentials.consumerKey as string;
+
+				// Build the request
+				const timestamp = Math.round(Date.now() / 1000);
+				const fullUrl = `${endpoint}/dedicated/server/${serverName}/task`;
+				const method = 'GET';
+
+				// Generate signature
+				const signatureElements = [
+					applicationSecret,
+					consumerKey,
+					method,
+					fullUrl,
+					'',
+					timestamp,
+				];
+
+				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+				const headers = {
+					'X-Ovh-Application': applicationKey,
+					'X-Ovh-Consumer': consumerKey,
+					'X-Ovh-Signature': signature,
+					'X-Ovh-Timestamp': timestamp.toString(),
+				};
+
+				const options: IRequestOptions = {
+					method,
+					url: fullUrl,
+					headers,
+					json: true,
+				};
+
+				try {
+					const tasks = await this.helpers.request(options);
+					
+					if (Array.isArray(tasks)) {
+						for (const task of tasks) {
+							returnData.push({
+								name: `Task ${task}`,
+								value: task,
+							});
+						}
+					}
+				} catch (error) {
+					console.error('Error loading tasks:', error);
+				}
+
+				return returnData.sort((a, b) => Number(a.value) - Number(b.value));
+			},
+
+			// Get server interventions
+			async getServerInterventions(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				
+				if (!serverName) {
+					return returnData;
+				}
+
+				const credentials = await this.getCredentials('ovhApi');
+				const endpoint = credentials.endpoint as string;
+				const applicationKey = credentials.applicationKey as string;
+				const applicationSecret = credentials.applicationSecret as string;
+				const consumerKey = credentials.consumerKey as string;
+
+				// Build the request
+				const timestamp = Math.round(Date.now() / 1000);
+				const fullUrl = `${endpoint}/dedicated/server/${serverName}/intervention`;
+				const method = 'GET';
+
+				// Generate signature
+				const signatureElements = [
+					applicationSecret,
+					consumerKey,
+					method,
+					fullUrl,
+					'',
+					timestamp,
+				];
+
+				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+				const headers = {
+					'X-Ovh-Application': applicationKey,
+					'X-Ovh-Consumer': consumerKey,
+					'X-Ovh-Signature': signature,
+					'X-Ovh-Timestamp': timestamp.toString(),
+				};
+
+				const options: IRequestOptions = {
+					method,
+					url: fullUrl,
+					headers,
+					json: true,
+				};
+
+				try {
+					const interventions = await this.helpers.request(options);
+					
+					if (Array.isArray(interventions)) {
+						for (const intervention of interventions) {
+							returnData.push({
+								name: `Intervention ${intervention}`,
+								value: intervention,
+							});
+						}
+					}
+				} catch (error) {
+					console.error('Error loading interventions:', error);
+				}
+
+				return returnData.sort((a, b) => Number(a.value) - Number(b.value));
+			},
+
+			// Get server IPs
+			async getServerIPs(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				
+				if (!serverName) {
+					return returnData;
+				}
+
+				const credentials = await this.getCredentials('ovhApi');
+				const endpoint = credentials.endpoint as string;
+				const applicationKey = credentials.applicationKey as string;
+				const applicationSecret = credentials.applicationSecret as string;
+				const consumerKey = credentials.consumerKey as string;
+
+				// Build the request
+				const timestamp = Math.round(Date.now() / 1000);
+				const fullUrl = `${endpoint}/dedicated/server/${serverName}/ips`;
+				const method = 'GET';
+
+				// Generate signature
+				const signatureElements = [
+					applicationSecret,
+					consumerKey,
+					method,
+					fullUrl,
+					'',
+					timestamp,
+				];
+
+				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+				const headers = {
+					'X-Ovh-Application': applicationKey,
+					'X-Ovh-Consumer': consumerKey,
+					'X-Ovh-Signature': signature,
+					'X-Ovh-Timestamp': timestamp.toString(),
+				};
+
+				const options: IRequestOptions = {
+					method,
+					url: fullUrl,
+					headers,
+					json: true,
+				};
+
+				try {
+					const ips = await this.helpers.request(options);
+					
+					if (Array.isArray(ips)) {
+						for (const ip of ips) {
+							returnData.push({
+								name: ip,
+								value: ip,
+							});
+						}
+					}
+				} catch (error) {
+					console.error('Error loading IPs:', error);
+				}
+
+				return returnData.sort((a, b) => a.name.localeCompare(b.name));
+			},
+
+			// Get virtual MACs
+			async getVirtualMACs(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				
+				if (!serverName) {
+					return returnData;
+				}
+
+				const credentials = await this.getCredentials('ovhApi');
+				const endpoint = credentials.endpoint as string;
+				const applicationKey = credentials.applicationKey as string;
+				const applicationSecret = credentials.applicationSecret as string;
+				const consumerKey = credentials.consumerKey as string;
+
+				// Build the request
+				const timestamp = Math.round(Date.now() / 1000);
+				const fullUrl = `${endpoint}/dedicated/server/${serverName}/virtualMac`;
+				const method = 'GET';
+
+				// Generate signature
+				const signatureElements = [
+					applicationSecret,
+					consumerKey,
+					method,
+					fullUrl,
+					'',
+					timestamp,
+				];
+
+				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+				const headers = {
+					'X-Ovh-Application': applicationKey,
+					'X-Ovh-Consumer': consumerKey,
+					'X-Ovh-Signature': signature,
+					'X-Ovh-Timestamp': timestamp.toString(),
+				};
+
+				const options: IRequestOptions = {
+					method,
+					url: fullUrl,
+					headers,
+					json: true,
+				};
+
+				try {
+					const macs = await this.helpers.request(options);
+					
+					if (Array.isArray(macs)) {
+						for (const mac of macs) {
+							returnData.push({
+								name: mac,
+								value: mac,
+							});
+						}
+					}
+				} catch (error) {
+					console.error('Error loading virtual MACs:', error);
+				}
+
+				return returnData.sort((a, b) => a.name.localeCompare(b.name));
+			},
+
+			// Get secondary DNS domains
+			async getSecondaryDNSDomains(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const serverName = this.getCurrentNodeParameter('serverName') as string;
+				
+				if (!serverName) {
+					return returnData;
+				}
+
+				const credentials = await this.getCredentials('ovhApi');
+				const endpoint = credentials.endpoint as string;
+				const applicationKey = credentials.applicationKey as string;
+				const applicationSecret = credentials.applicationSecret as string;
+				const consumerKey = credentials.consumerKey as string;
+
+				// Build the request
+				const timestamp = Math.round(Date.now() / 1000);
+				const fullUrl = `${endpoint}/dedicated/server/${serverName}/secondaryDnsDomains`;
+				const method = 'GET';
+
+				// Generate signature
+				const signatureElements = [
+					applicationSecret,
+					consumerKey,
+					method,
+					fullUrl,
+					'',
+					timestamp,
+				];
+
+				const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+				const headers = {
+					'X-Ovh-Application': applicationKey,
+					'X-Ovh-Consumer': consumerKey,
+					'X-Ovh-Signature': signature,
+					'X-Ovh-Timestamp': timestamp.toString(),
+				};
+
+				const options: IRequestOptions = {
+					method,
+					url: fullUrl,
+					headers,
+					json: true,
+				};
+
+				try {
+					const domains = await this.helpers.request(options);
+					
+					if (Array.isArray(domains)) {
+						for (const domain of domains) {
+							returnData.push({
+								name: domain,
+								value: domain,
+							});
+						}
+					}
+				} catch (error) {
+					console.error('Error loading secondary DNS domains:', error);
+				}
+
+				return returnData.sort((a, b) => a.name.localeCompare(b.name));
+			},
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -788,11 +1348,11 @@ export class OvhDedicatedServer implements INodeType {
 								itemIndex: i,
 							});
 						}
-						const partitionScheme = this.getNodeParameter('partitionScheme', i) as string;
+						const partitionSchemeName = this.getNodeParameter('partitionSchemeName', i) as string;
 						path = `/dedicated/server/${serverNameTrimmed}/install/start`;
 						body = {
 							templateName: templateName.trim(),
-							partitionSchemeName: partitionScheme || 'default',
+							partitionSchemeName: partitionSchemeName || 'default',
 						};
 					}
 				} else if (resource === 'network') {
@@ -822,13 +1382,13 @@ export class OvhDedicatedServer implements INodeType {
 						};
 					} else if (operation === 'deleteVirtualMac') {
 						method = 'DELETE';
-						const macAddress = this.getNodeParameter('macAddress', i) as string;
-						if (!macAddress || macAddress.trim() === '') {
-							throw new NodeOperationError(this.getNode(), 'MAC address is required', {
+						const virtualMac = this.getNodeParameter('virtualMac', i) as string;
+						if (!virtualMac || virtualMac.trim() === '') {
+							throw new NodeOperationError(this.getNode(), 'Virtual MAC address is required', {
 								itemIndex: i,
 							});
 						}
-						path = `/dedicated/server/${serverNameTrimmed}/virtualMac/${encodeURIComponent(macAddress.trim())}`;
+						path = `/dedicated/server/${serverNameTrimmed}/virtualMac/${encodeURIComponent(virtualMac.trim())}`;
 					} else if (operation === 'getSecondaryDns') {
 						path = `/dedicated/server/${serverNameTrimmed}/secondaryDnsDomains`;
 					} else if (operation === 'addSecondaryDns') {
@@ -841,11 +1401,11 @@ export class OvhDedicatedServer implements INodeType {
 						body = { domain: domain.trim() };
 					} else if (operation === 'deleteSecondaryDns') {
 						method = 'DELETE';
-						const domain = this.getNodeParameter('domain', i) as string;
-						if (!domain || domain.trim() === '') {
-							throw new NodeOperationError(this.getNode(), 'Domain is required', { itemIndex: i });
+						const secondaryDnsDomain = this.getNodeParameter('secondaryDnsDomain', i) as string;
+						if (!secondaryDnsDomain || secondaryDnsDomain.trim() === '') {
+							throw new NodeOperationError(this.getNode(), 'Secondary DNS domain is required', { itemIndex: i });
 						}
-						path = `/dedicated/server/${serverNameTrimmed}/secondaryDnsDomains/${encodeURIComponent(domain.trim())}`;
+						path = `/dedicated/server/${serverNameTrimmed}/secondaryDnsDomains/${encodeURIComponent(secondaryDnsDomain.trim())}`;
 					} else if (operation === 'ipBlockMerge') {
 						const ipBlock = this.getNodeParameter('ipBlock', i) as string;
 						if (!ipBlock || ipBlock.trim() === '') {

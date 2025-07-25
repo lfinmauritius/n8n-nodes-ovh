@@ -52,16 +52,8 @@
     ],
     "nodes": [
       "dist/nodes/OvhAi/OvhAi.node.js",
-      "dist/nodes/OvhCompute/OvhCompute.node.js",
-      "dist/nodes/OvhContainerRegistry/OvhContainerRegistry.node.js",
-      "dist/nodes/OvhDatabase/OvhDatabase.node.js",
-      "dist/nodes/OvhDedicatedServer/OvhDedicatedServer.node.js",
       "dist/nodes/OvhDomain/OvhDomain.node.js",
-      "dist/nodes/OvhKubernetes/OvhKubernetes.node.js",
-      "dist/nodes/OvhPrivateCloud/OvhPrivateCloud.node.js",
-      "dist/nodes/OvhPrivateNetwork/OvhPrivateNetwork.node.js",
-      "dist/nodes/OvhStorage/OvhStorage.node.js",
-      "dist/nodes/OvhWebPaas/OvhWebPaas.node.js"
+      "dist/nodes/OvhDedicatedServer/OvhDedicatedServer.node.js"
     ]
   },
   "devDependencies": {

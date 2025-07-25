@@ -6,6 +6,8 @@ import {
 	IDataObject,
 	IHttpRequestMethods,
 	IRequestOptions,
+	ILoadOptionsFunctions,
+	INodePropertyOptions,
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
@@ -233,7 +235,10 @@ export class OvhDomain implements INodeType {
 			{
 				displayName: 'Domain Name',
 				name: 'domain',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getDomains',
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -242,14 +247,16 @@ export class OvhDomain implements INodeType {
 						operation: ['get', 'update'],
 					},
 				},
-				placeholder: 'example.com',
 				description: 'The domain name to operate on',
 			},
 			// DNS Record fields
 			{
 				displayName: 'Zone Name',
 				name: 'zoneName',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getZones',
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -257,14 +264,17 @@ export class OvhDomain implements INodeType {
 						resource: ['record'],
 					},
 				},
-				placeholder: 'example.com',
 				description: 'The DNS zone name',
 			},
 			{
 				displayName: 'Record ID',
 				name: 'recordId',
-				type: 'number',
-				default: 0,
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getRecordIds',
+					loadOptionsDependsOn: ['zoneName'],
+				},
+				default: '',
 				required: true,
 				displayOptions: {
 					show: {
@@ -380,7 +390,10 @@ export class OvhDomain implements INodeType {
 			{
 				displayName: 'Domain Name',
 				name: 'zoneNameForZone',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getZones',
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -388,7 +401,6 @@ export class OvhDomain implements INodeType {
 						resource: ['zone'],
 					},
 				},
-				placeholder: 'example.com',
 				description: 'The domain zone name',
 			},
 			// DNS Record update fields
@@ -499,7 +511,10 @@ export class OvhDomain implements INodeType {
 			{
 				displayName: 'Domain Name',
 				name: 'domainNameNS',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getDomains',
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -507,14 +522,17 @@ export class OvhDomain implements INodeType {
 						resource: ['nameserver', 'contact'],
 					},
 				},
-				placeholder: 'example.com',
 				description: 'The domain name to operate on',
 			},
 			// Nameserver fields
 			{
 				displayName: 'Nameserver',
 				name: 'nameserver',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getNameservers',
+					loadOptionsDependsOn: ['domainNameNS'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -523,7 +541,6 @@ export class OvhDomain implements INodeType {
 						operation: ['get'],
 					},
 				},
-				placeholder: 'ns1.example.com',
 				description: 'The nameserver to get information for',
 			},
 			{
@@ -587,7 +604,10 @@ export class OvhDomain implements INodeType {
 			{
 				displayName: 'Contact ID',
 				name: 'contactId',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getContacts',
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -596,10 +616,454 @@ export class OvhDomain implements INodeType {
 						operation: ['update'],
 					},
 				},
-				placeholder: 'contact123456',
 				description: 'New contact ID to assign',
 			},
 		],
+	};
+
+	methods = {
+		loadOptions: {
+			async getDomains(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					const path = '/domain';
+					const method = 'GET';
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Consumer': consumerKey,
+							'X-Ovh-Signature': signature,
+							'X-Ovh-Timestamp': timestamp.toString(),
+						},
+					};
+
+					let responseData = await this.helpers.request(options);
+
+					// Parse JSON manually for GET requests
+					if (typeof responseData === 'string') {
+						try {
+							responseData = JSON.parse(responseData);
+						} catch (error) {
+							// If JSON parsing fails, keep the original response
+						}
+					}
+
+					if (Array.isArray(responseData)) {
+						for (const domain of responseData) {
+							returnData.push({
+								name: domain,
+								value: domain,
+							});
+						}
+					}
+				} catch (error) {
+					// Return empty array on error
+					console.error('Error loading domains:', error);
+				}
+
+				return returnData;
+			},
+
+			async getZones(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					const path = '/domain/zone';
+					const method = 'GET';
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Consumer': consumerKey,
+							'X-Ovh-Signature': signature,
+							'X-Ovh-Timestamp': timestamp.toString(),
+						},
+					};
+
+					let responseData = await this.helpers.request(options);
+
+					// Parse JSON manually for GET requests
+					if (typeof responseData === 'string') {
+						try {
+							responseData = JSON.parse(responseData);
+						} catch (error) {
+							// If JSON parsing fails, keep the original response
+						}
+					}
+
+					if (Array.isArray(responseData)) {
+						for (const zone of responseData) {
+							returnData.push({
+								name: zone,
+								value: zone,
+							});
+						}
+					}
+				} catch (error) {
+					// Return empty array on error
+					console.error('Error loading zones:', error);
+				}
+
+				return returnData;
+			},
+
+			async getRecordIds(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const zoneName = this.getNodeParameter('zoneName') as string;
+					if (!zoneName || zoneName.trim() === '') {
+						return returnData;
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					const zoneNameTrimmed = zoneName.trim();
+					const path = `/domain/zone/${zoneNameTrimmed}/record`;
+					const method = 'GET';
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Consumer': consumerKey,
+							'X-Ovh-Signature': signature,
+							'X-Ovh-Timestamp': timestamp.toString(),
+						},
+					};
+
+					let responseData = await this.helpers.request(options);
+
+					// Parse JSON manually for GET requests
+					if (typeof responseData === 'string') {
+						try {
+							responseData = JSON.parse(responseData);
+						} catch (error) {
+							// If JSON parsing fails, keep the original response
+						}
+					}
+
+					if (Array.isArray(responseData)) {
+						// For each record ID, fetch details to show more meaningful information
+						for (const recordId of responseData) {
+							try {
+								const detailPath = `/domain/zone/${zoneNameTrimmed}/record/${recordId}`;
+								const detailUrl = `${endpoint}${detailPath}`;
+								const detailTimestamp = Math.round(Date.now() / 1000);
+
+								const detailSignatureElements = [
+									applicationSecret,
+									consumerKey,
+									'GET',
+									detailUrl,
+									'',
+									detailTimestamp,
+								];
+
+								const detailSignature = '$1$' + createHash('sha1').update(detailSignatureElements.join('+')).digest('hex');
+
+								const detailOptions: IRequestOptions = {
+									method: 'GET',
+									url: detailUrl,
+									headers: {
+										'X-Ovh-Application': applicationKey,
+										'X-Ovh-Consumer': consumerKey,
+										'X-Ovh-Signature': detailSignature,
+										'X-Ovh-Timestamp': detailTimestamp.toString(),
+									},
+								};
+
+								let detailResponse = await this.helpers.request(detailOptions);
+
+								if (typeof detailResponse === 'string') {
+									try {
+										detailResponse = JSON.parse(detailResponse);
+									} catch (error) {
+										// If parsing fails, keep original
+									}
+								}
+
+								const record = detailResponse as any;
+								const subdomain = record.subDomain || '@';
+								const type = record.fieldType || 'Unknown';
+								const target = record.target || '';
+								
+								returnData.push({
+									name: `${subdomain} (${type}) -> ${target} [ID: ${recordId}]`,
+									value: recordId,
+								});
+							} catch (error) {
+								// If we can't get details, just show the ID
+								returnData.push({
+									name: `Record ID: ${recordId}`,
+									value: recordId,
+								});
+							}
+						}
+					}
+				} catch (error) {
+					// Return empty array on error
+					console.error('Error loading record IDs:', error);
+				}
+
+				return returnData;
+			},
+
+			async getNameservers(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const domainName = this.getNodeParameter('domainNameNS') as string;
+					if (!domainName || domainName.trim() === '') {
+						return returnData;
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					const domainNameTrimmed = domainName.trim();
+					const path = `/domain/${domainNameTrimmed}`;
+					const method = 'GET';
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Consumer': consumerKey,
+							'X-Ovh-Signature': signature,
+							'X-Ovh-Timestamp': timestamp.toString(),
+						},
+					};
+
+					let responseData = await this.helpers.request(options);
+
+					// Parse JSON manually for GET requests
+					if (typeof responseData === 'string') {
+						try {
+							responseData = JSON.parse(responseData);
+						} catch (error) {
+							// If JSON parsing fails, keep the original response
+						}
+					}
+
+					if (responseData && typeof responseData === 'object' && (responseData as any).nameServers) {
+						const nameServers = (responseData as any).nameServers;
+						if (Array.isArray(nameServers)) {
+							for (const ns of nameServers) {
+								if (ns && ns.nameServer) {
+									returnData.push({
+										name: ns.nameServer,
+										value: ns.nameServer,
+									});
+								}
+							}
+						}
+					}
+				} catch (error) {
+					// Return empty array on error
+					console.error('Error loading nameservers:', error);
+				}
+
+				return returnData;
+			},
+
+			async getContacts(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					const path = '/me/contact';
+					const method = 'GET';
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Consumer': consumerKey,
+							'X-Ovh-Signature': signature,
+							'X-Ovh-Timestamp': timestamp.toString(),
+						},
+					};
+
+					let responseData = await this.helpers.request(options);
+
+					// Parse JSON manually for GET requests
+					if (typeof responseData === 'string') {
+						try {
+							responseData = JSON.parse(responseData);
+						} catch (error) {
+							// If JSON parsing fails, keep the original response
+						}
+					}
+
+					if (Array.isArray(responseData)) {
+						// For each contact ID, fetch details to show more meaningful information
+						for (const contactId of responseData) {
+							try {
+								const detailPath = `/me/contact/${contactId}`;
+								const detailUrl = `${endpoint}${detailPath}`;
+								const detailTimestamp = Math.round(Date.now() / 1000);
+
+								const detailSignatureElements = [
+									applicationSecret,
+									consumerKey,
+									'GET',
+									detailUrl,
+									'',
+									detailTimestamp,
+								];
+
+								const detailSignature = '$1$' + createHash('sha1').update(detailSignatureElements.join('+')).digest('hex');
+
+								const detailOptions: IRequestOptions = {
+									method: 'GET',
+									url: detailUrl,
+									headers: {
+										'X-Ovh-Application': applicationKey,
+										'X-Ovh-Consumer': consumerKey,
+										'X-Ovh-Signature': detailSignature,
+										'X-Ovh-Timestamp': detailTimestamp.toString(),
+									},
+								};
+
+								let detailResponse = await this.helpers.request(detailOptions);
+
+								if (typeof detailResponse === 'string') {
+									try {
+										detailResponse = JSON.parse(detailResponse);
+									} catch (error) {
+										// If parsing fails, keep original
+									}
+								}
+
+								const contact = detailResponse as any;
+								const name = `${contact.firstName || ''} ${contact.lastName || ''}`.trim() || 'Unknown';
+								const email = contact.email || '';
+								
+								returnData.push({
+									name: `${name} (${email}) - ${contactId}`,
+									value: contactId,
+								});
+							} catch (error) {
+								// If we can't get details, just show the ID
+								returnData.push({
+									name: contactId,
+									value: contactId,
+								});
+							}
+						}
+					}
+				} catch (error) {
+					// Return empty array on error
+					console.error('Error loading contacts:', error);
+				}
+
+				return returnData;
+			},
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {

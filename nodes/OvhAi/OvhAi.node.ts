@@ -349,9 +349,12 @@ export class OvhAi implements INodeType {
 			},
 			// Project ID for cloud resources
 			{
-				displayName: 'Project ID',
+				displayName: 'Project Name or ID',
 				name: 'projectId',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getProjects',
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -359,14 +362,16 @@ export class OvhAi implements INodeType {
 						resource: ['app', 'job', 'notebook', 'datastore'],
 					},
 				},
-				placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-				description: 'The cloud project ID',
+				description: 'The cloud project ID. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Project ID for project resource (only for get operation)
 			{
-				displayName: 'Project ID',
+				displayName: 'Project Name or ID',
 				name: 'projectId',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getProjects',
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -375,14 +380,17 @@ export class OvhAi implements INodeType {
 						operation: ['get'],
 					},
 				},
-				placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-				description: 'The cloud project ID',
+				description: 'The cloud project ID. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// App ID field
 			{
-				displayName: 'App ID',
+				displayName: 'App Name or ID',
 				name: 'appId',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getApps',
+					loadOptionsDependsOn: ['projectId'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -391,13 +399,17 @@ export class OvhAi implements INodeType {
 						operation: ['get', 'delete', 'getLogs', 'start', 'stop'],
 					},
 				},
-				description: 'The AI app ID',
+				description: 'The AI app ID. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Job ID field
 			{
-				displayName: 'Job ID',
+				displayName: 'Job Name or ID',
 				name: 'jobId',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getJobs',
+					loadOptionsDependsOn: ['projectId'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -406,13 +418,17 @@ export class OvhAi implements INodeType {
 						operation: ['get', 'delete'],
 					},
 				},
-				description: 'The training job ID',
+				description: 'The training job ID. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Notebook ID field
 			{
-				displayName: 'Notebook ID',
+				displayName: 'Notebook Name or ID',
 				name: 'notebookId',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getNotebooks',
+					loadOptionsDependsOn: ['projectId'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -421,7 +437,7 @@ export class OvhAi implements INodeType {
 						operation: ['get', 'delete', 'start', 'stop', 'getBackups', 'getBackup', 'forkBackup', 'dataSync', 'updateLabels', 'getLogs', 'restart', 'getBackupPolicy', 'updateBackupPolicy'],
 					},
 				},
-				description: 'The notebook ID to operate on',
+				description: 'The notebook ID to operate on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// App creation fields
 			{
@@ -455,9 +471,13 @@ export class OvhAi implements INodeType {
 				description: 'Docker image to use for the app',
 			},
 			{
-				displayName: 'Region',
+				displayName: 'Region Name or ID',
 				name: 'region',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getAppRegions',
+					loadOptionsDependsOn: ['projectId'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -466,8 +486,7 @@ export class OvhAi implements INodeType {
 						operation: ['create'],
 					},
 				},
-				placeholder: 'GRA',
-				description: 'Region where to deploy the app (e.g., GRA, BHS, etc.)',
+				description: 'Region where to deploy the app. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Resources',
@@ -687,9 +706,13 @@ export class OvhAi implements INodeType {
 				description: 'Docker image to use for the training job',
 			},
 			{
-				displayName: 'Region',
+				displayName: 'Region Name or ID',
 				name: 'region',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getJobRegions',
+					loadOptionsDependsOn: ['projectId'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -698,8 +721,7 @@ export class OvhAi implements INodeType {
 						operation: ['create'],
 					},
 				},
-				placeholder: 'GRA',
-				description: 'Region where to run the job (e.g., GRA, BHS, etc.)',
+				description: 'Region where to run the job. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Resources',
@@ -843,9 +865,13 @@ export class OvhAi implements INodeType {
 			},
 			// Datastore region field
 			{
-				displayName: 'Region',
+				displayName: 'Region Name or ID',
 				name: 'region',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getDatastoreRegions',
+					loadOptionsDependsOn: ['projectId'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -854,14 +880,17 @@ export class OvhAi implements INodeType {
 						operation: ['createAlias', 'deleteAlias', 'getAlias', 'getAliasAuth', 'getAliases', 'updateAlias'],
 					},
 				},
-				placeholder: 'GRA',
-				description: 'The region where data is stored (e.g., GRA, BHS)',
+				description: 'The region where data is stored. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Datastore alias field
 			{
-				displayName: 'Alias',
+				displayName: 'Alias Name or ID',
 				name: 'alias',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getDatastoreAliases',
+					loadOptionsDependsOn: ['projectId', 'region'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -870,8 +899,7 @@ export class OvhAi implements INodeType {
 						operation: ['deleteAlias', 'getAlias', 'getAliasAuth'],
 					},
 				},
-				placeholder: 'my-data-alias',
-				description: 'The datastore alias name',
+				description: 'The datastore alias name. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			// Datastore alias creation fields
 			{
@@ -1480,6 +1508,658 @@ export class OvhAi implements INodeType {
 					console.error('Error loading regions:', error);
 					return [{
 						name: 'Error Loading Regions',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+
+			async getProjects(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = '/cloud/project';
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract projects
+					if (Array.isArray(responseData)) {
+						for (const projectId of responseData) {
+							// Get project details
+							const projectPath = `/cloud/project/${projectId}`;
+							const projectUrl = `${endpoint}${projectPath}`;
+							const projectTimestamp = Math.round(Date.now() / 1000);
+							
+							const projectSignatureElements = [
+								applicationSecret,
+								consumerKey,
+								method,
+								projectUrl,
+								'',
+								projectTimestamp,
+							];
+
+							const projectSignature = '$1$' + createHash('sha1').update(projectSignatureElements.join('+')).digest('hex');
+
+							const projectOptions: IRequestOptions = {
+								method,
+								url: projectUrl,
+								headers: {
+									'X-Ovh-Application': applicationKey,
+									'X-Ovh-Consumer': consumerKey,
+									'X-Ovh-Signature': projectSignature,
+									'X-Ovh-Timestamp': projectTimestamp.toString(),
+								},
+								json: true,
+							};
+
+							try {
+								const projectDetails = await this.helpers.request(projectOptions);
+								const name = `${projectDetails.description || projectId} (${projectId})`;
+								returnData.push({
+									name,
+									value: projectId,
+								});
+							} catch {
+								// If we can't get details, just use the ID
+								returnData.push({
+									name: projectId,
+									value: projectId,
+								});
+							}
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading projects:', error);
+					return [{
+						name: 'Error Loading Projects',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+
+			async getAppRegions(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					
+					if (!projectId) {
+						return [{
+							name: 'Please Select a Project First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/ai/capabilities/region`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract regions
+					if (Array.isArray(responseData)) {
+						for (const region of responseData) {
+							const name = `${region.id} - ${region.name || region.id}`;
+							const value = region.id;
+							returnData.push({
+								name,
+								value,
+							});
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading app regions:', error);
+					return [{
+						name: 'Error Loading Regions',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+
+			async getJobRegions(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					
+					if (!projectId) {
+						return [{
+							name: 'Please Select a Project First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/ai/capabilities/region`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract regions
+					if (Array.isArray(responseData)) {
+						for (const region of responseData) {
+							const name = `${region.id} - ${region.name || region.id}`;
+							const value = region.id;
+							returnData.push({
+								name,
+								value,
+							});
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading job regions:', error);
+					return [{
+						name: 'Error Loading Regions',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+
+			async getDatastoreRegions(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					
+					if (!projectId) {
+						return [{
+							name: 'Please Select a Project First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/ai/capabilities/region`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract regions
+					if (Array.isArray(responseData)) {
+						for (const region of responseData) {
+							const name = `${region.id} - ${region.name || region.id}`;
+							const value = region.id;
+							returnData.push({
+								name,
+								value,
+							});
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading datastore regions:', error);
+					return [{
+						name: 'Error Loading Regions',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+
+			async getApps(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					
+					if (!projectId) {
+						return [{
+							name: 'Please Select a Project First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/ai/app`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract apps
+					if (Array.isArray(responseData)) {
+						for (const app of responseData) {
+							const name = `${app.name || app.id} (${app.status || 'Unknown'})`;
+							const value = app.id;
+							returnData.push({
+								name,
+								value,
+							});
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading apps:', error);
+					return [{
+						name: 'Error Loading Apps',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+
+			async getJobs(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					
+					if (!projectId) {
+						return [{
+							name: 'Please Select a Project First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/ai/job`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract jobs
+					if (Array.isArray(responseData)) {
+						for (const job of responseData) {
+							const name = `${job.name || job.id} (${job.status || 'Unknown'})`;
+							const value = job.id;
+							returnData.push({
+								name,
+								value,
+							});
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading jobs:', error);
+					return [{
+						name: 'Error Loading Jobs',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+
+			async getNotebooks(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					
+					if (!projectId) {
+						return [{
+							name: 'Please Select a Project First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/ai/notebook`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract notebooks
+					if (Array.isArray(responseData)) {
+						for (const notebook of responseData) {
+							const name = `${notebook.name || notebook.id} (${notebook.status || 'Unknown'})`;
+							const value = notebook.id;
+							returnData.push({
+								name,
+								value,
+							});
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading notebooks:', error);
+					return [{
+						name: 'Error Loading Notebooks',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+
+			async getDatastoreAliases(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					const region = this.getNodeParameter('region') as string;
+					
+					if (!projectId || !region) {
+						return [{
+							name: 'Please Select a Project and Region First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/region/${region}/data`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract datastore aliases
+					if (Array.isArray(responseData)) {
+						for (const datastore of responseData) {
+							const name = `${datastore.alias} (${datastore.type || 'Unknown'})`;
+							const value = datastore.alias;
+							returnData.push({
+								name,
+								value,
+							});
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading datastore aliases:', error);
+					return [{
+						name: 'Error Loading Datastore Aliases',
 						value: '',
 					}];
 				}

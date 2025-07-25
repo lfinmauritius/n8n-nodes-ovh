@@ -42,7 +42,8 @@
       "WebFetch(domain:api.ovh.com)",
       "Bash(git config:*)",
       "WebFetch(domain:ca.api.ovh.com)",
-      "WebFetch(domain:gra.ai.cloud.ovh.net)"
+      "WebFetch(domain:gra.ai.cloud.ovh.net)",
+      "Bash(tail:*)"
     ],
     "deny": []
   }
