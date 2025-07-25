@@ -967,14 +967,29 @@ export class OvhDedicatedServer implements INodeType {
 					json: true,
 				};
 
-					const templates = await this.helpers.request(options);
+					const response = await this.helpers.request(options);
 					
-					if (Array.isArray(templates)) {
-						for (const template of templates) {
+					// Handle both array format and object format with categories
+					if (Array.isArray(response)) {
+						// Handle simple array format
+						for (const template of response) {
 							returnData.push({
 								name: template,
 								value: template,
 							});
+						}
+					} else if (typeof response === 'object') {
+						// Handle object format with categories (personal, ovh, etc.)
+						for (const category in response) {
+							const templates = response[category];
+							if (Array.isArray(templates)) {
+								for (const template of templates) {
+									returnData.push({
+										name: `${template} (${category})`,
+										value: template,
+									});
+								}
+							}
 						}
 					}
 				} catch (error: any) {
