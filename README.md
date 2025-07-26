@@ -523,6 +523,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.11.8 - July 2025
+- **🔧 Critical Parameter Fixes** - Fixed major parameter deficiencies discovered through comprehensive API audit:
+  - **Datacenter Create Fixed**: Corrected `commercialRangeName` parameter (was `commerceRangeName`) and added optional `vrackName` parameter
+  - **User Create Enhanced**: Added 14 missing optional parameters including `canAddRessource`, `canManageRights`, `encryptionRight`, `networkRole`, `nsxRight`, `right`, `tokenValidator`, `vmNetworkRole`, and more
+  - **Complete User Management**: Now supports comprehensive user creation with roles, permissions, contact info, and advanced options
+  - **API Compliance**: Fixed critical issues preventing proper datacenter and user creation in production environments
+
 ### Version 0.11.7 - July 2025
 - **🚀 Phase 2 Service Operations Expansion** - Added 9 missing Service operations to complete OVH Private Cloud coverage:
   - **New Service Operations**: Added newPrices, nsx, nsxt, orderableIpCountries, passwordPolicy, pcidss (GET operations)

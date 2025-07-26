@@ -1,0 +1,268 @@
+# Analyse des Paramètres POST/PUT - OVH Private Cloud API
+
+Cette analyse extrait tous les endpoints POST et PUT avec leurs paramètres body requis et optionnels pour identifier les paramètres manquants dans l'implémentation actuelle.
+
+## Format:
+- **Endpoint**: [METHOD] /path
+- **Description**: Description de l'endpoint
+- **Paramètres Body**: Liste des paramètres avec type et si requis
+- **Notes**: Paramètres potentiellement manquants ou remarques
+
+---
+
+## 1. POST /dedicatedCloud/{serviceName}/allowedNetwork
+**Description**: Create network allowed on infrastructure firewall
+**Paramètres Body**:
+- description (string) - Optionnel - Description for your ACL
+- network (ipv4Block) - Requis - Network name, e.g. 123.100.200.0/32
+
+**Notes**: Endpoint de création de réseau autorisé - paramètres description et network à implémenter
+
+---
+
+## 2. PUT /dedicatedCloud/{serviceName}/allowedNetwork/{networkAccessId}
+**Description**: Update network allowed on infrastructure firewall
+**Paramètres Body**: Aucun paramètre body identifié
+**Notes**: Endpoint de mise à jour - peut nécessiter des paramètres body non documentés
+
+---
+
+## 3. POST /dedicatedCloud/{serviceName}/allowedNetwork/{networkAccessId}/task/{taskId}/changeMaintenanceExecutionDate
+**Description**: Change the execution date of a maintenance operation
+**Paramètres Body**:
+- executionDate (datetime) - Requis - The new execution date
+
+**Notes**: Paramètre executionDate à implémenter pour la gestion des tâches
+
+---
+
+## 4. POST /dedicatedCloud/{serviceName}/allowedNetwork/{networkAccessId}/task/{taskId}/resetTaskState
+**Description**: Relaunch operation currently in error state
+**Paramètres Body**:
+- reason (string) - Requis - Reason of task restart
+
+**Notes**: Paramètre reason à implémenter pour le redémarrage de tâches
+
+---
+
+## 5. POST /dedicatedCloud/{serviceName}/changeContact
+**Description**: Launch a contact change procedure
+**Paramètres Body**:
+- contactAdmin (string/coreTypes.AccountId:string) - Optionnel - The contact to set as admin contact
+- contactBilling (string/coreTypes.AccountId:string) - Optionnel - The contact to set as billing contact
+- contactTech (string/coreTypes.AccountId:string) - Optionnel - The contact to set as tech contact
+
+**Notes**: Endpoint de gestion des contacts - trois paramètres optionnels à implémenter
+
+---
+
+## 6. POST /dedicatedCloud/{serviceName}/changeProperties
+**Description**: Update VMware on OVHcloud
+**Paramètres Body**:
+- description (string) - Optionnel - Description of your VMware on OVHcloud
+- sslV3 (boolean) - Optionnel - Enable SSL v3 support
+- userAccessPolicy (dedicatedCloud.UserAccessPolicyEnum) - Optionnel - Access policy
+- userLimitConcurrentSession (long) - Optionnel - Maximum amount of connected users
+- userLogoutPolicy (dedicatedCloud.UserLogoutPolicyEnum) - Optionnel - User logout policy
+
+**Notes**: Endpoint de modification des propriétés avec plusieurs paramètres optionnels complexes
+
+---
+
+## 7. POST /dedicatedCloud/{serviceName}/confirmTermination
+**Description**: Confirm service termination
+**Paramètres Body**:
+- commentary (string) - Optionnel - Commentary about your termination request
+- futureUse (service.TerminationFutureUseEnum) - Optionnel - What next after termination
+- reason (service.TerminationReasonEnum) - Optionnel - Reason of your termination request
+- token (string) - Requis - The termination token sent by email
+
+**Notes**: Endpoint de confirmation de résiliation avec token requis
+
+---
+
+## 8. POST /dedicatedCloud/{serviceName}/datacenter ⭐ PRIORITÉ HAUTE
+**Description**: Create virtual datacenter
+**Paramètres Body**:
+- commercialRangeName (string) - Requis - Commercial range of new datacenter
+- vrackName (string) - Optionnel - Name of the Vrack link to the new datacenter
+
+**Notes**: ENDPOINT DATACENTER CREATE - Paramètres commercialRangeName (requis) et vrackName (optionnel) MANQUANTS dans l'implémentation actuelle
+
+---
+
+## 9. PUT /dedicatedCloud/{serviceName}/datacenter/{datacenterId}
+**Description**: Update virtual datacenter
+**Paramètres Body**: Aucun paramètre body identifié
+**Notes**: Endpoint de mise à jour datacenter - peut nécessiter des paramètres body
+
+---
+
+## 10. POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/backup/batchRestore
+**Description**: Restore from last point for each backup job
+**Paramètres Body**:
+- backupJobName (string) - Optionnel - The backup job name
+- backupRepositoryName (string) - Requis - The backup files location name
+
+**Notes**: Endpoints de backup avec paramètres spécialisés
+
+---
+
+## 11. POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/backup/changeProperties
+**Description**: Update backup option
+**Paramètres Body**:
+- backupDurationInReport (boolean) - Optionnel - Duration on email report (deprecated)
+- backupOffer (dedicatedCloud.backup.OfferTypeEnum) - Requis - Backup offer type
+- backupSizeInReport (boolean) - Optionnel - Backup size on day on email report (deprecated)
+- diskSizeInReport (boolean) - Optionnel - Disk size on mail report (deprecated)
+- fullDayInReport (boolean) - Optionnel - Full day on mail report (deprecated)
+- mailAddress (string) - Optionnel - Additional email address for backup daily report
+- restorePointInReport (boolean) - Optionnel - RestorePoint number on mail report (deprecated)
+- scheduleHour (time) - Optionnel - Schedule hour for start backup (UTC)
+
+**Notes**: Endpoint complexe de configuration backup avec plusieurs paramètres
+
+---
+
+## 12. POST /dedicatedCloud/{serviceName}/user ⭐ PRIORITÉ HAUTE
+**Description**: Create user
+**Paramètres Body**:
+- canAddRessource (boolean) - Optionnel - User able to add resources in Datacenter
+- canManageRights (boolean) - Optionnel - User able to manage users rights
+- email (string) - Optionnel - User email address
+- encryptionRight (boolean) - Optionnel - User can manage encryption/KMS configuration
+- expirationDate (datetime) - Optionnel - Date of removal of the user
+- firstName (string) - Optionnel - First name of the user
+- lastName (string) - Optionnel - Last name of the user
+- name (string) - Requis - Name of the user (login)
+- networkRole (dedicatedCloud.right.NetworkRoleEnum) - Optionnel - Network access role
+- nsxRight (boolean) - Optionnel - User able to access nsx interface
+- password (password) - Optionnel - User password (random if empty)
+- phoneNumber (string) - Optionnel - Mobile phone number
+- receiveAlerts (boolean) - Optionnel - User receives technical alerts
+- right (dedicatedCloud.right.RightEnum) - Optionnel - Access type in all Datacenters
+- tokenValidator (boolean) - Optionnel - User can confirm security tokens
+- vmNetworkRole (dedicatedCloud.right.VmNetworkRoleEnum) - Optionnel - VM Network role
+
+**Notes**: ENDPOINT USER CREATE - NOMBREUX PARAMÈTRES MANQUANTS dans l'implémentation actuelle. Seuls name, password, email sont implémentés.
+
+---
+
+## 13. POST /dedicatedCloud/{serviceName}/user/{userId}/changePassword
+**Description**: Change user password
+**Paramètres Body**:
+- password (password) - Optionnel - New password (random if empty)
+
+**Notes**: Endpoint simple de changement de mot de passe
+
+---
+
+## 14. POST /dedicatedCloud/{serviceName}/user/{userId}/changeProperties
+**Description**: Update user
+**Paramètres Body**:
+- canManageIpFailOvers (boolean) - Optionnel - User can manage ip failovers
+- canManageNetwork (boolean) - Optionnel - User can manage the network
+- canManageRights (boolean) - Optionnel - User can manage users rights
+- email (string) - Optionnel - Email address of the user
+- encryptionRight (boolean) - Optionnel - User can manage encryption/KMS
+- firstName (string) - Optionnel - First name of the user
+- fullAdminRo (boolean) - Optionnel - User is full admin in readonly
+- lastName (string) - Optionnel - Last name of the user
+- nsxRight (boolean) - Optionnel - User able to access nsx interface
+- phoneNumber (string) - Optionnel - Mobile phone number
+- receiveAlerts (boolean) - Optionnel - User receives technical alerts
+- tokenValidator (boolean) - Optionnel - User can confirm security tokens
+
+**Notes**: Endpoint de mise à jour utilisateur avec nombreux paramètres
+
+---
+
+## 15. PUT /dedicatedCloud/{serviceName}/serviceInfos
+**Description**: Update service information
+**Paramètres Body**: Aucun paramètre body identifié dans cette section
+**Notes**: Endpoint de mise à jour des informations de service - peut nécessiter des paramètres body
+
+---
+
+## AUTRES ENDPOINTS POST/PUT IDENTIFIÉS:
+
+### Endpoints de gestion des tâches (pattern répétitif):
+- POST .../task/{taskId}/changeMaintenanceExecutionDate
+- POST .../task/{taskId}/resetTaskState
+
+### Endpoints de backup:
+- POST .../backup/batchRestore
+- POST .../backup/changeProperties
+- POST .../backup/disable
+- POST .../backup/generateReport
+- POST .../backup/optimizeProxies
+
+### Endpoints de disaster recovery:
+- POST .../disasterRecovery/zerto/disable
+- POST .../disasterRecovery/zerto/endMigration
+- POST .../disasterRecovery/zerto/endpointPublicIp
+- POST .../disasterRecovery/zerto/remoteSites
+- POST .../disasterRecovery/zerto/startMigration
+
+### Endpoints VM:
+- POST .../vm/{vmId}/disableBackup
+- POST .../vm/{vmId}/enableBackup
+- POST .../vm/{vmId}/restoreBackup
+- POST .../vm/{vmId}/setLicense
+
+### Endpoints de sécurité:
+- POST .../twoFAWhitelist
+- POST .../securityOptions/resumePendingEnabling
+
+---
+
+## ANALYSE ET RECOMMANDATIONS
+
+### PARAMÈTRES MANQUANTS CRITIQUES IDENTIFIÉS:
+
+#### 1. POST /dedicatedCloud/{serviceName}/datacenter ⭐ CRITIQUE
+**Statut actuel**: Implémentation INCOMPLÈTE
+**Paramètres manquants**:
+- commercialRangeName (string) - **REQUIS** 
+- vrackName (string) - Optionnel
+
+#### 2. POST /dedicatedCloud/{serviceName}/user ⭐ CRITIQUE  
+**Statut actuel**: Implémentation TRÈS INCOMPLÈTE
+**Paramètres manquants** (13 sur 16 paramètres):
+- canAddRessource (boolean)
+- canManageRights (boolean) 
+- encryptionRight (boolean)
+- expirationDate (datetime)
+- firstName (string)
+- lastName (string)
+- networkRole (enum)
+- nsxRight (boolean)
+- phoneNumber (string)
+- receiveAlerts (boolean)
+- right (enum)
+- tokenValidator (boolean)
+- vmNetworkRole (enum)
+
+#### 3. Autres endpoints avec paramètres body manquants:
+- POST /dedicatedCloud/{serviceName}/allowedNetwork
+- POST /dedicatedCloud/{serviceName}/changeContact
+- POST /dedicatedCloud/{serviceName}/changeProperties
+- POST /dedicatedCloud/{serviceName}/confirmTermination
+- Nombreux endpoints de backup, disaster recovery, etc.
+
+### ACTIONS PRIORITAIRES:
+
+1. **Corriger immédiatement** les endpoints Datacenter et User Create
+2. **Implémenter** tous les paramètres body requis et optionnels
+3. **Ajouter** la validation des types d'énumérations OVH
+4. **Tester** les endpoints avec tous les paramètres
+
+### LISTE COMPLÈTE DES ENDPOINTS POST/PUT EXTRAITS:
+
+Total identifié: 80+ endpoints POST/PUT
+Endpoints avec paramètres body complexes: 40+
+Endpoints prioritaires à corriger: 15+
+
+Les paramètres path sont déjà bien implémentés. Le problème principal concerne les paramètres body qui sont largement sous-implémentés dans le nœud OvhPrivateCloud actuel.
+
+---

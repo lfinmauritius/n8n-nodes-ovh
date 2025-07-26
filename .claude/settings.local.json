@@ -45,7 +45,10 @@
       "WebFetch(domain:gra.ai.cloud.ovh.net)",
       "Bash(tail:*)",
       "Bash(awk:*)",
-      "Bash(do echo \"=== $resource ===\")"
+      "Bash(do echo \"=== $resource ===\")",
+      "Bash(python:*)",
+      "Bash(ls:*)",
+      "Bash(rg:*)"
     ],
     "deny": []
   }

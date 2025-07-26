@@ -2714,6 +2714,162 @@ export class OvhPrivateCloud implements INodeType {
 				},
 				description: 'The user password',
 			},
+			// User creation optional fields
+			{
+				displayName: 'Additional Options',
+				name: 'userAdditionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['create'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Can Add Resources',
+						name: 'canAddRessource',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user is able to add resources in Datacenter',
+					},
+					{
+						displayName: 'Can Manage Rights',
+						name: 'canManageRights',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user is able to manage users rights',
+					},
+					{
+						displayName: 'Email',
+						name: 'email',
+						type: 'string',
+						placeholder: 'name@email.com',
+						default: '',
+						description: 'User email address',
+					},
+					{
+						displayName: 'Encryption Right',
+						name: 'encryptionRight',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user can manage encryption/KMS configuration',
+					},
+					{
+						displayName: 'Expiration Date',
+						name: 'expirationDate',
+						type: 'dateTime',
+						default: '',
+						description: 'Date of removal of the user',
+					},
+					{
+						displayName: 'First Name',
+						name: 'firstName',
+						type: 'string',
+						default: '',
+						description: 'First name of the user',
+					},
+					{
+						displayName: 'Last Name',
+						name: 'lastName',
+						type: 'string',
+						default: '',
+						description: 'Last name of the user',
+					},
+					{
+						displayName: 'Network Role',
+						name: 'networkRole',
+						type: 'options',
+						default: 'none',
+						options: [
+							{
+								name: 'None',
+								value: 'none',
+							},
+							{
+								name: 'Read Only',
+								value: 'readOnly',
+							},
+							{
+								name: 'Admin',
+								value: 'admin',
+							},
+						],
+						description: 'Network access role',
+					},
+					{
+						displayName: 'NSX Right',
+						name: 'nsxRight',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user is able to access nsx interface',
+					},
+					{
+						displayName: 'Phone Number',
+						name: 'phoneNumber',
+						type: 'string',
+						default: '',
+						description: 'Mobile phone number',
+					},
+					{
+						displayName: 'Receive Alerts',
+						name: 'receiveAlerts',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user receives technical alerts',
+					},
+					{
+						displayName: 'Right',
+						name: 'right',
+						type: 'options',
+						default: 'disabled',
+						options: [
+							{
+								name: 'Disabled',
+								value: 'disabled',
+							},
+							{
+								name: 'Read Only',
+								value: 'readOnly',
+							},
+							{
+								name: 'Admin',
+								value: 'admin',
+							},
+						],
+						description: 'Access type in all Datacenters',
+					},
+					{
+						displayName: 'Token Validator',
+						name: 'tokenValidator',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user can confirm security tokens',
+					},
+					{
+						displayName: 'VM Network Role',
+						name: 'vmNetworkRole',
+						type: 'options',
+						default: 'none',
+						options: [
+							{
+								name: 'None',
+								value: 'none',
+							},
+							{
+								name: 'Read Only',
+								value: 'readOnly',
+							},
+							{
+								name: 'Admin',
+								value: 'admin',
+							},
+						],
+					},
+				],
+			},
 			// User update fields
 			{
 				displayName: 'Update Fields',
@@ -2930,8 +3086,8 @@ export class OvhPrivateCloud implements INodeType {
 				description: 'Name for the new datacenter',
 			},
 			{
-				displayName: 'Commerce Range Name',
-				name: 'commerceRangeName',
+				displayName: 'Commercial Range Name',
+				name: 'commercialRangeName',
 				type: 'string',
 				default: '',
 				required: true,
@@ -2941,6 +3097,20 @@ export class OvhPrivateCloud implements INodeType {
 						operation: ['create'],
 					},
 				},
+				description: 'The commercial range of this new datacenter',
+			},
+			{
+				displayName: 'vRack Name',
+				name: 'vrackName',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['datacenter'],
+						operation: ['create'],
+					},
+				},
+				description: 'VRack to attach the datacenter to (optional)',
 			},
 			// Datacenter update fields
 			{
@@ -4417,12 +4587,14 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'create') {
 						method = 'POST';
 						const datacenterName = this.getNodeParameter('datacenterName', i) as string;
-						const commerceRangeName = this.getNodeParameter('commerceRangeName', i) as string;
+						const commercialRangeName = this.getNodeParameter('commercialRangeName', i) as string;
+						const vrackName = this.getNodeParameter('vrackName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/datacenter`;
 						body = {
 							name: datacenterName,
-							commerceRangeName,
+							commercialRangeName,
 						};
+						if (vrackName) body.vrackName = vrackName;
 					} else if (operation === 'update') {
 						method = 'PUT';
 						const datacenterId = parseInt(this.getNodeParameter('datacenterId', i) as string, 10);
@@ -4546,8 +4718,25 @@ export class OvhPrivateCloud implements INodeType {
 						method = 'POST';
 						const name = this.getNodeParameter('name', i) as string;
 						const password = this.getNodeParameter('password', i) as string;
+						const additionalOptions = this.getNodeParameter('userAdditionalOptions', i) as IDataObject;
 						path = `/dedicatedCloud/${serviceName}/user`;
 						body = { name, password };
+						
+						// Add optional parameters if provided
+						if (additionalOptions.canAddRessource !== undefined) body.canAddRessource = additionalOptions.canAddRessource;
+						if (additionalOptions.canManageRights !== undefined) body.canManageRights = additionalOptions.canManageRights;
+						if (additionalOptions.email !== undefined && additionalOptions.email !== '') body.email = additionalOptions.email;
+						if (additionalOptions.encryptionRight !== undefined) body.encryptionRight = additionalOptions.encryptionRight;
+						if (additionalOptions.expirationDate !== undefined && additionalOptions.expirationDate !== '') body.expirationDate = additionalOptions.expirationDate;
+						if (additionalOptions.firstName !== undefined && additionalOptions.firstName !== '') body.firstName = additionalOptions.firstName;
+						if (additionalOptions.lastName !== undefined && additionalOptions.lastName !== '') body.lastName = additionalOptions.lastName;
+						if (additionalOptions.networkRole !== undefined && additionalOptions.networkRole !== 'none') body.networkRole = additionalOptions.networkRole;
+						if (additionalOptions.nsxRight !== undefined) body.nsxRight = additionalOptions.nsxRight;
+						if (additionalOptions.phoneNumber !== undefined && additionalOptions.phoneNumber !== '') body.phoneNumber = additionalOptions.phoneNumber;
+						if (additionalOptions.receiveAlerts !== undefined) body.receiveAlerts = additionalOptions.receiveAlerts;
+						if (additionalOptions.right !== undefined && additionalOptions.right !== 'disabled') body.right = additionalOptions.right;
+						if (additionalOptions.tokenValidator !== undefined) body.tokenValidator = additionalOptions.tokenValidator;
+						if (additionalOptions.vmNetworkRole !== undefined && additionalOptions.vmNetworkRole !== 'none') body.vmNetworkRole = additionalOptions.vmNetworkRole;
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
