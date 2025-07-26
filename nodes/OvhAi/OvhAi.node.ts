@@ -456,9 +456,13 @@ export class OvhAi implements INodeType {
 				description: 'Name of the AI app',
 			},
 			{
-				displayName: 'Image',
+				displayName: 'Image Name or ID',
 				name: 'image',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getAppImages',
+					loadOptionsDependsOn: ['projectId', 'region'],
+				},
 				default: '',
 				required: true,
 				displayOptions: {
@@ -467,8 +471,7 @@ export class OvhAi implements INodeType {
 						operation: ['create'],
 					},
 				},
-				placeholder: 'tensorflow/tensorflow:latest',
-				description: 'Docker image to use for the app',
+				description: 'Docker image to use for the app. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Region Name or ID',
@@ -639,6 +642,76 @@ export class OvhAi implements INodeType {
 						description: 'Scaling strategy for the app',
 					},
 					{
+						displayName: 'Replicas',
+						name: 'scalingReplicas',
+						type: 'number',
+						default: 1,
+						displayOptions: {
+							show: {
+								scalingStrategy: ['fixed'],
+							},
+						},
+						description: 'Number of replicas for fixed scaling',
+					},
+					{
+						displayName: 'Min Replicas',
+						name: 'scalingReplicasMin',
+						type: 'number',
+						default: 1,
+						displayOptions: {
+							show: {
+								scalingStrategy: ['automatic'],
+							},
+						},
+						description: 'Minimum number of replicas for automatic scaling',
+					},
+					{
+						displayName: 'Max Replicas',
+						name: 'scalingReplicasMax',
+						type: 'number',
+						default: 5,
+						displayOptions: {
+							show: {
+								scalingStrategy: ['automatic'],
+							},
+						},
+						description: 'Maximum number of replicas for automatic scaling',
+					},
+					{
+						displayName: 'Resource Type',
+						name: 'scalingResourceType',
+						type: 'options',
+						options: [
+							{
+								name: 'CPU',
+								value: 'CPU',
+							},
+							{
+								name: 'Memory',
+								value: 'MEMORY',
+							},
+						],
+						default: 'CPU',
+						displayOptions: {
+							show: {
+								scalingStrategy: ['automatic'],
+							},
+						},
+						description: 'Resource type to monitor for automatic scaling',
+					},
+					{
+						displayName: 'Average Usage Target (%)',
+						name: 'scalingAverageUsageTarget',
+						type: 'number',
+						default: 50,
+						displayOptions: {
+							show: {
+								scalingStrategy: ['automatic'],
+							},
+						},
+						description: 'Target average usage percentage for automatic scaling',
+					},
+					{
 						displayName: 'Volumes',
 						name: 'volumes',
 						type: 'fixedCollection',
@@ -661,12 +734,37 @@ export class OvhAi implements INodeType {
 										description: 'Path where to mount the volume',
 									},
 									{
-										displayName: 'Size (GB)',
-										name: 'size',
-										type: 'number',
-										default: 10,
-										placeholder: '10',
-										description: 'Size of the volume in GB',
+										displayName: 'Container',
+										name: 'container',
+										type: 'string',
+										default: '',
+										placeholder: 'my-container',
+										description: 'Object storage container name',
+									},
+									{
+										displayName: 'Permission',
+										name: 'permission',
+										type: 'options',
+										options: [
+											{
+												name: 'Read Only',
+												value: 'RO',
+											},
+											{
+												name: 'Read Write',
+												value: 'RW',
+											},
+										],
+										default: 'RW',
+										description: 'Volume access permission',
+									},
+									{
+										displayName: 'Prefix',
+										name: 'prefix',
+										type: 'string',
+										default: '',
+										placeholder: 'data/',
+										description: 'Optional prefix path in the container',
 									},
 								],
 							},
@@ -2340,6 +2438,86 @@ export class OvhAi implements INodeType {
 
 				return returnData;
 			},
+
+			async getAppImages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					const region = this.getNodeParameter('region') as string;
+					
+					if (!projectId || !region) {
+						return [{
+							name: 'Please Select a Project and Region First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/ai/capabilities/region/${region}/app/image`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract images
+					if (Array.isArray(responseData)) {
+						for (const image of responseData) {
+							const name = image.name || image.id || image;
+							const value = image.id || image;
+							returnData.push({
+								name,
+								value,
+							});
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					// Return error message that will be visible to user
+					const errorMessage = error.message || 'Unknown error';
+					return [{
+						name: `Error Loading Images: ${errorMessage}`,
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
 		},
 	};
 
@@ -2409,39 +2587,76 @@ export class OvhAi implements INodeType {
 						body.resources = resourcesObj;
 						
 						// Add additional fields
-						if (additionalFields.port) body.port = additionalFields.port;
 						if (additionalFields.defaultHttpPort) body.defaultHttpPort = additionalFields.defaultHttpPort;
-						if (additionalFields.scalingStrategy) body.scalingStrategy = additionalFields.scalingStrategy;
 						if (additionalFields.partnerId) body.partnerId = additionalFields.partnerId;
 						
-						// Handle environment variables
+						// Handle environment variables - OVH expects envVars array, not env object
 						if (additionalFields.env) {
 							const envVars = (additionalFields.env as any).variable || [];
 							if (envVars.length > 0) {
-								const envObject: IDataObject = {};
-								envVars.forEach((envVar: any) => {
-									if (envVar.name && envVar.value) {
-										envObject[envVar.name] = envVar.value;
-									}
-								});
-								body.env = envObject;
-							}
-						}
-						
-						// Handle volumes
-						if (additionalFields.volumes) {
-							const volumes = (additionalFields.volumes as any).volume || [];
-							if (volumes.length > 0) {
-								body.volumes = volumes.map((vol: any) => ({
-									mountPath: vol.mountPath,
-									size: vol.size,
+								body.envVars = envVars.map((envVar: any) => ({
+									name: envVar.name,
+									value: envVar.value
 								}));
 							}
 						}
 						
-						// Handle probe
+						// Handle scaling strategy
+						if (additionalFields.scalingStrategy) {
+							const strategy = additionalFields.scalingStrategy as string;
+							if (strategy === 'fixed') {
+								body.scalingStrategy = {
+									fixed: {
+										replicas: additionalFields.scalingReplicas || 1
+									}
+								};
+							} else if (strategy === 'automatic') {
+								body.scalingStrategy = {
+									automatic: {
+										replicasMin: additionalFields.scalingReplicasMin || 1,
+										replicasMax: additionalFields.scalingReplicasMax || 5,
+										resourceType: additionalFields.scalingResourceType || 'CPU',
+										averageUsageTarget: additionalFields.scalingAverageUsageTarget || 50
+									}
+								};
+							}
+						}
+						
+						// Handle volumes with proper structure
+						if (additionalFields.volumes) {
+							const volumes = (additionalFields.volumes as any).volume || [];
+							if (volumes.length > 0) {
+								body.volumes = volumes.map((vol: any) => {
+									const volume: any = {
+										mountPath: vol.mountPath,
+										permission: vol.permission || 'RW'
+									};
+									
+									// Add dataStore configuration if container is specified
+									if (vol.container) {
+										volume.dataStore = {
+											container: vol.container
+										};
+										if (vol.prefix) volume.dataStore.prefix = vol.prefix;
+									}
+									
+									return volume;
+								});
+							}
+						}
+						
+						// Handle probe with all required fields
 						if (additionalFields.probe && Object.keys(additionalFields.probe).length > 0) {
-							body.probe = additionalFields.probe;
+							const probe = additionalFields.probe as any;
+							body.probe = {
+								path: probe.path || '/',
+								port: probe.port || 8080,
+								initialDelaySeconds: probe.initialDelaySeconds || 10,
+								periodSeconds: probe.periodSeconds || 30,
+								timeoutSeconds: probe.timeoutSeconds || 5,
+								successThreshold: probe.successThreshold || 1,
+								failureThreshold: probe.failureThreshold || 3
+							};
 						}
 					} else if (operation === 'delete') {
 						method = 'DELETE';
