@@ -1382,7 +1382,14 @@ export class OvhAi implements INodeType {
 				try {
 					const projectId = this.getNodeParameter('projectId') as string;
 					const region = this.getNodeParameter('notebookRegion') as string;
-					const editorId = this.getNodeParameter('editorId') as string;
+					let editorId = '';
+					
+					// Try to get editorId, but don't fail if it's not available
+					try {
+						editorId = this.getNodeParameter('editorId') as string;
+					} catch (e) {
+						// editorId might not be set yet, which is fine
+					}
 					
 					if (!projectId || !region) {
 						return [{
@@ -1434,17 +1441,35 @@ export class OvhAi implements INodeType {
 					// Process the response to extract frameworks
 					if (Array.isArray(responseData)) {
 						for (const framework of responseData) {
-							// Filter frameworks by editorId if selected
-							if (editorId && framework.docUrl && framework.docUrl.includes(editorId)) {
-								const name = `${framework.name} (${framework.version})`;
-								const value = framework.id;
-								returnData.push({
-									name,
-									value,
-								});
-							} else if (!editorId) {
-								// If no editor selected, show all frameworks
-								const name = `${framework.name} (${framework.version})`;
+							// Check if framework matches the selected editor
+							let shouldInclude = true;
+							
+							if (editorId) {
+								// Check various fields that might contain editor information
+								shouldInclude = false;
+								
+								// Check if framework id contains editor name
+								if (framework.id && framework.id.toLowerCase().includes(editorId.toLowerCase())) {
+									shouldInclude = true;
+								}
+								// Check if framework name contains editor name
+								else if (framework.name && framework.name.toLowerCase().includes(editorId.toLowerCase())) {
+									shouldInclude = true;
+								}
+								// Check if framework has an editor field
+								else if (framework.editor && framework.editor.toLowerCase() === editorId.toLowerCase()) {
+									shouldInclude = true;
+								}
+								// Check docUrl as fallback
+								else if (framework.docUrl && framework.docUrl.toLowerCase().includes(editorId.toLowerCase())) {
+									shouldInclude = true;
+								}
+							}
+							
+							if (shouldInclude) {
+								const name = framework.name ? 
+									`${framework.name}${framework.version ? ` (${framework.version})` : ''}` : 
+									framework.id;
 								const value = framework.id;
 								returnData.push({
 									name,
@@ -1454,12 +1479,23 @@ export class OvhAi implements INodeType {
 						}
 					}
 					
+					// If no frameworks found, provide helpful message
+					if (returnData.length === 0) {
+						return [{
+							name: editorId ? 
+								`No frameworks found for editor: ${editorId} in region: ${region}` : 
+								`No frameworks found in region: ${region}`,
+							value: '',
+						}];
+					}
+					
 					returnData.sort((a, b) => a.name.localeCompare(b.name));
 					
 				} catch (error) {
-					console.error('Error loading frameworks:', error);
+					// Return error message that will be visible to user
+					const errorMessage = error.message || 'Unknown error';
 					return [{
-						name: 'Error Loading Frameworks',
+						name: `Error Loading Frameworks: ${errorMessage}`,
 						value: '',
 					}];
 				}
