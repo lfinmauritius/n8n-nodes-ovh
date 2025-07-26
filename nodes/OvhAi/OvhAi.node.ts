@@ -2692,8 +2692,9 @@ export class OvhAi implements INodeType {
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/label`;
 						
 						// Parse labels JSON string to object
+						// The API expects the labels object directly, not wrapped in a "labels" property
 						try {
-							body = { labels: JSON.parse(labels) };
+							body = JSON.parse(labels);
 						} catch (error) {
 							throw new NodeOperationError(this.getNode(), 'Labels must be valid JSON format', {
 								itemIndex: i,
