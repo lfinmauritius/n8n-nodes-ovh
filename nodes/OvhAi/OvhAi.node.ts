@@ -2684,7 +2684,7 @@ export class OvhAi implements INodeType {
 					} else if (operation === 'dataSync') {
 						method = 'POST';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
-						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/backup/datasync`;
+						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/datasync`;
 					} else if (operation === 'updateLabels') {
 						method = 'PUT';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
