@@ -40,12 +40,24 @@ export class OvhPrivateCloud implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
+						name: 'Allowed Network',
+						value: 'allowedNetwork',
+					},
+					{
 						name: 'Backup',
 						value: 'backup',
 					},
 					{
+						name: 'Backup Repository',
+						value: 'backupRepository',
+					},
+					{
 						name: 'Cluster',
 						value: 'cluster',
+					},
+					{
+						name: 'Commercial Range',
+						value: 'commercialRange',
 					},
 					{
 						name: 'Datacenter',
@@ -60,8 +72,36 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'filer',
 					},
 					{
+						name: 'Global',
+						value: 'global',
+					},
+					{
+						name: 'HCX',
+						value: 'hcx',
+					},
+					{
+						name: 'HD',
+						value: 'hds',
+					},
+					{
+						name: 'HIPAA',
+						value: 'hipaa',
+					},
+					{
 						name: 'Host',
 						value: 'host',
+					},
+					{
+						name: 'IAM',
+						value: 'iam',
+					},
+					{
+						name: 'IP',
+						value: 'ip',
+					},
+					{
+						name: 'Location',
+						value: 'location',
 					},
 					{
 						name: 'NSX-T Edge',
@@ -80,15 +120,238 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'task',
 					},
 					{
+						name: 'Two FA Whitelist',
+						value: 'twoFAWhitelist',
+					},
+					{
 						name: 'User',
 						value: 'user',
+					},
+					{
+						name: 'VLAN',
+						value: 'vlan',
 					},
 					{
 						name: 'VM',
 						value: 'vm',
 					},
+					{
+						name: 'VM Encryption',
+						value: 'vmEncryption',
+					},
+					{
+						name: 'vRack',
+						value: 'vrack',
+					},
+					{
+						name: 'vROp',
+						value: 'vrops',
+					},
 				],
 				default: 'datacenter',
+			},
+			// Global operations (without serviceName)
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['global'],
+					},
+				},
+				options: [
+					{
+						name: 'Get All Services',
+						value: 'getAllServices',
+						description: 'Get all dedicated cloud services',
+						action: 'Get all dedicated cloud services',
+					},
+					{
+						name: 'Get Commercial Range',
+						value: 'getCommercialRange',
+						description: 'Get specific commercial range',
+						action: 'Get specific commercial range',
+					},
+					{
+						name: 'Get Commercial Ranges',
+						value: 'getCommercialRanges',
+						description: 'Get all commercial ranges',
+						action: 'Get all commercial ranges',
+					},
+					{
+						name: 'Get Location',
+						value: 'getLocation',
+						description: 'Get specific location',
+						action: 'Get specific location',
+					},
+					{
+						name: 'Get Location Host Profile',
+						value: 'getLocationHostProfile',
+						description: 'Get specific host profile for location',
+						action: 'Get specific host profile for location',
+					},
+					{
+						name: 'Get Location Host Profiles',
+						value: 'getLocationHostProfiles',
+						description: 'Get host profiles for location',
+						action: 'Get host profiles for location',
+					},
+					{
+						name: 'Get Location Host Stock',
+						value: 'getLocationHostStock',
+						description: 'Get host stock for location',
+						action: 'Get host stock for location',
+					},
+					{
+						name: 'Get Location Hypervisor',
+						value: 'getLocationHypervisor',
+						description: 'Get specific hypervisor for location',
+						action: 'Get specific hypervisor for location',
+					},
+					{
+						name: 'Get Location Hypervisors',
+						value: 'getLocationHypervisors',
+						description: 'Get hypervisors for location',
+						action: 'Get hypervisors for location',
+					},
+					{
+						name: 'Get Location PCC Stock',
+						value: 'getLocationPccStock',
+						description: 'Get PCC stock for location',
+						action: 'Get PCC stock for location',
+					},
+					{
+						name: 'Get Location Zpool Stock',
+						value: 'getLocationZpoolStock',
+						description: 'Get zpool stock for location',
+						action: 'Get zpool stock for location',
+					},
+					{
+						name: 'Get Locations',
+						value: 'getLocations',
+						description: 'Get all locations',
+						action: 'Get all locations',
+					},
+				],
+				default: 'getAllServices',
+			},
+			// Allowed Network operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['allowedNetwork'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create allowed network',
+						action: 'Create allowed network',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete allowed network',
+						action: 'Delete allowed network',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get allowed network',
+						action: 'Get allowed network',
+					},
+					{
+						name: 'Get Many',
+						value: 'getAll',
+						description: 'Get many allowed networks',
+						action: 'Get many allowed networks',
+					},
+					{
+						name: 'Get Task',
+						value: 'getTask',
+						description: 'Get allowed network task',
+						action: 'Get allowed network task',
+					},
+					{
+						name: 'Get Tasks',
+						value: 'getTasks',
+						description: 'Get allowed network tasks',
+						action: 'Get allowed network tasks',
+					},
+					{
+						name: 'Reset Task State',
+						value: 'resetTaskState',
+						action: 'Reset task state',
+					},
+					{
+						name: 'Update',
+						value: 'update',
+						description: 'Update allowed network',
+						action: 'Update allowed network',
+					},
+				],
+				default: 'get',
+			},
+			// Backup Repository operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['backupRepository'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get backup repository',
+						action: 'Get backup repository',
+					},
+					{
+						name: 'Get Many',
+						value: 'getAll',
+						description: 'Get many backup repositories',
+						action: 'Get many backup repositories',
+					},
+				],
+				default: 'get',
+			},
+			// Commercial Range operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['commercialRange'],
+					},
+				},
+				options: [
+					{
+						name: 'Get Compliance',
+						value: 'getCompliance',
+						description: 'Get commercial range compliance',
+						action: 'Get commercial range compliance',
+					},
+					{
+						name: 'Get Orderable',
+						value: 'getOrderable',
+						description: 'Get orderable commercial ranges',
+						action: 'Get orderable commercial ranges',
+					},
+				],
+				default: 'getCompliance',
 			},
 			// Service operations
 			{
@@ -103,9 +366,43 @@ export class OvhPrivateCloud implements INodeType {
 				},
 				options: [
 					{
+						name: 'Can Deploy NSX-T Edges on Global Datastores',
+						value: 'canDeployNsxtEdgesOnGlobalDatastores',
+						description: 'Check if NSX-T edges can be deployed on global datastores',
+						action: 'Check if nsx t edges can be deployed on global datastores',
+					},
+					{
+						name: 'Capabilities',
+						value: 'capabilities',
+						description: 'Get service capabilities',
+						action: 'Get service capabilities',
+					},
+					{
+						name: 'Change Contact',
+						value: 'changeContact',
+						description: 'Change service contact',
+						action: 'Change service contact',
+					},
+					{
 						name: 'Check Global Task List',
 						value: 'checkGlobalTaskList',
 						action: 'Check global task list',
+					},
+					{
+						name: 'Confirm Termination',
+						value: 'confirmTermination',
+						description: 'Confirm service termination',
+						action: 'Confirm service termination',
+					},
+					{
+						name: 'Generate NSXv Inventory',
+						value: 'generateNsxvInventory',
+						action: 'Generate ns xv inventory',
+					},
+					{
+						name: 'Generate VXLAN to vRack Mapping',
+						value: 'generateVxlanToVrackMapping',
+						action: 'Generate vxlan to v rack mapping',
 					},
 					{
 						name: 'Get',
@@ -125,16 +422,51 @@ export class OvhPrivateCloud implements INodeType {
 						action: 'Get many services',
 					},
 					{
+						name: 'Get OVH ID',
+						value: 'getOvhId',
+						description: 'Get OVH ID from object moref',
+						action: 'Get OVH ID from object moref',
+					},
+					{
 						name: 'Get Service Info',
 						value: 'getServiceInfo',
 						description: 'Get service subscription information',
 						action: 'Get service subscription information',
 					},
 					{
+						name: 'Get vCenter Version',
+						value: 'getVcenterVersion',
+						description: 'Get available vCenter versions',
+						action: 'Get available v center versions',
+					},
+					{
+						name: 'Get Vendor Information',
+						value: 'getVendor',
+						action: 'Get vendor information',
+					},
+					{
+						name: 'Get Vendor Object Type',
+						value: 'getVendorObjectType',
+						description: 'Get vendor object type from object moref',
+						action: 'Get vendor object type from object moref',
+					},
+					{
 						name: 'Update',
 						value: 'update',
 						description: 'Update service properties',
 						action: 'Update service properties',
+					},
+					{
+						name: 'Upgrade vCenter',
+						value: 'upgradeVcenter',
+						description: 'Upgrade vCenter version',
+						action: 'Upgrade v center version',
+					},
+					{
+						name: 'VMware Cloud Director Eligibility',
+						value: 'vmwareCloudDirectorEligibility',
+						description: 'Check VMware Cloud Director eligibility',
+						action: 'Check v mware cloud director eligibility',
 					},
 				],
 				default: 'get',
@@ -216,6 +548,33 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'updateTaskMaintenanceDate',
 						description: 'Update datacenter task maintenance date',
 						action: 'Update datacenter task maintenance date',
+					},
+				],
+				default: 'get',
+			},
+			// VLAN operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['vlan'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get VLAN information',
+						action: 'Get VLAN information',
+					},
+					{
+						name: 'Get Many',
+						value: 'getAll',
+						description: 'Get many VLANs',
+						action: 'Get many vla ns',
 					},
 				],
 				default: 'get',
@@ -330,6 +689,204 @@ export class OvhPrivateCloud implements INodeType {
 				],
 				default: 'get',
 			},
+			// VM Encryption operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['vmEncryption'],
+					},
+				},
+				options: [
+					{
+						name: 'Create KMS',
+						value: 'createKms',
+						description: 'Create a new KMS configuration',
+						action: 'Create a new KMS configuration',
+					},
+					{
+						name: 'Delete KMS',
+						value: 'deleteKms',
+						description: 'Delete a KMS configuration',
+						action: 'Delete a KMS configuration',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get VM encryption information',
+						action: 'Get VM encryption information',
+					},
+					{
+						name: 'Get KMS',
+						value: 'getKms',
+						description: 'Get all KMS configurations',
+						action: 'Get all KMS configurations',
+					},
+					{
+						name: 'Get KMS Configuration',
+						value: 'getKmsConfig',
+						description: 'Get specific KMS configuration',
+						action: 'Get specific KMS configuration',
+					},
+					{
+						name: 'Update KMS',
+						value: 'updateKms',
+						description: 'Update KMS configuration properties',
+						action: 'Update KMS configuration properties',
+					},
+				],
+				default: 'get',
+			},
+			// vRack operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['vrack'],
+					},
+				},
+				options: [
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete vRack association',
+						action: 'Delete v rack association',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get vRack information',
+						action: 'Get v rack information',
+					},
+					{
+						name: 'Get Many',
+						value: 'getAll',
+						description: 'Get many vRack associations',
+						action: 'Get many v rack associations',
+					},
+				],
+				default: 'get',
+			},
+			// vROps operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['vrops'],
+					},
+				},
+				options: [
+					{
+						name: 'Can Be Disabled',
+						value: 'canBeDisabled',
+						description: 'Check if vROps can be disabled',
+						action: 'Check if v r ops can be disabled',
+					},
+					{
+						name: 'Can Be Enabled',
+						value: 'canBeEnabled',
+						description: 'Check if vROps can be enabled',
+						action: 'Check if v r ops can be enabled',
+					},
+					{
+						name: 'Create Outgoing Flow',
+						value: 'createOutgoingFlow',
+						description: 'Create a new outgoing flow',
+						action: 'Create a new outgoing flow',
+					},
+					{
+						name: 'Delete Outgoing Flow',
+						value: 'deleteOutgoingFlow',
+						description: 'Delete an outgoing flow',
+						action: 'Delete an outgoing flow',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get vROps information',
+						action: 'Get v r ops information',
+					},
+					{
+						name: 'Get Outgoing Flow',
+						value: 'getOutgoingFlow',
+						description: 'Get specific outgoing flow',
+						action: 'Get specific outgoing flow',
+					},
+					{
+						name: 'Get Outgoing Flows',
+						value: 'getOutgoingFlows',
+						description: 'Get all outgoing flows',
+						action: 'Get all outgoing flows',
+					},
+					{
+						name: 'Update Outgoing Flow',
+						value: 'updateOutgoingFlow',
+						description: 'Update outgoing flow properties',
+						action: 'Update outgoing flow properties',
+					},
+					{
+						name: 'Upgrade',
+						value: 'upgrade',
+						description: 'Upgrade vROps',
+						action: 'Upgrade v r ops',
+					},
+				],
+				default: 'get',
+			},
+			// Two FA Whitelist operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['twoFAWhitelist'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						description: 'Create a new two FA whitelist entry',
+						action: 'Create a new two FA whitelist entry',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a two FA whitelist entry',
+						action: 'Delete a two FA whitelist entry',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get two FA whitelist entry information',
+						action: 'Get two FA whitelist entry information',
+					},
+					{
+						name: 'Get Many',
+						value: 'getAll',
+						description: 'Get many two FA whitelist entries',
+						action: 'Get many two FA whitelist entries',
+					},
+					{
+						name: 'Update',
+						value: 'update',
+						description: 'Update two FA whitelist entry properties',
+						action: 'Update two FA whitelist entry properties',
+					},
+				],
+				default: 'get',
+			},
 			// User operations
 			{
 				displayName: 'Operation',
@@ -343,16 +900,52 @@ export class OvhPrivateCloud implements INodeType {
 				},
 				options: [
 					{
+						name: 'Change Password',
+						value: 'changePassword',
+						description: 'Change user password',
+						action: 'Change user password',
+					},
+					{
+						name: 'Confirm Phone Number',
+						value: 'confirmPhoneNumber',
+						description: 'Confirm user phone number',
+						action: 'Confirm user phone number',
+					},
+					{
 						name: 'Create',
 						value: 'create',
 						description: 'Create a new user',
 						action: 'Create a new user',
 					},
 					{
+						name: 'Create Object Right',
+						value: 'createObjectRight',
+						description: 'Create object right for user',
+						action: 'Create object right for user',
+					},
+					{
 						name: 'Delete',
 						value: 'delete',
 						description: 'Delete a user',
 						action: 'Delete a user',
+					},
+					{
+						name: 'Delete Object Right',
+						value: 'deleteObjectRight',
+						description: 'Delete object right for user',
+						action: 'Delete object right for user',
+					},
+					{
+						name: 'Disable',
+						value: 'disable',
+						description: 'Disable user account',
+						action: 'Disable user account',
+					},
+					{
+						name: 'Enable',
+						value: 'enable',
+						description: 'Enable user account',
+						action: 'Enable user account',
 					},
 					{
 						name: 'Get',
@@ -367,10 +960,64 @@ export class OvhPrivateCloud implements INodeType {
 						action: 'Get many users',
 					},
 					{
+						name: 'Get Object Right',
+						value: 'getObjectRight',
+						description: 'Get specific object right',
+						action: 'Get specific object right',
+					},
+					{
+						name: 'Get Object Rights',
+						value: 'getObjectRights',
+						description: 'Get user object rights',
+						action: 'Get user object rights',
+					},
+					{
+						name: 'Get Right',
+						value: 'getRight',
+						description: 'Get specific user right',
+						action: 'Get specific user right',
+					},
+					{
+						name: 'Get Rights',
+						value: 'getRights',
+						description: 'Get user rights',
+						action: 'Get user rights',
+					},
+					{
+						name: 'Get Task',
+						value: 'getTask',
+						description: 'Get specific user task',
+						action: 'Get specific user task',
+					},
+					{
+						name: 'Get Tasks',
+						value: 'getTasks',
+						description: 'Get user tasks',
+						action: 'Get user tasks',
+					},
+					{
+						name: 'Reset Task State',
+						value: 'resetTaskState',
+						description: 'Reset user task state',
+						action: 'Reset user task state',
+					},
+					{
 						name: 'Update',
 						value: 'update',
 						description: 'Update user information',
 						action: 'Update user information',
+					},
+					{
+						name: 'Update Right',
+						value: 'updateRight',
+						description: 'Update user right',
+						action: 'Update user right',
+					},
+					{
+						name: 'Update Task Maintenance Date',
+						value: 'updateTaskMaintenanceDate',
+						description: 'Update task maintenance execution date',
+						action: 'Update task maintenance execution date',
 					},
 				],
 				default: 'get',
@@ -778,6 +1425,224 @@ export class OvhPrivateCloud implements INodeType {
 				],
 				default: 'get',
 			},
+			// HCX operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['hcx'],
+					},
+				},
+				options: [
+					{
+						name: 'Disable',
+						value: 'disable',
+						description: 'Disable HCX',
+						action: 'Disable HCX',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get HCX information',
+						action: 'Get HCX information',
+					},
+				],
+				default: 'get',
+			},
+			// HDS operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['hds'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get HDS information',
+						action: 'Get HDS information',
+					},
+				],
+				default: 'get',
+			},
+			// HIPAA operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['hipaa'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get HIPAA information',
+						action: 'Get HIPAA information',
+					},
+				],
+				default: 'get',
+			},
+			// IAM operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['iam'],
+					},
+				},
+				options: [
+					{
+						name: 'Add Role',
+						value: 'addRole',
+						description: 'Add IAM role',
+						action: 'Add IAM role',
+					},
+					{
+						name: 'Can Be Disabled',
+						value: 'canBeDisabled',
+						description: 'Check if IAM can be disabled',
+						action: 'Check if IAM can be disabled',
+					},
+					{
+						name: 'Can Be Enabled',
+						value: 'canBeEnabled',
+						description: 'Check if IAM can be enabled',
+						action: 'Check if IAM can be enabled',
+					},
+					{
+						name: 'Disable',
+						value: 'disable',
+						description: 'Disable IAM',
+						action: 'Disable IAM',
+					},
+					{
+						name: 'Enable',
+						value: 'enable',
+						description: 'Enable IAM',
+						action: 'Enable IAM',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get IAM information',
+						action: 'Get IAM information',
+					},
+				],
+				default: 'get',
+			},
+			// IP operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['ip'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get IP information',
+						action: 'Get IP information',
+					},
+					{
+						name: 'Get Details',
+						value: 'getDetails',
+						description: 'Get IP details',
+						action: 'Get IP details',
+					},
+					{
+						name: 'Get Many',
+						value: 'getAll',
+						description: 'Get many IPs',
+						action: 'Get many i ps',
+					},
+					{
+						name: 'Get Task',
+						value: 'getTask',
+						description: 'Get IP task',
+						action: 'Get IP task',
+					},
+					{
+						name: 'Get Tasks',
+						value: 'getTasks',
+						description: 'Get IP tasks',
+						action: 'Get IP tasks',
+					},
+					{
+						name: 'Reset Task State',
+						value: 'resetTaskState',
+						description: 'Reset IP task state',
+						action: 'Reset IP task state',
+					},
+					{
+						name: 'Update Task Maintenance Date',
+						value: 'updateTaskMaintenanceDate',
+						description: 'Update IP task maintenance date',
+						action: 'Update IP task maintenance date',
+					},
+				],
+				default: 'get',
+			},
+			// Location operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['location'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get location information',
+						action: 'Get location information',
+					},
+					{
+						name: 'Get Host Profile',
+						value: 'getHostProfile',
+						action: 'Get host profile',
+					},
+					{
+						name: 'Get Host Profiles',
+						value: 'getHostProfiles',
+						action: 'Get host profiles',
+					},
+					{
+						name: 'Get Hypervisor',
+						value: 'getHypervisor',
+						action: 'Get hypervisor',
+					},
+					{
+						name: 'Get Hypervisors',
+						value: 'getHypervisors',
+						action: 'Get hypervisors',
+					},
+				],
+				default: 'get',
+			},
 			// NSX-T Edge operations
 			{
 				displayName: 'Operation',
@@ -893,7 +1758,7 @@ export class OvhPrivateCloud implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['service'],
-						operation: ['get', 'update'],
+						operation: ['canDeployNsxtEdgesOnGlobalDatastores', 'capabilities', 'changeContact', 'checkGlobalTaskList', 'confirmTermination', 'generateNsxvInventory', 'generateVxlanToVrackMapping', 'get', 'getGlobalTasks', 'getOvhId', 'getServiceInfo', 'getVcenterVersion', 'getVendor', 'getVendorObjectType', 'update', 'upgradeVcenter', 'vmwareCloudDirectorEligibility'],
 					},
 				},
 				placeholder: 'pcc-xxx-xxx-xxx-xxx',
@@ -911,7 +1776,7 @@ export class OvhPrivateCloud implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['backup', 'cluster', 'datacenter', 'disasterRecovery', 'filer', 'host', 'nsxtEdge', 'privateGateway', 'vm', 'user', 'task'],
+						resource: ['allowedNetwork', 'backup', 'backupRepository', 'cluster', 'datacenter', 'disasterRecovery', 'filer', 'hcx', 'hds', 'hipaa', 'host', 'iam', 'ip', 'location', 'nsxtEdge', 'privateGateway', 'vm', 'user', 'task', 'twoFAWhitelist', 'vlan', 'vmEncryption', 'vrack', 'vrops'],
 					},
 				},
 				placeholder: 'pcc-xxx-xxx-xxx-xxx',
@@ -1063,6 +1928,537 @@ export class OvhPrivateCloud implements INodeType {
 					},
 				},
 				placeholder: '12345',
+			},
+			// IP network field
+			{
+				displayName: 'IP Network',
+				name: 'network',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ip'],
+						operation: ['get', 'getDetails', 'getTasks', 'getTask', 'resetTaskState', 'updateTaskMaintenanceDate'],
+					},
+				},
+				placeholder: '192.168.0.0/24',
+				description: 'The IP network in CIDR format',
+			},
+			// Task ID field for IP operations
+			{
+				displayName: 'Task ID',
+				name: 'taskId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ip'],
+						operation: ['getTask', 'resetTaskState', 'updateTaskMaintenanceDate'],
+					},
+				},
+				placeholder: '12345',
+			},
+			// Host Profile ID field
+			{
+				displayName: 'Host Profile ID',
+				name: 'hostProfileId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['location'],
+						operation: ['getHostProfile'],
+					},
+				},
+				placeholder: 'profile-ID',
+			},
+			// Hypervisor Short Name field
+			{
+				displayName: 'Hypervisor Short Name',
+				name: 'hypervisorShortName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['location'],
+						operation: ['getHypervisor'],
+					},
+				},
+				placeholder: 'vmware',
+			},
+			// IAM Grant ID field
+			{
+				displayName: 'Grant ID',
+				name: 'grantId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['iam'],
+						operation: ['addRole'],
+					},
+				},
+				placeholder: 'grant-ID',
+			},
+			// IAM Role ID field
+			{
+				displayName: 'Role ID',
+				name: 'roleId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['iam'],
+						operation: ['addRole'],
+					},
+				},
+				placeholder: 'role-ID',
+			},
+			// IAM Resource ID field
+			{
+				displayName: 'Resource ID',
+				name: 'resourceId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['iam'],
+						operation: ['addRole'],
+					},
+				},
+				placeholder: 'resource-ID',
+			},
+			// IP reset task reason field
+			{
+				displayName: 'Reason',
+				name: 'reason',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ip'],
+						operation: ['resetTaskState'],
+					},
+				},
+				placeholder: 'Reason for resetting task state',
+			},
+			// Maintenance execution date field
+			{
+				displayName: 'Maintenance Execution Date',
+				name: 'maintenanceExecutionDate',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ip'],
+						operation: ['updateTaskMaintenanceDate'],
+					},
+				},
+				placeholder: '2024-01-01T00:00:00Z',
+				description: 'The new maintenance execution date in ISO 8601 format',
+			},
+			// Two FA Whitelist ID field
+			{
+				displayName: 'Two FA Whitelist ID',
+				name: 'twoFAWhitelistId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['twoFAWhitelist'],
+						operation: ['get', 'delete', 'update'],
+					},
+				},
+				placeholder: '12345',
+			},
+			// Two FA Whitelist create/update fields
+			{
+				displayName: 'Description',
+				name: 'description',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['twoFAWhitelist'],
+						operation: ['create', 'update'],
+					},
+				},
+				placeholder: 'Admin workstation',
+			},
+			{
+				displayName: 'IP',
+				name: 'ip',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['twoFAWhitelist'],
+						operation: ['create'],
+					},
+				},
+				placeholder: '192.168.1.100',
+				description: 'IP address to whitelist',
+			},
+			// VLAN ID field
+			{
+				displayName: 'VLAN ID',
+				name: 'vlanId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vlan'],
+						operation: ['get'],
+					},
+				},
+				placeholder: '10',
+			},
+			// VM Encryption KMS fields
+			{
+				displayName: 'KMS ID',
+				name: 'kmsId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vmEncryption'],
+						operation: ['getKmsConfig', 'deleteKms', 'updateKms'],
+					},
+				},
+				placeholder: '12345',
+			},
+			{
+				displayName: 'IP',
+				name: 'ip',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vmEncryption'],
+						operation: ['createKms'],
+					},
+				},
+				placeholder: '192.168.1.100',
+				description: 'KMS server IP address',
+			},
+			{
+				displayName: 'Port',
+				name: 'port',
+				type: 'number',
+				default: 5696,
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vmEncryption'],
+						operation: ['createKms'],
+					},
+				},
+				description: 'KMS server port',
+			},
+			{
+				displayName: 'SSL Thumbprint',
+				name: 'sslThumbprint',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vmEncryption'],
+						operation: ['createKms'],
+					},
+				},
+				placeholder: 'XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX',
+				description: 'KMS server SSL certificate thumbprint',
+			},
+			// VM Encryption KMS update fields
+			{
+				displayName: 'IP',
+				name: 'ip',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['vmEncryption'],
+						operation: ['updateKms'],
+					},
+				},
+				placeholder: '192.168.1.100',
+				description: 'KMS server IP address (optional)',
+			},
+			{
+				displayName: 'Port',
+				name: 'port',
+				type: 'number',
+				default: 5696,
+				displayOptions: {
+					show: {
+						resource: ['vmEncryption'],
+						operation: ['updateKms'],
+					},
+				},
+				description: 'KMS server port (optional)',
+			},
+			{
+				displayName: 'SSL Thumbprint',
+				name: 'sslThumbprint',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['vmEncryption'],
+						operation: ['updateKms'],
+					},
+				},
+				placeholder: 'XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX',
+				description: 'KMS server SSL certificate thumbprint (optional)',
+			},
+			// vRack fields
+			{
+				displayName: 'vRack',
+				name: 'vrack',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vrack'],
+						operation: ['get', 'delete'],
+					},
+				},
+				placeholder: 'pn-123456',
+				description: 'The vRack identifier',
+			},
+			// vROps outgoing flow fields
+			{
+				displayName: 'Outgoing Flow ID',
+				name: 'outgoingFlowId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vrops'],
+						operation: ['getOutgoingFlow', 'deleteOutgoingFlow', 'updateOutgoingFlow'],
+					},
+				},
+				placeholder: '12345',
+			},
+			{
+				displayName: 'Collector Type',
+				name: 'collectorType',
+				type: 'options',
+				options: [
+					{
+						name: 'SYSLOG',
+						value: 'SYSLOG',
+					},
+					{
+						name: 'KAFKA',
+						value: 'KAFKA',
+					},
+				],
+				default: 'SYSLOG',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vrops'],
+						operation: ['createOutgoingFlow'],
+					},
+				},
+				description: 'Type of collector to create',
+			},
+			{
+				displayName: 'Host',
+				name: 'host',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vrops'],
+						operation: ['createOutgoingFlow'],
+					},
+				},
+				placeholder: 'collector.example.com',
+				description: 'Collector host address',
+			},
+			{
+				displayName: 'Port',
+				name: 'port',
+				type: 'number',
+				default: 514,
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vrops'],
+						operation: ['createOutgoingFlow'],
+					},
+				},
+				description: 'Collector port',
+			},
+			// vROps outgoing flow update fields
+			{
+				displayName: 'Host',
+				name: 'host',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['vrops'],
+						operation: ['updateOutgoingFlow'],
+					},
+				},
+				placeholder: 'collector.example.com',
+				description: 'Collector host address (optional)',
+			},
+			{
+				displayName: 'Port',
+				name: 'port',
+				type: 'number',
+				default: 514,
+				displayOptions: {
+					show: {
+						resource: ['vrops'],
+						operation: ['updateOutgoingFlow'],
+					},
+				},
+				description: 'Collector port (optional)',
+			},
+			// User operation fields
+			{
+				displayName: 'Object Right ID',
+				name: 'objectRightId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['getObjectRight', 'deleteObjectRight'],
+					},
+				},
+				placeholder: '12345',
+			},
+			{
+				displayName: 'Right ID',
+				name: 'rightId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['getRight', 'updateRight'],
+					},
+				},
+				placeholder: '12345',
+			},
+			{
+				displayName: 'Password',
+				name: 'password',
+				type: 'string',
+				typeOptions: {
+					password: true,
+				},
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['changePassword'],
+					},
+				},
+				placeholder: 'New password',
+			},
+			{
+				displayName: 'Token',
+				name: 'token',
+				type: 'string',
+				typeOptions: { password: true },
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['confirmPhoneNumber'],
+					},
+				},
+				placeholder: 'Confirmation token',
+			},
+			// User task fields
+			{
+				displayName: 'Task ID',
+				name: 'taskId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['getTask', 'updateTaskMaintenanceDate', 'resetTaskState'],
+					},
+				},
+				placeholder: '12345',
+			},
+			{
+				displayName: 'Maintenance Execution Date',
+				name: 'maintenanceExecutionDate',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['updateTaskMaintenanceDate'],
+					},
+				},
+				placeholder: '2024-01-01T00:00:00Z',
+				description: 'The new maintenance execution date in ISO 8601 format',
+			},
+			{
+				displayName: 'Reason',
+				name: 'reason',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['resetTaskState'],
+					},
+				},
+				placeholder: 'Reason for resetting task state',
+			},
+			// Vendor object type fields
+			{
+				displayName: 'Managed Object Reference',
+				name: 'managedObjectReference',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['service'],
+						operation: ['getVendorObjectType', 'getOvhId'],
+					},
+				},
+				placeholder: 'vm-1234',
+				description: 'The VMware managed object reference',
 			},
 			// User creation fields
 			{
@@ -1535,6 +2931,80 @@ export class OvhPrivateCloud implements INodeType {
 					},
 				},
 				description: 'Reason for adding host spare',
+			},
+			// Network Access ID field
+			{
+				displayName: 'Network Access ID',
+				name: 'networkAccessId',
+				type: 'number',
+				default: 0,
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['allowedNetwork'],
+						operation: ['get', 'delete'],
+					},
+				},
+			},
+			// Network field for allowed network
+			{
+				displayName: 'Network',
+				name: 'network',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['allowedNetwork'],
+						operation: ['create'],
+					},
+				},
+				placeholder: '192.168.1.0/24',
+				description: 'Network CIDR',
+			},
+			// Description field for allowed network
+			{
+				displayName: 'Description',
+				name: 'description',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['allowedNetwork'],
+						operation: ['create'],
+					},
+				},
+				description: 'Network description (optional)',
+			},
+			// Repository ID field
+			{
+				displayName: 'Repository ID',
+				name: 'repositoryId',
+				type: 'number',
+				default: 0,
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['backupRepository'],
+						operation: ['get'],
+					},
+				},
+				description: 'Backup repository ID',
+			},
+			// Commercial Range Name field
+			{
+				displayName: 'Commercial Range Name',
+				name: 'commercialRangeName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['global', 'commercialRange'],
+						operation: ['getCommercialRange', 'getCompliance'],
+					},
+				},
+				placeholder: 'SDDC',
 			},
 		],
 	};
@@ -2441,7 +3911,21 @@ export class OvhPrivateCloud implements INodeType {
 				let body: IDataObject = {};
 
 				if (resource === 'service') {
-					if (operation === 'get') {
+					if (operation === 'canDeployNsxtEdgesOnGlobalDatastores') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/canDeployNsxtEdgesOnGlobalDatastores`;
+					} else if (operation === 'capabilities') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/capabilities`;
+					} else if (operation === 'changeContact') {
+						method = 'POST';
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/changeContact`;
+					} else if (operation === 'confirmTermination') {
+						method = 'POST';
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/confirmTermination`;
+					} else if (operation === 'get') {
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}`;
 					} else if (operation === 'getAll') {
@@ -2468,6 +3952,77 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'getGlobalTasks') {
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/globalTasks`;
+					} else if (operation === 'upgradeVcenter') {
+						method = 'POST';
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/upgradeVcenter`;
+					} else if (operation === 'getVcenterVersion') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/vcenterVersion`;
+					} else if (operation === 'getVendor') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/vendor`;
+					} else if (operation === 'getVendorObjectType') {
+						method = 'POST';
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						const managedObjectReference = this.getNodeParameter('managedObjectReference', i) as string;
+						path = `/dedicatedCloud/${serviceName}/vendor/objectType`;
+						body = { managedObjectReference };
+					} else if (operation === 'getOvhId') {
+						method = 'POST';
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						const managedObjectReference = this.getNodeParameter('managedObjectReference', i) as string;
+						path = `/dedicatedCloud/${serviceName}/vendor/ovhId`;
+						body = { managedObjectReference };
+					} else if (operation === 'vmwareCloudDirectorEligibility') {
+						method = 'POST';
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/vmwareCloudDirectorEligibility`;
+					}
+				} else if (resource === 'global') {
+					if (operation === 'getAllServices') {
+						path = '/dedicatedCloud';
+					} else if (operation === 'getCommercialRanges') {
+						path = '/dedicatedCloud/commercialRange';
+					} else if (operation === 'getCommercialRange') {
+						const commercialRangeName = this.getNodeParameter('commercialRangeName', i) as string;
+						path = `/dedicatedCloud/commercialRange/${commercialRangeName}`;
+					} else if (operation === 'getLocations') {
+						path = '/dedicatedCloud/location';
+					}
+				} else if (resource === 'allowedNetwork') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getAll') {
+						path = `/dedicatedCloud/${serviceName}/allowedNetwork`;
+					} else if (operation === 'get') {
+						const networkAccessId = parseInt(this.getNodeParameter('networkAccessId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/allowedNetwork/${networkAccessId}`;
+					} else if (operation === 'create') {
+						method = 'POST';
+						const network = this.getNodeParameter('network', i) as string;
+						const description = this.getNodeParameter('description', i) as string;
+						path = `/dedicatedCloud/${serviceName}/allowedNetwork`;
+						body = { network };
+						if (description) body.description = description;
+					} else if (operation === 'delete') {
+						method = 'DELETE';
+						const networkAccessId = parseInt(this.getNodeParameter('networkAccessId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/allowedNetwork/${networkAccessId}`;
+					}
+				} else if (resource === 'backupRepository') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getAll') {
+						path = `/dedicatedCloud/${serviceName}/backupRepository`;
+					} else if (operation === 'get') {
+						const repositoryId = parseInt(this.getNodeParameter('repositoryId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/backupRepository/${repositoryId}`;
+					}
+				} else if (resource === 'commercialRange') {
+					if (operation === 'getCompliance') {
+						const commercialRangeName = this.getNodeParameter('commercialRangeName', i) as string;
+						path = `/dedicatedCloud/commercialRange/${commercialRangeName}/compliance`;
+					} else if (operation === 'getOrderable') {
+						path = '/dedicatedCloud/commercialRange/orderable';
 					}
 				} else if (resource === 'datacenter') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
@@ -2624,6 +4179,77 @@ export class OvhPrivateCloud implements INodeType {
 						if (updateFields.email) body.email = updateFields.email;
 						if (updateFields.fullName) body.fullName = updateFields.fullName;
 						if (updateFields.phoneNumber) body.phoneNumber = updateFields.phoneNumber;
+					} else if (operation === 'changePassword') {
+						method = 'POST';
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const password = this.getNodeParameter('password', i) as string;
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/changePassword`;
+						body = { password };
+					} else if (operation === 'confirmPhoneNumber') {
+						method = 'POST';
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const token = this.getNodeParameter('token', i) as string;
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/confirmPhoneNumber`;
+						body = { token };
+					} else if (operation === 'disable') {
+						method = 'POST';
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/disable`;
+					} else if (operation === 'enable') {
+						method = 'POST';
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/enable`;
+					} else if (operation === 'getObjectRights') {
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/objectRight`;
+					} else if (operation === 'getObjectRight') {
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const objectRightId = parseInt(this.getNodeParameter('objectRightId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/objectRight/${objectRightId}`;
+					} else if (operation === 'createObjectRight') {
+						method = 'POST';
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/objectRight`;
+						// TODO: Add object right creation parameters
+					} else if (operation === 'deleteObjectRight') {
+						method = 'DELETE';
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const objectRightId = parseInt(this.getNodeParameter('objectRightId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/objectRight/${objectRightId}`;
+					} else if (operation === 'getRights') {
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/right`;
+					} else if (operation === 'getRight') {
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const rightId = parseInt(this.getNodeParameter('rightId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/right/${rightId}`;
+					} else if (operation === 'updateRight') {
+						method = 'PUT';
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const rightId = parseInt(this.getNodeParameter('rightId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/right/${rightId}`;
+						// TODO: Add right update parameters
+					} else if (operation === 'getTasks') {
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/task`;
+					} else if (operation === 'getTask') {
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const taskId = parseInt(this.getNodeParameter('taskId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/task/${taskId}`;
+					} else if (operation === 'updateTaskMaintenanceDate') {
+						method = 'POST';
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const taskId = parseInt(this.getNodeParameter('taskId', i) as string, 10);
+						const maintenanceExecutionDate = this.getNodeParameter('maintenanceExecutionDate', i) as string;
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/task/${taskId}/changeMaintenanceExecutionDate`;
+						body = { maintenanceExecutionDate };
+					} else if (operation === 'resetTaskState') {
+						method = 'POST';
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const taskId = parseInt(this.getNodeParameter('taskId', i) as string, 10);
+						const reason = this.getNodeParameter('reason', i) as string;
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/task/${taskId}/resetTaskState`;
+						body = { reason };
 					}
 				} else if (resource === 'task') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
@@ -2911,6 +4537,223 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'disable') {
 						method = 'POST';
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/privateGateway/disable`;
+					}
+				} else if (resource === 'hcx') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'get') {
+						path = `/dedicatedCloud/${serviceName}/hcx`;
+					} else if (operation === 'disable') {
+						method = 'POST';
+						path = `/dedicatedCloud/${serviceName}/hcx/disable`;
+					}
+				} else if (resource === 'hds') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'get') {
+						path = `/dedicatedCloud/${serviceName}/hds`;
+					}
+				} else if (resource === 'hipaa') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'get') {
+						path = `/dedicatedCloud/${serviceName}/hipaa`;
+					}
+				} else if (resource === 'iam') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'get') {
+						path = `/dedicatedCloud/${serviceName}/iam`;
+					} else if (operation === 'addRole') {
+						method = 'POST';
+						const grantId = this.getNodeParameter('grantId', i) as string;
+						const roleId = this.getNodeParameter('roleId', i) as string;
+						const resourceId = this.getNodeParameter('resourceId', i) as string;
+						path = `/dedicatedCloud/${serviceName}/iam`;
+						body = {
+							grantId,
+							roleId,
+							resourceId,
+						};
+					} else if (operation === 'canBeDisabled') {
+						path = `/dedicatedCloud/${serviceName}/iam/canBeDisabled`;
+					} else if (operation === 'canBeEnabled') {
+						path = `/dedicatedCloud/${serviceName}/iam/canBeEnabled`;
+					} else if (operation === 'disable') {
+						method = 'POST';
+						path = `/dedicatedCloud/${serviceName}/iam/disable`;
+					} else if (operation === 'enable') {
+						method = 'POST';
+						path = `/dedicatedCloud/${serviceName}/iam/enable`;
+					}
+				} else if (resource === 'ip') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getAll') {
+						path = `/dedicatedCloud/${serviceName}/ip`;
+					} else if (operation === 'get') {
+						const network = encodeURIComponent(this.getNodeParameter('network', i) as string);
+						path = `/dedicatedCloud/${serviceName}/ip/${network}`;
+					} else if (operation === 'getDetails') {
+						const network = encodeURIComponent(this.getNodeParameter('network', i) as string);
+						path = `/dedicatedCloud/${serviceName}/ip/${network}/details`;
+					} else if (operation === 'getTasks') {
+						const network = encodeURIComponent(this.getNodeParameter('network', i) as string);
+						path = `/dedicatedCloud/${serviceName}/ip/${network}/task`;
+					} else if (operation === 'getTask') {
+						const network = encodeURIComponent(this.getNodeParameter('network', i) as string);
+						const taskId = parseInt(this.getNodeParameter('taskId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/ip/${network}/task/${taskId}`;
+					} else if (operation === 'resetTaskState') {
+						method = 'POST';
+						const network = encodeURIComponent(this.getNodeParameter('network', i) as string);
+						const taskId = parseInt(this.getNodeParameter('taskId', i) as string, 10);
+						const reason = this.getNodeParameter('reason', i) as string;
+						path = `/dedicatedCloud/${serviceName}/ip/${network}/task/${taskId}/resetTaskState`;
+						body = { reason };
+					} else if (operation === 'updateTaskMaintenanceDate') {
+						method = 'POST';
+						const network = encodeURIComponent(this.getNodeParameter('network', i) as string);
+						const taskId = parseInt(this.getNodeParameter('taskId', i) as string, 10);
+						const maintenanceExecutionDate = this.getNodeParameter('maintenanceExecutionDate', i) as string;
+						path = `/dedicatedCloud/${serviceName}/ip/${network}/task/${taskId}/changeMaintenanceExecutionDate`;
+						body = { maintenanceExecutionDate };
+					}
+				} else if (resource === 'location') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'get') {
+						path = `/dedicatedCloud/${serviceName}/location`;
+					} else if (operation === 'getHostProfiles') {
+						path = `/dedicatedCloud/${serviceName}/location/hostprofile`;
+					} else if (operation === 'getHostProfile') {
+						const hostProfileId = parseInt(this.getNodeParameter('hostProfileId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/location/hostprofile/${hostProfileId}`;
+					} else if (operation === 'getHypervisors') {
+						path = `/dedicatedCloud/${serviceName}/location/hypervisor`;
+					} else if (operation === 'getHypervisor') {
+						const hypervisorShortName = this.getNodeParameter('hypervisorShortName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/location/hypervisor/${hypervisorShortName}`;
+					}
+				} else if (resource === 'twoFAWhitelist') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getAll') {
+						path = `/dedicatedCloud/${serviceName}/twoFAWhitelist`;
+					} else if (operation === 'get') {
+						const twoFAWhitelistId = parseInt(this.getNodeParameter('twoFAWhitelistId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/twoFAWhitelist/${twoFAWhitelistId}`;
+					} else if (operation === 'create') {
+						method = 'POST';
+						const ip = this.getNodeParameter('ip', i) as string;
+						const description = this.getNodeParameter('description', i) as string;
+						path = `/dedicatedCloud/${serviceName}/twoFAWhitelist`;
+						body = { ip, description };
+					} else if (operation === 'delete') {
+						method = 'DELETE';
+						const twoFAWhitelistId = parseInt(this.getNodeParameter('twoFAWhitelistId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/twoFAWhitelist/${twoFAWhitelistId}`;
+					} else if (operation === 'update') {
+						method = 'POST';
+						const twoFAWhitelistId = parseInt(this.getNodeParameter('twoFAWhitelistId', i) as string, 10);
+						const description = this.getNodeParameter('description', i) as string;
+						path = `/dedicatedCloud/${serviceName}/twoFAWhitelist/${twoFAWhitelistId}/changeProperties`;
+						body = { description };
+					}
+				} else if (resource === 'vlan') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getAll') {
+						path = `/dedicatedCloud/${serviceName}/vlan`;
+					} else if (operation === 'get') {
+						const vlanId = parseInt(this.getNodeParameter('vlanId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/vlan/${vlanId}`;
+					}
+				} else if (resource === 'vmEncryption') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'get') {
+						path = `/dedicatedCloud/${serviceName}/vmEncryption`;
+					} else if (operation === 'getKms') {
+						path = `/dedicatedCloud/${serviceName}/vmEncryption/kms`;
+					} else if (operation === 'getKmsConfig') {
+						const kmsId = parseInt(this.getNodeParameter('kmsId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/vmEncryption/kms/${kmsId}`;
+					} else if (operation === 'createKms') {
+						method = 'POST';
+						const ip = this.getNodeParameter('ip', i) as string;
+						const port = this.getNodeParameter('port', i) as number;
+						const sslThumbprint = this.getNodeParameter('sslThumbprint', i) as string;
+						path = `/dedicatedCloud/${serviceName}/vmEncryption/kms`;
+						body = { ip, port, sslThumbprint };
+					} else if (operation === 'deleteKms') {
+						method = 'DELETE';
+						const kmsId = parseInt(this.getNodeParameter('kmsId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/vmEncryption/kms/${kmsId}`;
+					} else if (operation === 'updateKms') {
+						method = 'POST';
+						const kmsId = parseInt(this.getNodeParameter('kmsId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/vmEncryption/kms/${kmsId}/changeProperties`;
+						
+						// Only add properties that are provided
+						const ip = this.getNodeParameter('ip', i, '') as string;
+						const port = this.getNodeParameter('port', i, 0) as number;
+						const sslThumbprint = this.getNodeParameter('sslThumbprint', i, '') as string;
+						
+						if (ip) body.ip = ip;
+						if (port) body.port = port;
+						if (sslThumbprint) body.sslThumbprint = sslThumbprint;
+					}
+				} else if (resource === 'vrack') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getAll') {
+						path = `/dedicatedCloud/${serviceName}/vrack`;
+					} else if (operation === 'get') {
+						const vrack = this.getNodeParameter('vrack', i) as string;
+						path = `/dedicatedCloud/${serviceName}/vrack/${vrack}`;
+					} else if (operation === 'delete') {
+						method = 'DELETE';
+						const vrack = this.getNodeParameter('vrack', i) as string;
+						path = `/dedicatedCloud/${serviceName}/vrack/${vrack}`;
+					}
+				} else if (resource === 'vrops') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'get') {
+						path = `/dedicatedCloud/${serviceName}/vrops`;
+					} else if (operation === 'canBeDisabled') {
+						path = `/dedicatedCloud/${serviceName}/vrops/canBeDisabled`;
+					} else if (operation === 'canBeEnabled') {
+						path = `/dedicatedCloud/${serviceName}/vrops/canBeEnabled`;
+					} else if (operation === 'getOutgoingFlows') {
+						path = `/dedicatedCloud/${serviceName}/vrops/outgoingFlow`;
+					} else if (operation === 'getOutgoingFlow') {
+						const outgoingFlowId = parseInt(this.getNodeParameter('outgoingFlowId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/vrops/outgoingFlow/${outgoingFlowId}`;
+					} else if (operation === 'createOutgoingFlow') {
+						method = 'POST';
+						const collectorType = this.getNodeParameter('collectorType', i) as string;
+						const host = this.getNodeParameter('host', i) as string;
+						const port = this.getNodeParameter('port', i) as number;
+						path = `/dedicatedCloud/${serviceName}/vrops/outgoingFlow`;
+						body = { collectorType, host, port };
+					} else if (operation === 'deleteOutgoingFlow') {
+						method = 'DELETE';
+						const outgoingFlowId = parseInt(this.getNodeParameter('outgoingFlowId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/vrops/outgoingFlow/${outgoingFlowId}`;
+					} else if (operation === 'updateOutgoingFlow') {
+						method = 'POST';
+						const outgoingFlowId = parseInt(this.getNodeParameter('outgoingFlowId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/vrops/outgoingFlow/${outgoingFlowId}/changeProperties`;
+						
+						// Only add properties that are provided
+						const host = this.getNodeParameter('host', i, '') as string;
+						const port = this.getNodeParameter('port', i, 0) as number;
+						
+						if (host) body.host = host;
+						if (port) body.port = port;
+					} else if (operation === 'upgrade') {
+						method = 'POST';
+						path = `/dedicatedCloud/${serviceName}/vrops/upgrade`;
+					}
+				} else if (resource === 'service') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'generateNsxvInventory') {
+						method = 'POST';
+						path = `/dedicatedCloud/${serviceName}/generateNsxvInventory`;
+					} else if (operation === 'generateVxlanToVrackMapping') {
+						method = 'POST';
+						path = `/dedicatedCloud/${serviceName}/generateVxlanToVrackMapping`;
 					}
 				}
 

@@ -523,6 +523,44 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.11.5 - July 2025
+- **🌍 Global Operations & Final Expansion** - Added comprehensive global operations and new resource management:
+  - **Global Operations**: Added global dedicated cloud operations without serviceName requirement (get all services, commercial ranges, locations)
+  - **Allowed Network**: Complete network access management (create, get, delete with proper CIDR validation)
+  - **Backup Repository**: Backup repository information retrieval (get single, get all repositories)
+  - **Commercial Range**: Commercial range compliance checking and orderable ranges listing
+  - **Enhanced Service Operations**: Added capabilities check, contact change, termination confirmation, and NSX-T edge deployment validation
+  - All new operations include proper field definitions, parameter validation, and complete execute logic
+
+### Version 0.11.4 - July 2025
+- **🚀 Third massive expansion of OVH Private Cloud node** - Added complete VM encryption, vRack and vROps management:
+  - **VM Encryption enhancements**: Added delete KMS and update KMS operations with changeProperties endpoint
+  - **vRack**: Complete vRack management (get all, get specific, delete association)
+  - **vROps**: Full vROps management including outgoing flows (create, get, update, delete), can be enabled/disabled checks, and upgrade
+  - **Enhanced Service operations**: Added VMware Cloud Director eligibility check
+  - All new operations include proper field definitions, parameter validation, and complete execute logic
+
+### Version 0.11.3 - July 2025
+- **🚀 Second massive expansion of OVH Private Cloud node** - Added even more comprehensive operations:
+  - **Two FA Whitelist**: Complete 2FA whitelist management (create, get, update, delete)
+  - **VLAN**: Get VLAN information and list all VLANs
+  - **VM Encryption**: Full VM encryption management with KMS configuration
+  - **Enhanced Service operations**: Added vCenter upgrade, version check, vendor information, and object type mapping
+  - **Enhanced User operations**: Added password change, phone confirmation, enable/disable, object rights, rights management, and user task operations
+  - All new operations include proper field definitions, parameter validation, and execute logic
+
+### Version 0.11.2 - July 2025
+- **🚀 Massive expansion of OVH Private Cloud node** - Added comprehensive datacenter operations:
+  - **HCX**: Get status and disable HCX functionality
+  - **HDS**: Get HDS (Healthcare Data Security) certification status
+  - **HIPAA**: Get HIPAA compliance certification status
+  - **IAM**: Identity and Access Management with role operations
+  - **IP**: Complete IP block management with task operations
+  - **Location**: Get datacenter location, host profiles, and hypervisors
+  - **Service**: Generate NSXv inventory and VXLAN to vRack mapping
+  - **Filer operations**: Comprehensive existing operations now properly integrated
+  - All new operations include proper field definitions and execute logic
+
 ### Version 0.11.1 - July 2025
 - **🔧 OVH Private Cloud fixes and additions** - Corrected endpoint paths and added missing operations:
   - **Fixed endpoint paths**: Changed from `updateMaintenanceExecutionDate` to `changeMaintenanceExecutionDate`
