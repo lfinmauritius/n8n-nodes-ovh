@@ -1343,6 +1343,48 @@ export class OvhAi implements INodeType {
 				},
 				description: 'Number of days to retain backups',
 			},
+			// Data Sync fields
+			{
+				displayName: 'Direction',
+				name: 'dataSyncDirection',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['dataSync'],
+					},
+				},
+				options: [
+					{
+						name: 'Pull',
+						value: 'pull',
+						description: 'Pull data from volume to notebook',
+					},
+					{
+						name: 'Push',
+						value: 'push',
+						description: 'Push data from notebook to volume',
+					},
+				],
+				default: 'pull',
+				required: true,
+				description: 'Direction of the data synchronization',
+			},
+			{
+				displayName: 'Volume ID',
+				name: 'dataSyncVolume',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['dataSync'],
+					},
+				},
+				default: '',
+				required: true,
+				placeholder: '19846e28-3d00-4000-8bf4-813781af5801',
+				description: 'ID of the volume to synchronize',
+			},
 			// Command fields
 			{
 				displayName: 'Command',
@@ -2684,7 +2726,15 @@ export class OvhAi implements INodeType {
 					} else if (operation === 'dataSync') {
 						method = 'POST';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
+						const direction = this.getNodeParameter('dataSyncDirection', i) as string;
+						const volume = (this.getNodeParameter('dataSyncVolume', i) as string).trim();
 						path = `/cloud/project/${projectId}/ai/notebook/${notebookId}/datasync`;
+						
+						// Set the body with required parameters
+						body = {
+							direction: direction,
+							volume: volume
+						};
 					} else if (operation === 'updateLabels') {
 						method = 'PUT';
 						const notebookId = (this.getNodeParameter('notebookId', i) as string).trim();
