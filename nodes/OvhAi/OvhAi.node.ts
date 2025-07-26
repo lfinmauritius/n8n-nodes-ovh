@@ -1014,8 +1014,8 @@ export class OvhAi implements INodeType {
 			},
 			// Notebook creation fields
 			{
-				displayName: 'Notebook Framework',
-				name: 'framework',
+				displayName: 'Editor',
+				name: 'editorId',
 				type: 'options',
 				displayOptions: {
 					show: {
@@ -1037,8 +1037,8 @@ export class OvhAi implements INodeType {
 						value: 'vscode',
 					},
 				],
-				default: 'jupyter',
-				description: 'The notebook framework to use',
+				default: 'jupyterlab',
+				description: 'The notebook editor to use',
 			},
 			// Notebook additional parameters
 			{
@@ -1073,6 +1073,24 @@ export class OvhAi implements INodeType {
 					},
 				},
 				description: 'The region where to deploy the notebook (automatically loaded based on project). Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+			{
+				displayName: 'Framework Name or ID',
+				name: 'frameworkId',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getNotebookFrameworks',
+					loadOptionsDependsOn: ['projectId', 'notebookRegion', 'editorId'],
+				},
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['notebook'],
+						operation: ['create'],
+					},
+				},
+				description: 'The framework for the notebook (automatically loaded based on editor and region). Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
 				displayName: 'Flavor Name or ID',
@@ -1358,6 +1376,97 @@ export class OvhAi implements INodeType {
 
 	methods = {
 		loadOptions: {
+			async getNotebookFrameworks(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					const projectId = this.getNodeParameter('projectId') as string;
+					const region = this.getNodeParameter('notebookRegion') as string;
+					const editorId = this.getNodeParameter('editorId') as string;
+					
+					if (!projectId || !region) {
+						return [{
+							name: 'Please Select a Project and Region First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Build the request
+					const path = `/cloud/project/${projectId}/ai/capabilities/region/${region}/notebook/framework`;
+					const method = 'GET' as IHttpRequestMethods;
+					const timestamp = Math.round(Date.now() / 1000);
+					const fullUrl = `${endpoint}${path}`;
+
+					// Generate signature
+					const signatureElements = [
+						applicationSecret,
+						consumerKey,
+						method,
+						fullUrl,
+						'',
+						timestamp,
+					];
+
+					const signature = '$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
+
+					const headers = {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Consumer': consumerKey,
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Timestamp': timestamp.toString(),
+					};
+
+					const options: IRequestOptions = {
+						method,
+						url: fullUrl,
+						headers,
+						json: true,
+					};
+
+					const responseData = await this.helpers.request(options);
+					
+					// Process the response to extract frameworks
+					if (Array.isArray(responseData)) {
+						for (const framework of responseData) {
+							// Filter frameworks by editorId if selected
+							if (editorId && framework.docUrl && framework.docUrl.includes(editorId)) {
+								const name = `${framework.name} (${framework.version})`;
+								const value = framework.id;
+								returnData.push({
+									name,
+									value,
+								});
+							} else if (!editorId) {
+								// If no editor selected, show all frameworks
+								const name = `${framework.name} (${framework.version})`;
+								const value = framework.id;
+								returnData.push({
+									name,
+									value,
+								});
+							}
+						}
+					}
+					
+					returnData.sort((a, b) => a.name.localeCompare(b.name));
+					
+				} catch (error) {
+					console.error('Error loading frameworks:', error);
+					return [{
+						name: 'Error Loading Frameworks',
+						value: '',
+					}];
+				}
+
+				return returnData;
+			},
+			
 			async getNotebookFlavors(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
 				
@@ -2411,7 +2520,8 @@ export class OvhAi implements INodeType {
 						path = `/cloud/project/${projectId}/ai/notebook`;
 					} else if (operation === 'create') {
 						method = 'POST';
-						const framework = this.getNodeParameter('framework', i) as string;
+						const editorId = this.getNodeParameter('editorId', i) as string;
+						const frameworkId = (this.getNodeParameter('frameworkId', i) as string).trim();
 						const flavor = (this.getNodeParameter('flavor', i) as string).trim();
 						const notebookName = (this.getNodeParameter('notebookName', i) as string).trim();
 						const notebookRegion = (this.getNodeParameter('notebookRegion', i) as string).trim();
@@ -2435,7 +2545,8 @@ export class OvhAi implements INodeType {
 						
 						// Build the request body directly at root level (no spec wrapper)
 						const envObject: any = {
-							editorId: framework
+							editorId: editorId,
+							frameworkId: frameworkId // Use the selected framework ID from API
 						};
 						
 						// Use custom framework version if provided
@@ -2454,11 +2565,21 @@ export class OvhAi implements INodeType {
 						if (additionalFields.volumes) {
 							const volumesArray = (additionalFields.volumes as any).volume || [];
 							if (volumesArray.length > 0) {
-								body.volumes = volumesArray.map((vol: any) => ({
-									container: vol.container,
-									mountPath: vol.mountPath,
-									permission: 'RW'
-								}));
+								body.volumes = volumesArray.map((vol: any) => {
+									const volume: any = {
+										mountPath: vol.mountPath,
+										permission: 'RW'
+									};
+									
+									// Add dataStore configuration for object storage volumes
+									if (vol.container) {
+										volume.dataStore = {
+											container: vol.container
+										};
+									}
+									
+									return volume;
+								});
 							}
 						}
 						
@@ -2483,7 +2604,11 @@ export class OvhAi implements INodeType {
 						if (additionalFields.envVars) {
 							const envVarsArray = (additionalFields.envVars as any).variable || [];
 							if (envVarsArray.length > 0) {
-								body.envVars = envVarsArray;
+								// Format envVars correctly with name and value properties
+								body.envVars = envVarsArray.map((envVar: any) => ({
+									name: envVar.name,
+									value: envVar.value
+								}));
 							}
 						}
 						
