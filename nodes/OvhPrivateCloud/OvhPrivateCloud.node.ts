@@ -373,6 +373,12 @@ export class OvhPrivateCloud implements INodeType {
 						action: 'Change service contact',
 					},
 					{
+						name: 'Change Properties',
+						value: 'changeProperties',
+						description: 'Update service properties',
+						action: 'Update service properties',
+					},
+					{
 						name: 'Check Global Task List',
 						value: 'checkGlobalTaskList',
 						action: 'Check global task list',
@@ -1980,7 +1986,7 @@ export class OvhPrivateCloud implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['service'],
-						operation: ['canDeployNsxtEdgesOnGlobalDatastores', 'capabilities', 'changeContact', 'checkGlobalTaskList', 'confirmTermination', 'generateNsxvInventory', 'generateVxlanToVrackMapping', 'get', 'getCommercialRangeCompliance', 'getCommercialRangeOrderable', 'getGlobalTasks', 'getNewPrices', 'getNsx', 'getNsxt', 'getOrderableIpCountries', 'getOvhId', 'getPasswordPolicy', 'getPcidss', 'getServiceInfo', 'getVcenterVersion', 'getVendor', 'getVendorObjectType', 'orderNewFilerHourly', 'resetTriggeredAlarm', 'terminate', 'update', 'upgradeVcenter', 'vmwareCloudDirectorEligibility'],
+						operation: ['canDeployNsxtEdgesOnGlobalDatastores', 'capabilities', 'changeContact', 'changeProperties', 'checkGlobalTaskList', 'confirmTermination', 'generateNsxvInventory', 'generateVxlanToVrackMapping', 'get', 'getCommercialRangeCompliance', 'getCommercialRangeOrderable', 'getGlobalTasks', 'getNewPrices', 'getNsx', 'getNsxt', 'getOrderableIpCountries', 'getOvhId', 'getPasswordPolicy', 'getPcidss', 'getServiceInfo', 'getVcenterVersion', 'getVendor', 'getVendorObjectType', 'orderNewFilerHourly', 'resetTriggeredAlarm', 'terminate', 'update', 'upgradeVcenter', 'vmwareCloudDirectorEligibility'],
 					},
 				},
 				placeholder: 'pcc-xxx-xxx-xxx-xxx',
@@ -2682,6 +2688,232 @@ export class OvhPrivateCloud implements INodeType {
 				placeholder: 'vm-1234',
 				description: 'The VMware managed object reference',
 			},
+			// Service changeContact fields
+			{
+				displayName: 'Contact Admin',
+				name: 'contactAdmin',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['service'],
+						operation: ['changeContact'],
+					},
+				},
+				placeholder: 'admin-account-ID',
+				description: 'The contact to set as admin contact',
+			},
+			{
+				displayName: 'Contact Billing',
+				name: 'contactBilling',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['service'],
+						operation: ['changeContact'],
+					},
+				},
+				placeholder: 'billing-account-ID',
+				description: 'The contact to set as billing contact',
+			},
+			{
+				displayName: 'Contact Tech',
+				name: 'contactTech',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['service'],
+						operation: ['changeContact'],
+					},
+				},
+				placeholder: 'tech-account-ID',
+				description: 'The contact to set as tech contact',
+			},
+			// Service changeProperties fields
+			{
+				displayName: 'Service Properties',
+				name: 'serviceProperties',
+				type: 'collection',
+				placeholder: 'Add Property',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['service'],
+						operation: ['changeProperties'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: '',
+						description: 'Description of your VMware on OVHcloud',
+					},
+					{
+						displayName: 'SSL V3',
+						name: 'sslV3',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to enable SSL v3 support',
+					},
+					{
+						displayName: 'User Access Policy',
+						name: 'userAccessPolicy',
+						type: 'options',
+						default: 'FILTERED',
+						options: [
+							{
+								name: 'Filtered',
+								value: 'FILTERED',
+							},
+							{
+								name: 'Open to Internet',
+								value: 'OPEN_TO_INTERNET',
+							},
+							{
+								name: 'Restricted',
+								value: 'RESTRICTED',
+							},
+						],
+						description: 'Access policy for users',
+					},
+					{
+						displayName: 'User Limit Concurrent Session',
+						name: 'userLimitConcurrentSession',
+						type: 'number',
+						default: 0,
+						description: 'Maximum amount of connected users',
+					},
+					{
+						displayName: 'User Logout Policy',
+						name: 'userLogoutPolicy',
+						type: 'options',
+						default: 'NEVER',
+						options: [
+							{
+								name: 'Never',
+								value: 'NEVER',
+							},
+							{
+								name: 'On Idle',
+								value: 'ON_IDLE',
+							},
+							{
+								name: 'On Disconnect',
+								value: 'ON_DISCONNECT',
+							},
+						],
+					},
+				],
+			},
+			// Service confirmTermination fields
+			{
+				displayName: 'Commentary',
+				name: 'commentary',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['service'],
+						operation: ['confirmTermination'],
+					},
+				},
+				description: 'Commentary for termination',
+			},
+			{
+				displayName: 'Reason',
+				name: 'terminationReason',
+				type: 'options',
+				default: 'OTHER',
+				displayOptions: {
+					show: {
+						resource: ['service'],
+						operation: ['confirmTermination'],
+					},
+				},
+				options: [
+					{
+						name: 'Features Missing',
+						value: 'FEATURES_MISSING',
+					},
+					{
+						name: 'Lack of Performance',
+						value: 'LACK_OF_PERFORMANCES',
+					},
+					{
+						name: 'Migrated to Another OVH Product',
+						value: 'MIGRATED_TO_ANOTHER_OVH_PRODUCT',
+					},
+					{
+						name: 'Migrated to Competition',
+						value: 'MIGRATED_TO_COMPETITION',
+					},
+					{
+						name: 'No Time to Use',
+						value: 'NO_TIME_TO_USE',
+					},
+					{
+						name: 'Not Needed Anymore',
+						value: 'NOT_NEEDED_ANYMORE',
+					},
+					{
+						name: 'Not Reliable',
+						value: 'NOT_RELIABLE',
+					},
+					{
+						name: 'Other',
+						value: 'OTHER',
+					},
+					{
+						name: 'Too Expensive',
+						value: 'TOO_EXPENSIVE',
+					},
+					{
+						name: 'Too Hard to Use',
+						value: 'TOO_HARD_TO_USE',
+					},
+					{
+						name: 'Unsatisfied Support',
+						value: 'UNSATISFIED_SUPPORT',
+					},
+				],
+				description: 'Reason for termination',
+			},
+			{
+				displayName: 'Token',
+				name: 'token',
+				type: 'string',
+				typeOptions: { password: true },
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['service'],
+						operation: ['confirmTermination'],
+					},
+				},
+				placeholder: 'termination-token',
+				description: 'Termination token',
+			},
+			// Service orderNewFilerHourly fields
+			{
+				displayName: 'Filer Name',
+				name: 'filerName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['service'],
+						operation: ['orderNewFilerHourly'],
+					},
+				},
+				placeholder: 'filer-name',
+				description: 'Name for the new filer',
+			},
 			// User creation fields
 			{
 				displayName: 'Name',
@@ -3157,17 +3389,77 @@ export class OvhPrivateCloud implements INodeType {
 				},
 				options: [
 					{
-						displayName: 'Backup Duration',
-						name: 'backupDuration',
-						type: 'number',
-						default: 0,
-						description: 'Backup duration in days',
+						displayName: 'Backup Duration in Report',
+						name: 'backupDurationInReport',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to include duration on email report (deprecated)',
 					},
 					{
-						displayName: 'Backup Schedule',
-						name: 'backupSchedule',
+						displayName: 'Backup Offer',
+						name: 'backupOffer',
+						type: 'options',
+						default: 'standard',
+						options: [
+							{
+								name: 'Standard',
+								value: 'standard',
+							},
+							{
+								name: 'Advanced',
+								value: 'advanced',
+							},
+							{
+								name: 'Premium',
+								value: 'premium',
+							},
+						],
+						required: true,
+						description: 'Backup offer type',
+					},
+					{
+						displayName: 'Backup Size in Report',
+						name: 'backupSizeInReport',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to include backup size on day on email report (deprecated)',
+					},
+					{
+						displayName: 'Disk Size in Report',
+						name: 'diskSizeInReport',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to include disk size on mail report (deprecated)',
+					},
+					{
+						displayName: 'Full Day in Report',
+						name: 'fullDayInReport',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to include full day on mail report (deprecated)',
+					},
+					{
+						displayName: 'Mail Address',
+						name: 'mailAddress',
 						type: 'string',
 						default: '',
+						placeholder: 'name@email.com',
+						description: 'Additional email address for backup daily report',
+					},
+					{
+						displayName: 'Restore Point in Report',
+						name: 'restorePointInReport',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to include RestorePoint number on mail report (deprecated)',
+					},
+					{
+						displayName: 'Schedule Hour',
+						name: 'scheduleHour',
+						type: 'string',
+						default: '',
+						placeholder: '14:00',
+						description: 'Schedule hour for start backup (UTC)',
 					},
 				],
 			},
@@ -4386,10 +4678,40 @@ export class OvhPrivateCloud implements INodeType {
 						method = 'POST';
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/changeContact`;
+						
+						// Get optional contact parameters
+						const contactAdmin = this.getNodeParameter('contactAdmin', i, '') as string;
+						const contactBilling = this.getNodeParameter('contactBilling', i, '') as string;
+						const contactTech = this.getNodeParameter('contactTech', i, '') as string;
+						
+						if (contactAdmin) body.contactAdmin = contactAdmin;
+						if (contactBilling) body.contactBilling = contactBilling;
+						if (contactTech) body.contactTech = contactTech;
+					} else if (operation === 'changeProperties') {
+						method = 'POST';
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						const serviceProperties = this.getNodeParameter('serviceProperties', i) as IDataObject;
+						path = `/dedicatedCloud/${serviceName}/changeProperties`;
+						
+						// Add optional properties
+						if (serviceProperties.description !== undefined && serviceProperties.description !== '') body.description = serviceProperties.description;
+						if (serviceProperties.sslV3 !== undefined) body.sslV3 = serviceProperties.sslV3;
+						if (serviceProperties.userAccessPolicy !== undefined) body.userAccessPolicy = serviceProperties.userAccessPolicy;
+						if (serviceProperties.userLimitConcurrentSession !== undefined) body.userLimitConcurrentSession = serviceProperties.userLimitConcurrentSession;
+						if (serviceProperties.userLogoutPolicy !== undefined) body.userLogoutPolicy = serviceProperties.userLogoutPolicy;
 					} else if (operation === 'confirmTermination') {
 						method = 'POST';
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						const token = this.getNodeParameter('token', i) as string;
+						const reason = this.getNodeParameter('terminationReason', i) as string;
+						const commentary = this.getNodeParameter('commentary', i, '') as string;
 						path = `/dedicatedCloud/${serviceName}/confirmTermination`;
+						
+						body = {
+							token,
+							reason,
+						};
+						if (commentary) body.commentary = commentary;
 					} else if (operation === 'get') {
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}`;
@@ -4460,7 +4782,9 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'orderNewFilerHourly') {
 						method = 'POST';
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						const filerName = this.getNodeParameter('filerName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/orderNewFilerHourly`;
+						body = { name: filerName };
 					} else if (operation === 'getOvhId') {
 						method = 'POST';
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
@@ -4847,8 +5171,17 @@ export class OvhPrivateCloud implements INodeType {
 						const backupProperties = this.getNodeParameter('backupProperties', i) as IDataObject;
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/backup/changeProperties`;
 						
-						if (backupProperties.backupDuration !== undefined) body.backupDuration = backupProperties.backupDuration;
-						if (backupProperties.backupSchedule !== undefined) body.backupSchedule = backupProperties.backupSchedule;
+						// Required parameter
+						if (backupProperties.backupOffer !== undefined) body.backupOffer = backupProperties.backupOffer;
+						
+						// Optional parameters
+						if (backupProperties.backupDurationInReport !== undefined) body.backupDurationInReport = backupProperties.backupDurationInReport;
+						if (backupProperties.backupSizeInReport !== undefined) body.backupSizeInReport = backupProperties.backupSizeInReport;
+						if (backupProperties.diskSizeInReport !== undefined) body.diskSizeInReport = backupProperties.diskSizeInReport;
+						if (backupProperties.fullDayInReport !== undefined) body.fullDayInReport = backupProperties.fullDayInReport;
+						if (backupProperties.mailAddress !== undefined && backupProperties.mailAddress !== '') body.mailAddress = backupProperties.mailAddress;
+						if (backupProperties.restorePointInReport !== undefined) body.restorePointInReport = backupProperties.restorePointInReport;
+						if (backupProperties.scheduleHour !== undefined && backupProperties.scheduleHour !== '') body.scheduleHour = backupProperties.scheduleHour;
 					} else if (operation === 'checkJobs') {
 						method = 'POST';
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/checkBackupJobs`;

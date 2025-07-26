@@ -523,6 +523,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.11.9 - July 2025
+- **🚀 Phase 4 Parameter Enhancement** - Added comprehensive body parameters for Service and Backup operations:
+  - **Service Operations Enhanced**: Added complete parameters for `changeContact` (3 params), `changeProperties` (5 params), `confirmTermination` (3 params), and `orderNewFilerHourly`
+  - **Backup Management Upgraded**: Enhanced `changeProperties` with 8 parameters including backup offer type, email reports configuration, and scheduling options
+  - **Complete API Coverage**: All Service-level operations now have full parameter support for production use
+  - **Professional Features**: Support for contact management, service configuration, termination workflows, and advanced backup configurations
+
 ### Version 0.11.8 - July 2025
 - **🔧 Critical Parameter Fixes** - Fixed major parameter deficiencies discovered through comprehensive API audit:
   - **Datacenter Create Fixed**: Corrected `commercialRangeName` parameter (was `commerceRangeName`) and added optional `vrackName` parameter
