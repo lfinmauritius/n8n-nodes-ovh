@@ -56,10 +56,6 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'cluster',
 					},
 					{
-						name: 'Commercial Range',
-						value: 'commercialRange',
-					},
-					{
 						name: 'Datacenter',
 						value: 'datacenter',
 					},
@@ -326,33 +322,6 @@ export class OvhPrivateCloud implements INodeType {
 				],
 				default: 'get',
 			},
-			// Commercial Range operations
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['commercialRange'],
-					},
-				},
-				options: [
-					{
-						name: 'Get Compliance',
-						value: 'getCompliance',
-						description: 'Get commercial range compliance',
-						action: 'Get commercial range compliance',
-					},
-					{
-						name: 'Get Orderable',
-						value: 'getOrderable',
-						description: 'Get orderable commercial ranges',
-						action: 'Get orderable commercial ranges',
-					},
-				],
-				default: 'getCompliance',
-			},
 			// Service operations
 			{
 				displayName: 'Operation',
@@ -409,6 +378,17 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'get',
 						description: 'Get service information',
 						action: 'Get service information',
+					},
+					{
+						name: 'Get Commercial Range Compliance',
+						value: 'getCommercialRangeCompliance',
+						action: 'Get commercial range compliance',
+					},
+					{
+						name: 'Get Commercial Range Orderable',
+						value: 'getCommercialRangeOrderable',
+						description: 'Get orderable commercial ranges',
+						action: 'Get orderable commercial ranges',
 					},
 					{
 						name: 'Get Global Tasks',
@@ -1758,7 +1738,7 @@ export class OvhPrivateCloud implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['service'],
-						operation: ['canDeployNsxtEdgesOnGlobalDatastores', 'capabilities', 'changeContact', 'checkGlobalTaskList', 'confirmTermination', 'generateNsxvInventory', 'generateVxlanToVrackMapping', 'get', 'getGlobalTasks', 'getOvhId', 'getServiceInfo', 'getVcenterVersion', 'getVendor', 'getVendorObjectType', 'update', 'upgradeVcenter', 'vmwareCloudDirectorEligibility'],
+						operation: ['canDeployNsxtEdgesOnGlobalDatastores', 'capabilities', 'changeContact', 'checkGlobalTaskList', 'confirmTermination', 'generateNsxvInventory', 'generateVxlanToVrackMapping', 'get', 'getCommercialRangeCompliance', 'getCommercialRangeOrderable', 'getGlobalTasks', 'getOvhId', 'getServiceInfo', 'getVcenterVersion', 'getVendor', 'getVendorObjectType', 'update', 'upgradeVcenter', 'vmwareCloudDirectorEligibility'],
 					},
 				},
 				placeholder: 'pcc-xxx-xxx-xxx-xxx',
@@ -2942,7 +2922,7 @@ export class OvhPrivateCloud implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['allowedNetwork'],
-						operation: ['get', 'delete'],
+						operation: ['get', 'delete', 'update'],
 					},
 				},
 			},
@@ -2976,6 +2956,37 @@ export class OvhPrivateCloud implements INodeType {
 				},
 				description: 'Network description (optional)',
 			},
+			// Update fields for allowed network
+			{
+				displayName: 'Update Fields',
+				name: 'allowedNetworkUpdateFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['allowedNetwork'],
+						operation: ['update'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Description',
+						name: 'description',
+						type: 'string',
+						default: '',
+						description: 'Network description',
+					},
+					{
+						displayName: 'Network',
+						name: 'network',
+						type: 'string',
+						default: '',
+						placeholder: '192.168.1.0/24',
+						description: 'Network CIDR',
+					},
+				],
+			},
 			// Repository ID field
 			{
 				displayName: 'Repository ID',
@@ -3000,8 +3011,8 @@ export class OvhPrivateCloud implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['global', 'commercialRange'],
-						operation: ['getCommercialRange', 'getCompliance'],
+						resource: ['global'],
+						operation: ['getCommercialRange'],
 					},
 				},
 				placeholder: 'SDDC',
@@ -3930,6 +3941,12 @@ export class OvhPrivateCloud implements INodeType {
 						path = `/dedicatedCloud/${serviceName}`;
 					} else if (operation === 'getAll') {
 						path = '/dedicatedCloud';
+					} else if (operation === 'getCommercialRangeCompliance') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/commercialRange/compliance`;
+					} else if (operation === 'getCommercialRangeOrderable') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/commercialRange/orderable`;
 					} else if (operation === 'getServiceInfo') {
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/serviceInfos`;
@@ -4008,6 +4025,15 @@ export class OvhPrivateCloud implements INodeType {
 						method = 'DELETE';
 						const networkAccessId = parseInt(this.getNodeParameter('networkAccessId', i) as string, 10);
 						path = `/dedicatedCloud/${serviceName}/allowedNetwork/${networkAccessId}`;
+					} else if (operation === 'update') {
+						method = 'PUT';
+						const networkAccessId = parseInt(this.getNodeParameter('networkAccessId', i) as string, 10);
+						const updateFields = this.getNodeParameter('allowedNetworkUpdateFields', i) as IDataObject;
+						path = `/dedicatedCloud/${serviceName}/allowedNetwork/${networkAccessId}`;
+						
+						// Build the allowedNetwork object for PUT
+						if (updateFields.description !== undefined) body.description = updateFields.description;
+						if (updateFields.network !== undefined) body.network = updateFields.network;
 					}
 				} else if (resource === 'backupRepository') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
@@ -4016,13 +4042,6 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'get') {
 						const repositoryId = parseInt(this.getNodeParameter('repositoryId', i) as string, 10);
 						path = `/dedicatedCloud/${serviceName}/backupRepository/${repositoryId}`;
-					}
-				} else if (resource === 'commercialRange') {
-					if (operation === 'getCompliance') {
-						const commercialRangeName = this.getNodeParameter('commercialRangeName', i) as string;
-						path = `/dedicatedCloud/commercialRange/${commercialRangeName}/compliance`;
-					} else if (operation === 'getOrderable') {
-						path = '/dedicatedCloud/commercialRange/orderable';
 					}
 				} else if (resource === 'datacenter') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;

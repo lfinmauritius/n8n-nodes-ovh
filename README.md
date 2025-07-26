@@ -523,6 +523,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.11.6 - July 2025
+- **🔧 Critical API Compliance Fixes** - Fixed major inconsistencies with actual OVH API:
+  - **allowedNetwork**: Added missing PUT operation for updating allowed networks
+  - **commercialRange**: Fixed incorrect endpoint paths - moved compliance and orderable operations from global to service-level endpoints
+  - **API Verification**: Comprehensive audit against OVH dedicatedCloud production API endpoints
+  - All corrections maintain full backward compatibility while fixing incorrect API calls
+
 ### Version 0.11.5 - July 2025
 - **🌍 Global Operations & Final Expansion** - Added comprehensive global operations and new resource management:
   - **Global Operations**: Added global dedicated cloud operations without serviceName requirement (get all services, commercial ranges, locations)
