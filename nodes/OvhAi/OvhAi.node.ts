@@ -1441,41 +1441,28 @@ export class OvhAi implements INodeType {
 					// Process the response to extract frameworks
 					if (Array.isArray(responseData)) {
 						for (const framework of responseData) {
-							// Check if framework matches the selected editor
-							let shouldInclude = true;
+							// For now, include all frameworks to see what's available
+							// We'll add back filtering once we understand the data structure
+							const frameworkInfo = [];
 							
+							// Build informative name showing all available fields
+							if (framework.id) frameworkInfo.push(`ID: ${framework.id}`);
+							if (framework.name) frameworkInfo.push(`Name: ${framework.name}`);
+							if (framework.version) frameworkInfo.push(`v${framework.version}`);
+							if (framework.editor) frameworkInfo.push(`Editor: ${framework.editor}`);
+							
+							// Show what editor was selected for debugging
 							if (editorId) {
-								// Check various fields that might contain editor information
-								shouldInclude = false;
-								
-								// Check if framework id contains editor name
-								if (framework.id && framework.id.toLowerCase().includes(editorId.toLowerCase())) {
-									shouldInclude = true;
-								}
-								// Check if framework name contains editor name
-								else if (framework.name && framework.name.toLowerCase().includes(editorId.toLowerCase())) {
-									shouldInclude = true;
-								}
-								// Check if framework has an editor field
-								else if (framework.editor && framework.editor.toLowerCase() === editorId.toLowerCase()) {
-									shouldInclude = true;
-								}
-								// Check docUrl as fallback
-								else if (framework.docUrl && framework.docUrl.toLowerCase().includes(editorId.toLowerCase())) {
-									shouldInclude = true;
-								}
+								frameworkInfo.push(`[Looking for: ${editorId}]`);
 							}
 							
-							if (shouldInclude) {
-								const name = framework.name ? 
-									`${framework.name}${framework.version ? ` (${framework.version})` : ''}` : 
-									framework.id;
-								const value = framework.id;
-								returnData.push({
-									name,
-									value,
-								});
-							}
+							const name = frameworkInfo.length > 0 ? frameworkInfo.join(' - ') : 'Unknown Framework';
+							const value = framework.id || '';
+							
+							returnData.push({
+								name,
+								value,
+							});
 						}
 					}
 					
