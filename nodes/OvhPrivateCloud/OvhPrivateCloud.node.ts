@@ -112,7 +112,7 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'robot',
 					},
 					{
-						name: 'Security Options',
+						name: 'Security Option',
 						value: 'securityOptions',
 					},
 					{
@@ -126,10 +126,6 @@ export class OvhPrivateCloud implements INodeType {
 					{
 						name: 'Service Pack',
 						value: 'servicePack',
-					},
-					{
-						name: 'Service Packs',
-						value: 'servicePacks',
 					},
 					{
 						name: 'Tag',
@@ -1078,6 +1074,176 @@ export class OvhPrivateCloud implements INodeType {
 				],
 				default: 'get',
 			},
+			// Robot operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['robot'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get robot information',
+						action: 'Get robot information',
+					},
+					{
+						name: 'Get Many',
+						value: 'getAll',
+						description: 'Get many robots',
+						action: 'Get many robots',
+					},
+				],
+				default: 'get',
+			},
+			// Security Options operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['securityOptions'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get security options',
+						action: 'Get security options',
+					},
+					{
+						name: 'Get Compatibility Matrix',
+						value: 'getCompatibilityMatrix',
+						action: 'Get compatibility matrix',
+					},
+					{
+						name: 'Get Dependencies Tree',
+						value: 'getDependenciesTree',
+						action: 'Get dependencies tree',
+					},
+					{
+						name: 'Get Pending Options',
+						value: 'getPendingOptions',
+						action: 'Get pending options',
+					},
+					{
+						name: 'Resume Pending Enabling',
+						value: 'resumePendingEnabling',
+						action: 'Resume pending enabling',
+					},
+				],
+				default: 'get',
+			},
+			// Service Info operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['serviceInfos'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get service information',
+						action: 'Get service information',
+					},
+					{
+						name: 'Update',
+						value: 'update',
+						description: 'Update service information',
+						action: 'Update service information',
+					},
+				],
+				default: 'get',
+			},
+			// Service Pack operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['servicePack'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get service pack information',
+						action: 'Get service pack information',
+					},
+				],
+				default: 'get',
+			},
+			// Service Packs operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['servicePacks'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get service pack information',
+						action: 'Get service pack information',
+					},
+					{
+						name: 'Get Many',
+						value: 'getAll',
+						description: 'Get many service packs',
+						action: 'Get many service packs',
+					},
+				],
+				default: 'get',
+			},
+			// Tag operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['tag'],
+					},
+				},
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						description: 'Get tag information',
+						action: 'Get tag information',
+					},
+					{
+						name: 'Get Many',
+						value: 'getAll',
+						description: 'Get many tags',
+						action: 'Get many tags',
+					},
+				],
+				default: 'get',
+			},
 			// Task operations
 			{
 				displayName: 'Operation',
@@ -1832,7 +1998,7 @@ export class OvhPrivateCloud implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['allowedNetwork', 'backup', 'backupRepository', 'cluster', 'datacenter', 'disasterRecovery', 'filer', 'hcx', 'hds', 'hipaa', 'host', 'iam', 'ip', 'location', 'nsxtEdge', 'privateGateway', 'vm', 'user', 'task', 'twoFAWhitelist', 'vlan', 'vmEncryption', 'vrack', 'vrops'],
+						resource: ['allowedNetwork', 'backup', 'backupRepository', 'cluster', 'datacenter', 'disasterRecovery', 'filer', 'hcx', 'hds', 'hipaa', 'host', 'iam', 'ip', 'location', 'nsxtEdge', 'privateGateway', 'robot', 'securityOptions', 'serviceInfos', 'servicePack', 'servicePacks', 'tag', 'vm', 'user', 'task', 'twoFAWhitelist', 'vlan', 'vmEncryption', 'vrack', 'vrops'],
 					},
 				},
 				placeholder: 'pcc-xxx-xxx-xxx-xxx',
@@ -3078,6 +3244,48 @@ export class OvhPrivateCloud implements INodeType {
 				},
 				description: 'Backup repository ID',
 			},
+			// Robot Name parameter
+			{
+				displayName: 'Robot Name',
+				name: 'robotName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['robot'],
+						operation: ['get'],
+					},
+				},
+			},
+			// Service Pack Name parameter
+			{
+				displayName: 'Service Pack Name',
+				name: 'servicePackName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['servicePacks'],
+						operation: ['get'],
+					},
+				},
+			},
+			// Tag Name parameter
+			{
+				displayName: 'Tag Name',
+				name: 'tagName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['tag'],
+						operation: ['get'],
+					},
+				},
+			},
 			// Commercial Range Name field
 			{
 				displayName: 'Commercial Range Name',
@@ -4148,6 +4356,55 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'get') {
 						const repositoryId = parseInt(this.getNodeParameter('repositoryId', i) as string, 10);
 						path = `/dedicatedCloud/${serviceName}/backupRepository/${repositoryId}`;
+					}
+				} else if (resource === 'robot') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getAll') {
+						path = `/dedicatedCloud/${serviceName}/robot`;
+					} else if (operation === 'get') {
+						const robotName = this.getNodeParameter('robotName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/robot/${robotName}`;
+					}
+				} else if (resource === 'securityOptions') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'get') {
+						path = `/dedicatedCloud/${serviceName}/securityOptions`;
+					} else if (operation === 'getCompatibilityMatrix') {
+						path = `/dedicatedCloud/${serviceName}/securityOptions/compatibilityMatrix`;
+					} else if (operation === 'getDependenciesTree') {
+						path = `/dedicatedCloud/${serviceName}/securityOptions/dependenciesTree`;
+					} else if (operation === 'getPendingOptions') {
+						path = `/dedicatedCloud/${serviceName}/securityOptions/pendingOptions`;
+					} else if (operation === 'resumePendingEnabling') {
+						method = 'POST';
+						path = `/dedicatedCloud/${serviceName}/securityOptions/resumePendingEnabling`;
+					}
+				} else if (resource === 'serviceInfos') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'get') {
+						path = `/dedicatedCloud/${serviceName}/serviceInfos`;
+					} else if (operation === 'update') {
+						method = 'PUT';
+						path = `/dedicatedCloud/${serviceName}/serviceInfos`;
+					}
+				} else if (resource === 'servicePack') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					path = `/dedicatedCloud/${serviceName}/servicePack`;
+				} else if (resource === 'servicePacks') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getAll') {
+						path = `/dedicatedCloud/${serviceName}/servicePacks`;
+					} else if (operation === 'get') {
+						const servicePackName = this.getNodeParameter('servicePackName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/servicePacks/${servicePackName}`;
+					}
+				} else if (resource === 'tag') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getAll') {
+						path = `/dedicatedCloud/${serviceName}/tag`;
+					} else if (operation === 'get') {
+						const tagName = this.getNodeParameter('tagName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/tag/${tagName}`;
 					}
 				} else if (resource === 'datacenter') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
