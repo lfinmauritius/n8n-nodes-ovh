@@ -523,6 +523,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.11.1 - July 2025
+- **🔧 OVH Private Cloud fixes and additions** - Corrected endpoint paths and added missing operations:
+  - **Fixed endpoint paths**: Changed from `updateMaintenanceExecutionDate` to `changeMaintenanceExecutionDate`
+  - **Added VM Disaster Recovery**: Configure VPN for Zerto Single disaster recovery
+  - **Added Service Global Tasks**: Check global task list and get global tasks operations
+  - **Improved API compliance**: All endpoints now exactly match OVH API documentation
+
 ### Version 0.11.0 - July 2025
 - **🚀 OVH Private Cloud major enhancement** - Massive expansion of datacenter and infrastructure operations:
   - **Host Resilience Management**: New operations for checking, enabling, and disabling host resilience

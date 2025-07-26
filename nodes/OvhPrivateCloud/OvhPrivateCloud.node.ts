@@ -103,10 +103,20 @@ export class OvhPrivateCloud implements INodeType {
 				},
 				options: [
 					{
+						name: 'Check Global Task List',
+						value: 'checkGlobalTaskList',
+						action: 'Check global task list',
+					},
+					{
 						name: 'Get',
 						value: 'get',
 						description: 'Get service information',
 						action: 'Get service information',
+					},
+					{
+						name: 'Get Global Tasks',
+						value: 'getGlobalTasks',
+						action: 'Get global tasks',
 					},
 					{
 						name: 'Get Many',
@@ -222,6 +232,12 @@ export class OvhPrivateCloud implements INodeType {
 					},
 				},
 				options: [
+					{
+						name: 'Configure VPN for Zerto Single',
+						value: 'configureVpnForZertoSingle',
+						description: 'Configure VPN for Zerto Single disaster recovery',
+						action: 'Configure vpn for zerto single disaster recovery',
+					},
 					{
 						name: 'Create Backup',
 						value: 'createBackup',
@@ -2446,6 +2462,12 @@ export class OvhPrivateCloud implements INodeType {
 						if (updateProperties.userSessionTimeout !== undefined) body.userSessionTimeout = updateProperties.userSessionTimeout;
 						if (updateProperties.sslV3 !== undefined) body.sslV3 = updateProperties.sslV3;
 						if (updateProperties.webAccess !== undefined) body.webAccess = updateProperties.webAccess;
+					} else if (operation === 'checkGlobalTaskList') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/globalTasks`;
+					} else if (operation === 'getGlobalTasks') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/globalTasks`;
 					}
 				} else if (resource === 'datacenter') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
@@ -2488,7 +2510,7 @@ export class OvhPrivateCloud implements INodeType {
 						method = 'POST';
 						const datacenterId = parseInt(this.getNodeParameter('datacenterId', i) as string, 10);
 						const taskId = this.getNodeParameter('taskId', i) as string;
-						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/task/${taskId}/updateMaintenanceExecutionDate`;
+						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/task/${taskId}/changeMaintenanceExecutionDate`;
 						// TODO: Add maintenance date field if needed
 					} else if (operation === 'orderFiler') {
 						method = 'POST';
@@ -2569,6 +2591,11 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'getLicense') {
 						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/license`;
+					} else if (operation === 'configureVpnForZertoSingle') {
+						method = 'POST';
+						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
+						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/disasterRecovery/configureVpnForZertoSingle`;
+						// TODO: Add VPN configuration parameters if needed
 					}
 				} else if (resource === 'user') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
@@ -2832,7 +2859,7 @@ export class OvhPrivateCloud implements INodeType {
 						method = 'POST';
 						const hostId = parseInt(this.getNodeParameter('hostId', i) as string, 10);
 						const taskId = this.getNodeParameter('taskId', i) as string;
-						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/host/${hostId}/task/${taskId}/updateMaintenanceExecutionDate`;
+						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/host/${hostId}/task/${taskId}/changeMaintenanceExecutionDate`;
 						// TODO: Add maintenance date field if needed
 					}
 				} else if (resource === 'nsxtEdge') {
