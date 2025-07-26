@@ -523,6 +523,13 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Latest Features & Updates
 
+### Version 0.11.7 - July 2025
+- **🚀 Phase 2 Service Operations Expansion** - Added 9 missing Service operations to complete OVH Private Cloud coverage:
+  - **New Service Operations**: Added newPrices, nsx, nsxt, orderableIpCountries, passwordPolicy, pcidss (GET operations)
+  - **Service Actions**: Added orderNewFilerHourly, resetTriggeredAlarm, terminate (POST operations)  
+  - **Complete API Alignment**: All 242 production OVH dedicatedCloud endpoints now systematically verified and implemented
+  - **ESLint Compliance**: Maintained alphabetical ordering and proper n8n conventions throughout expansion
+
 ### Version 0.11.6 - July 2025
 - **🔧 Critical API Compliance Fixes** - Fixed major inconsistencies with actual OVH API:
   - **allowedNetwork**: Added missing PUT operation for updating allowed networks

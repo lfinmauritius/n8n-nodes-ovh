@@ -108,8 +108,32 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'privateGateway',
 					},
 					{
+						name: 'Robot',
+						value: 'robot',
+					},
+					{
+						name: 'Security Options',
+						value: 'securityOptions',
+					},
+					{
 						name: 'Service',
 						value: 'service',
+					},
+					{
+						name: 'Service Info',
+						value: 'serviceInfos',
+					},
+					{
+						name: 'Service Pack',
+						value: 'servicePack',
+					},
+					{
+						name: 'Service Packs',
+						value: 'servicePacks',
+					},
+					{
+						name: 'Tag',
+						value: 'tag',
 					},
 					{
 						name: 'Task',
@@ -402,10 +426,45 @@ export class OvhPrivateCloud implements INodeType {
 						action: 'Get many services',
 					},
 					{
+						name: 'Get New Prices',
+						value: 'getNewPrices',
+						description: 'Get new prices for service',
+						action: 'Get new prices for service',
+					},
+					{
+						name: 'Get NSX',
+						value: 'getNsx',
+						description: 'Get NSX information',
+						action: 'Get NSX information',
+					},
+					{
+						name: 'Get NSXt',
+						value: 'getNsxt',
+						description: 'Get NSXt information',
+						action: 'Get ns xt information',
+					},
+					{
+						name: 'Get Orderable IP Countries',
+						value: 'getOrderableIpCountries',
+						description: 'Get countries where IPs can be ordered',
+						action: 'Get countries where i ps can be ordered',
+					},
+					{
 						name: 'Get OVH ID',
 						value: 'getOvhId',
 						description: 'Get OVH ID from object moref',
 						action: 'Get OVH ID from object moref',
+					},
+					{
+						name: 'Get Password Policy',
+						value: 'getPasswordPolicy',
+						action: 'Get password policy',
+					},
+					{
+						name: 'Get PCI DSS',
+						value: 'getPcidss',
+						description: 'Get PCI DSS information',
+						action: 'Get PCI DSS information',
 					},
 					{
 						name: 'Get Service Info',
@@ -429,6 +488,23 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'getVendorObjectType',
 						description: 'Get vendor object type from object moref',
 						action: 'Get vendor object type from object moref',
+					},
+					{
+						name: 'Order New Filer Hourly',
+						value: 'orderNewFilerHourly',
+						description: 'Order new filer with hourly billing',
+						action: 'Order new filer with hourly billing',
+					},
+					{
+						name: 'Reset Triggered Alarm',
+						value: 'resetTriggeredAlarm',
+						action: 'Reset triggered alarm',
+					},
+					{
+						name: 'Terminate',
+						value: 'terminate',
+						description: 'Terminate service',
+						action: 'Terminate service',
 					},
 					{
 						name: 'Update',
@@ -1738,7 +1814,7 @@ export class OvhPrivateCloud implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['service'],
-						operation: ['canDeployNsxtEdgesOnGlobalDatastores', 'capabilities', 'changeContact', 'checkGlobalTaskList', 'confirmTermination', 'generateNsxvInventory', 'generateVxlanToVrackMapping', 'get', 'getCommercialRangeCompliance', 'getCommercialRangeOrderable', 'getGlobalTasks', 'getOvhId', 'getServiceInfo', 'getVcenterVersion', 'getVendor', 'getVendorObjectType', 'update', 'upgradeVcenter', 'vmwareCloudDirectorEligibility'],
+						operation: ['canDeployNsxtEdgesOnGlobalDatastores', 'capabilities', 'changeContact', 'checkGlobalTaskList', 'confirmTermination', 'generateNsxvInventory', 'generateVxlanToVrackMapping', 'get', 'getCommercialRangeCompliance', 'getCommercialRangeOrderable', 'getGlobalTasks', 'getNewPrices', 'getNsx', 'getNsxt', 'getOrderableIpCountries', 'getOvhId', 'getPasswordPolicy', 'getPcidss', 'getServiceInfo', 'getVcenterVersion', 'getVendor', 'getVendorObjectType', 'orderNewFilerHourly', 'resetTriggeredAlarm', 'terminate', 'update', 'upgradeVcenter', 'vmwareCloudDirectorEligibility'],
 					},
 				},
 				placeholder: 'pcc-xxx-xxx-xxx-xxx',
@@ -3947,6 +4023,24 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'getCommercialRangeOrderable') {
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/commercialRange/orderable`;
+					} else if (operation === 'getNewPrices') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/newPrices`;
+					} else if (operation === 'getNsx') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/nsx`;
+					} else if (operation === 'getNsxt') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/nsxt`;
+					} else if (operation === 'getOrderableIpCountries') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/orderableIpCountries`;
+					} else if (operation === 'getPasswordPolicy') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/passwordPolicy`;
+					} else if (operation === 'getPcidss') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/pcidss`;
 					} else if (operation === 'getServiceInfo') {
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/serviceInfos`;
@@ -3985,12 +4079,24 @@ export class OvhPrivateCloud implements INodeType {
 						const managedObjectReference = this.getNodeParameter('managedObjectReference', i) as string;
 						path = `/dedicatedCloud/${serviceName}/vendor/objectType`;
 						body = { managedObjectReference };
+					} else if (operation === 'orderNewFilerHourly') {
+						method = 'POST';
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/orderNewFilerHourly`;
 					} else if (operation === 'getOvhId') {
 						method = 'POST';
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						const managedObjectReference = this.getNodeParameter('managedObjectReference', i) as string;
 						path = `/dedicatedCloud/${serviceName}/vendor/ovhId`;
 						body = { managedObjectReference };
+					} else if (operation === 'resetTriggeredAlarm') {
+						method = 'POST';
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/resetTriggeredAlarm`;
+					} else if (operation === 'terminate') {
+						method = 'POST';
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/dedicatedCloud/${serviceName}/terminate`;
 					} else if (operation === 'vmwareCloudDirectorEligibility') {
 						method = 'POST';
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
