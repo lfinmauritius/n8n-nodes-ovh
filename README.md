@@ -1,10 +1,10 @@
 # n8n-nodes-ovh
 
-**⚠️ BETA VERSION - Currently OVH AI, OVH Dedicated Server and OVH Domain nodes are active**
+**⚠️ BETA VERSION - Currently OVH AI, OVH Dedicated Server, OVH Domain, and OVH Private Cloud nodes are active**
 
 This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, Web PaaS, and private network tasks.
 
-**Note**: This is a beta release. Currently enabled nodes are OVH AI, OVH Dedicated Server and OVH Domain. Other nodes will be activated in future releases after thorough testing.
+**Note**: This is a beta release. Currently enabled nodes are OVH AI, OVH Dedicated Server, OVH Domain, and OVH Private Cloud. Other nodes will be activated in future releases after thorough testing.
 
 **Developed by [Ascenzia](https://ascenzia.fr)** - Your trusted partner for AI agent creation and automation.
 
@@ -95,10 +95,20 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Get**: Get service information
 - **Get Many**: List all your private cloud services
 - **Get Service Info**: Get service subscription information
+- **Update**: Update service properties (description, user limits, access policy, etc.)
 
 #### Datacenter Operations
 - **Get**: Get datacenter information
 - **Get Many**: List all datacenters in a service
+- **Create**: Create a new datacenter
+- **Update**: Update datacenter information
+- **Get Task**: Get datacenter task information
+- **Get Tasks**: List all datacenter tasks
+- **Reset Task State**: Reset datacenter task state
+- **Update Task Maintenance Date**: Update datacenter task maintenance date
+- **Order Filer**: Order new filer for datacenter
+- **Order Host**: Order new host for datacenter
+- **Order Host Hour**: Order host on hourly basis
 
 #### Virtual Machine Operations
 - **Get**: Get virtual machine information
@@ -107,6 +117,15 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Power On**: Power on a virtual machine
 - **Reset**: Reset a virtual machine
 - **Revert Snapshot**: Revert VM to a specific snapshot
+- **Get Backup**: Get VM backup information
+- **Enable Backup**: Enable VM backup
+- **Disable Backup**: Disable VM backup
+- **Create Backup**: Create VM backup
+- **Restore Backup**: Restore VM from backup
+- **Get Backup Offer Types**: Get available backup offer types
+- **Get CARP**: Get CARP configuration
+- **Update CARP**: Update CARP configuration
+- **Get License**: Get VM license information
 
 #### User Operations
 - **Get**: Get user information
@@ -118,6 +137,84 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 #### Task Operations
 - **Get**: Get task information
 - **Get Many**: List all tasks for a service
+
+#### Backup Operations
+- **Get**: Get backup information
+- **Batch Restore**: Batch restore backups
+- **Can Optimize Proxies**: Check if proxies can be optimized
+- **Change Properties**: Change backup properties
+- **Check Jobs**: Check backup jobs
+- **Disable**: Disable backup
+- **Generate Report**: Generate backup report
+- **Get Offer Capabilities**: Get backup offer capabilities
+- **Optimize Proxies**: Optimize backup proxies
+
+#### Cluster Operations
+- **Get**: Get cluster information
+- **Get Many**: List all clusters
+- **Create NSX-T**: Create NSX-T on cluster
+- **Delete NSX-T**: Delete NSX-T from cluster
+- **Update NSX-T**: Update NSX-T on cluster
+
+#### Disaster Recovery Operations
+- **Configure VPN**: Configure VPN for Zerto Single
+- **Create Remote Site**: Create remote site
+- **Create VRA Resources**: Create VRA resources
+- **Delete Remote Site**: Delete remote site
+- **Disable Zerto**: Disable Zerto
+- **Disable Zerto Single**: Disable Zerto Single
+- **End Migration**: End Zerto migration
+- **Get Default Local VRA Network**: Get default local VRA network
+- **Get Endpoint Public IP**: Get endpoint public IP
+- **Get Remote Sites**: Get remote sites
+- **Get Status**: Get Zerto status
+- **Get Usage Report**: Get Zerto usage report
+- **Get VRA Resources**: Get VRA resources
+- **Request Pairing Token**: Request pairing token for Zerto Single
+- **Start Migration**: Start Zerto migration
+
+#### Filer Operations
+- **Get**: Get filer information
+- **Get Many**: List all filers
+- **Get Location**: Get filer location
+- **Get Task**: Get filer task
+- **Get Tasks**: Get filer tasks
+- **Check Global Compatible**: Check if filer is global compatible
+- **Convert To Global**: Convert filer to global
+- **Remove**: Remove filer
+- **Reset Task State**: Reset task state
+- **Update Task Maintenance Date**: Update task maintenance date
+
+#### Host Operations
+- **Get**: Get host information
+- **Get Many**: List all hosts
+- **Get Location**: Get host location
+- **Add Host Spare**: Add host spare
+- **Remove**: Remove host
+- **Get Resilience**: Get host resilience status
+- **Check Resilience Can Be Enabled**: Check if resilience can be enabled on host
+- **Enable Resilience**: Enable resilience on host
+- **Disable Resilience**: Disable resilience on host
+- **Get Task**: Get host task information
+- **Get Tasks**: Get host tasks
+- **Reset Task State**: Reset host task state
+- **Update Task Maintenance Date**: Update host task maintenance date
+
+#### NSX-T Edge Operations
+- **Get**: Get NSX-T edge information
+- **Get Many**: List all NSX-T edges
+- **Create**: Create NSX-T edge
+- **Delete**: Delete NSX-T edge
+- **Relocate**: Relocate edge
+- **Get Resilience**: Get edge resilience status
+- **Check Resilience Can Be Enabled**: Check if resilience can be enabled on edge
+- **Enable Resilience**: Enable resilience on edge
+- **Disable Resilience**: Disable resilience on edge
+
+#### Private Gateway Operations
+- **Get**: Get private gateway information
+- **Enable**: Enable private gateway
+- **Disable**: Disable private gateway
 
 ### OVH AI Node
 
@@ -425,6 +522,21 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - **Get Many**: List all tasks for vRack operations
 
 ## Latest Features & Updates
+
+### Version 0.11.0 - July 2025
+- **🚀 OVH Private Cloud major enhancement** - Massive expansion of datacenter and infrastructure operations:
+  - **Host Resilience Management**: New operations for checking, enabling, and disabling host resilience
+  - **Host Task Management**: Get tasks, reset task states, and update maintenance dates for hosts
+  - **NSX-T Edge Support**: Complete NSX-T Edge resource management with CRUD operations and resilience controls
+  - **Private Gateway Operations**: Enable/disable private gateway functionality at datacenter level
+  - **VM Backup Management**: Create, restore, enable/disable VM backups with offer type discovery
+  - **VM CARP Configuration**: Get and update CARP (Common Address Redundancy Protocol) settings
+  - **VM License Management**: Retrieve VM licensing information
+  - **Datacenter Task Operations**: Comprehensive task management at datacenter level
+  - **Order Operations**: Order new hosts and filers for datacenters (monthly and hourly billing)
+  - **Service Properties Update**: Update private cloud service settings including access policies and user limits
+  - **Dynamic Field Loading**: Added dynamic dropdowns for hosts and NSX-T edges with intelligent loading
+  - **Enhanced User Experience**: All resources now support dynamic selection with proper name display
 
 ### Version 0.9.26 - July 2025
 - **🔧 OVH AI node fix** - Fixed HTTP methods for notebook operations:
@@ -737,6 +849,7 @@ To use this node, you need to create OVH API credentials:
    - **OVH Domain**: GET/PUT/POST/DELETE on `/domain/*`
    - **OVH Dedicated Server**: GET/PUT/POST/DELETE on `/dedicated/server/*`
    - **OVH AI**: GET/PUT/POST/DELETE on `/cloud/project/*/ai/*`
+   - **OVH Private Cloud**: GET/PUT/POST/DELETE on `/dedicatedCloud/*`
    - For all cloud services: GET on `/cloud/project` and `/cloud/project/*`
 
 3. You'll receive:

@@ -542,6 +542,18 @@ export class OvhAi implements INodeType {
 				},
 				options: [
 					{
+						displayName: 'Average Usage Target (%)',
+						name: 'scalingAverageUsageTarget',
+						type: 'number',
+						default: 50,
+						displayOptions: {
+							show: {
+								scalingStrategy: ['automatic'],
+							},
+						},
+						description: 'Target average usage percentage for automatic scaling',
+					},
+					{
 						displayName: 'Default HTTP Port',
 						name: 'defaultHttpPort',
 						type: 'number',
@@ -579,6 +591,30 @@ export class OvhAi implements INodeType {
 								],
 							},
 						],
+					},
+					{
+						displayName: 'Max Replicas',
+						name: 'scalingReplicasMax',
+						type: 'number',
+						default: 5,
+						displayOptions: {
+							show: {
+								scalingStrategy: ['automatic'],
+							},
+						},
+						description: 'Maximum number of replicas for automatic scaling',
+					},
+					{
+						displayName: 'Min Replicas',
+						name: 'scalingReplicasMin',
+						type: 'number',
+						default: 1,
+						displayOptions: {
+							show: {
+								scalingStrategy: ['automatic'],
+							},
+						},
+						description: 'Minimum number of replicas for automatic scaling',
 					},
 					{
 						displayName: 'Partner ID',
@@ -625,23 +661,6 @@ export class OvhAi implements INodeType {
 						],
 					},
 					{
-						displayName: 'Scaling Strategy',
-						name: 'scalingStrategy',
-						type: 'options',
-						options: [
-							{
-								name: 'Fixed',
-								value: 'fixed',
-							},
-							{
-								name: 'Automatic',
-								value: 'automatic',
-							},
-						],
-						default: 'fixed',
-						description: 'Scaling strategy for the app',
-					},
-					{
 						displayName: 'Replicas',
 						name: 'scalingReplicas',
 						type: 'number',
@@ -652,30 +671,6 @@ export class OvhAi implements INodeType {
 							},
 						},
 						description: 'Number of replicas for fixed scaling',
-					},
-					{
-						displayName: 'Min Replicas',
-						name: 'scalingReplicasMin',
-						type: 'number',
-						default: 1,
-						displayOptions: {
-							show: {
-								scalingStrategy: ['automatic'],
-							},
-						},
-						description: 'Minimum number of replicas for automatic scaling',
-					},
-					{
-						displayName: 'Max Replicas',
-						name: 'scalingReplicasMax',
-						type: 'number',
-						default: 5,
-						displayOptions: {
-							show: {
-								scalingStrategy: ['automatic'],
-							},
-						},
-						description: 'Maximum number of replicas for automatic scaling',
 					},
 					{
 						displayName: 'Resource Type',
@@ -700,16 +695,21 @@ export class OvhAi implements INodeType {
 						description: 'Resource type to monitor for automatic scaling',
 					},
 					{
-						displayName: 'Average Usage Target (%)',
-						name: 'scalingAverageUsageTarget',
-						type: 'number',
-						default: 50,
-						displayOptions: {
-							show: {
-								scalingStrategy: ['automatic'],
+						displayName: 'Scaling Strategy',
+						name: 'scalingStrategy',
+						type: 'options',
+						options: [
+							{
+								name: 'Fixed',
+								value: 'fixed',
 							},
-						},
-						description: 'Target average usage percentage for automatic scaling',
+							{
+								name: 'Automatic',
+								value: 'automatic',
+							},
+						],
+						default: 'fixed',
+						description: 'Scaling strategy for the app',
 					},
 					{
 						displayName: 'Volumes',
