@@ -668,10 +668,22 @@ export class OvhPrivateCloud implements INodeType {
 						action: 'Disable VM backup',
 					},
 					{
+						name: 'Disable CARP',
+						value: 'disableCarp',
+						description: 'Disable CARP configuration',
+						action: 'Disable CARP configuration',
+					},
+					{
 						name: 'Enable Backup',
 						value: 'enableBackup',
 						description: 'Enable VM backup',
 						action: 'Enable VM backup',
+					},
+					{
+						name: 'Enable CARP',
+						value: 'enableCarp',
+						description: 'Enable CARP configuration',
+						action: 'Enable CARP configuration',
 					},
 					{
 						name: 'Get',
@@ -737,6 +749,12 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'revertSnapshot',
 						description: 'Revert to snapshot',
 						action: 'Revert to snapshot',
+					},
+					{
+						name: 'Set License',
+						value: 'setLicense',
+						description: 'Set VM license',
+						action: 'Set VM license',
 					},
 					{
 						name: 'Update CARP',
@@ -962,6 +980,12 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'changePassword',
 						description: 'Change user password',
 						action: 'Change user password',
+					},
+					{
+						name: 'Change Properties',
+						value: 'changeProperties',
+						description: 'Update user properties',
+						action: 'Update user properties',
 					},
 					{
 						name: 'Confirm Phone Number',
@@ -2061,7 +2085,7 @@ export class OvhPrivateCloud implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['vm'],
-						operation: ['get', 'powerOff', 'powerOn', 'reset', 'revertSnapshot'],
+						operation: ['get', 'powerOff', 'powerOn', 'reset', 'revertSnapshot', 'enableBackup', 'disableBackup', 'restoreBackup', 'getBackup', 'getBackupOfferTypes', 'getCarp', 'getLicense', 'enableCarp', 'disableCarp', 'setLicense', 'updateCarp'],
 					},
 				},
 				description: 'The virtual machine ID. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
@@ -3158,6 +3182,288 @@ export class OvhPrivateCloud implements INodeType {
 					},
 				},
 				description: 'The name of the snapshot to revert to. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+			// VM Backup Days for enable backup
+			{
+				displayName: 'Backup Days',
+				name: 'backupDays',
+				type: 'multiOptions',
+				options: [
+					{
+						name: 'Friday',
+						value: 'Friday',
+					},
+					{
+						name: 'Monday',
+						value: 'Monday',
+					},
+					{
+						name: 'Saturday',
+						value: 'Saturday',
+					},
+					{
+						name: 'Sunday',
+						value: 'Sunday',
+					},
+					{
+						name: 'Thursday',
+						value: 'Thursday',
+					},
+					{
+						name: 'Tuesday',
+						value: 'Tuesday',
+					},
+					{
+						name: 'Wednesday',
+						value: 'Wednesday',
+					},
+				],
+				default: [],
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vm'],
+						operation: ['enableBackup'],
+					},
+				},
+				description: 'List of days your Virtual Machine will be backed up',
+			},
+			// VM Restore Backup parameters
+			{
+				displayName: 'Restore Point ID',
+				name: 'restorePointId',
+				type: 'number',
+				default: 0,
+				displayOptions: {
+					show: {
+						resource: ['vm'],
+						operation: ['restoreBackup'],
+					},
+				},
+				description: 'The ID of the restore point to use (leave empty for latest)',
+			},
+			{
+				displayName: 'Filer Type',
+				name: 'filerType',
+				type: 'options',
+				options: [
+					{
+						name: 'Nas HA',
+						value: 'nas-ha',
+					},
+					{
+						name: 'vSan',
+						value: 'vsan',
+					},
+				],
+				default: 'nas-ha',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vm'],
+						operation: ['restoreBackup'],
+					},
+				},
+				description: 'Type of filer where to restore the backup',
+			},
+			// Backup batch restore parameters
+			{
+				displayName: 'Backup Job Name',
+				name: 'backupJobName',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						resource: ['backup'],
+						operation: ['batchRestore'],
+					},
+				},
+				description: 'The backup job name (optional)',
+			},
+			{
+				displayName: 'Backup Repository Name',
+				name: 'backupRepositoryName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['backup'],
+						operation: ['batchRestore'],
+					},
+				},
+				placeholder: 'bkp-XXXXX',
+				description: 'The backup files location name (can be retrieved from generateReport)',
+			},
+			// VM CARP parameters
+			{
+				displayName: 'MAC Address',
+				name: 'macAddress',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vm'],
+						operation: ['enableCarp', 'disableCarp'],
+					},
+				},
+				placeholder: '00:50:56:XX:XX:XX',
+				description: 'MAC address for CARP configuration',
+			},
+			// VM setLicense parameters
+			{
+				displayName: 'Bypass Guest OS Family Check',
+				name: 'bypassGuestOsFamilyCheck',
+				type: 'boolean',
+				default: false,
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vm'],
+						operation: ['setLicense'],
+					},
+				},
+				description: 'Whether to bypass guest OS family check',
+			},
+			{
+				displayName: 'KMS License',
+				name: 'kmsLicense',
+				type: 'options',
+				options: [
+					{
+						name: 'KMS',
+						value: 'KMS',
+					},
+					{
+						name: 'SPLA',
+						value: 'SPLA',
+					},
+				],
+				default: 'KMS',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vm'],
+						operation: ['setLicense'],
+					},
+				},
+				description: 'Type of KMS license',
+			},
+			// User changeProperties fields
+			{
+				displayName: 'User Update Properties',
+				name: 'userUpdateProperties',
+				type: 'collection',
+				placeholder: 'Add Property',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['changeProperties'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Can Manage IP FailOvers',
+						name: 'canManageIpFailOvers',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user can manage IP failovers',
+					},
+					{
+						displayName: 'Can Manage Network',
+						name: 'canManageNetwork',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user can manage the network',
+					},
+					{
+						displayName: 'Can Manage Rights',
+						name: 'canManageRights',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user can manage users rights',
+					},
+					{
+						displayName: 'Email',
+						name: 'email',
+						type: 'string',
+						placeholder: 'name@email.com',
+						default: '',
+						description: 'Email address of the user',
+					},
+					{
+						displayName: 'Encryption Right',
+						name: 'encryptionRight',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user can manage encryption/KMS',
+					},
+					{
+						displayName: 'First Name',
+						name: 'firstName',
+						type: 'string',
+						default: '',
+						description: 'First name of the user',
+					},
+					{
+						displayName: 'Full Admin Read-Only',
+						name: 'fullAdminRo',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user is full admin in readonly',
+					},
+					{
+						displayName: 'Last Name',
+						name: 'lastName',
+						type: 'string',
+						default: '',
+						description: 'Last name of the user',
+					},
+					{
+						displayName: 'NSX Right',
+						name: 'nsxRight',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user able to access NSX interface',
+					},
+					{
+						displayName: 'Phone Number',
+						name: 'phoneNumber',
+						type: 'string',
+						default: '',
+						description: 'Mobile phone number',
+					},
+					{
+						displayName: 'Receive Alerts',
+						name: 'receiveAlerts',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user receives technical alerts',
+					},
+					{
+						displayName: 'Token Validator',
+						name: 'tokenValidator',
+						type: 'boolean',
+						default: false,
+						description: 'Whether user can confirm security tokens',
+					},
+				],
+			},
+			// User createObjectRight fields
+			{
+				displayName: 'Propagate',
+				name: 'propagate',
+				type: 'boolean',
+				default: false,
+				displayOptions: {
+					show: {
+						resource: ['user'],
+						operation: ['createObjectRight'],
+					},
+				},
+				description: 'Whether to propagate object right',
 			},
 			// Service update fields
 			{
@@ -4994,12 +5300,13 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'enableBackup') {
 						method = 'POST';
 						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
-						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/backup/enable`;
-						// TODO: Add backup enable parameters if needed
+						const backupDays = this.getNodeParameter('backupDays', i) as string[];
+						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/enableBackup`;
+						body = { backupDays };
 					} else if (operation === 'disableBackup') {
 						method = 'POST';
 						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
-						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/backup/disable`;
+						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/disableBackup`;
 					} else if (operation === 'createBackup') {
 						method = 'POST';
 						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
@@ -5008,8 +5315,11 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'restoreBackup') {
 						method = 'POST';
 						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
-						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/backup/restore`;
-						// TODO: Add restore parameters if needed
+						const restorePointId = this.getNodeParameter('restorePointId', i) as number;
+						const filerType = this.getNodeParameter('filerType', i) as string;
+						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/restoreBackup`;
+						body = { filerType };
+						if (restorePointId > 0) body.restorePointId = restorePointId;
 					} else if (operation === 'getBackupOfferTypes') {
 						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/backupOfferType`;
@@ -5021,6 +5331,25 @@ export class OvhPrivateCloud implements INodeType {
 						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/carp`;
 						// TODO: Add CARP update parameters if needed
+					} else if (operation === 'enableCarp') {
+						method = 'POST';
+						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
+						const macAddress = this.getNodeParameter('macAddress', i) as string;
+						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/enableCarp`;
+						body = { macAddress };
+					} else if (operation === 'disableCarp') {
+						method = 'POST';
+						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
+						const macAddress = this.getNodeParameter('macAddress', i) as string;
+						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/disableCarp`;
+						body = { macAddress };
+					} else if (operation === 'setLicense') {
+						method = 'POST';
+						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
+						const bypassGuestOsFamilyCheck = this.getNodeParameter('bypassGuestOsFamilyCheck', i) as boolean;
+						const kmsLicense = this.getNodeParameter('kmsLicense', i) as string;
+						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/setLicense`;
+						body = { bypassGuestOsFamilyCheck, kmsLicense };
 					} else if (operation === 'getLicense') {
 						const vmId = parseInt(this.getNodeParameter('vmId', i) as string, 10);
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/vm/${vmId}/license`;
@@ -5080,6 +5409,25 @@ export class OvhPrivateCloud implements INodeType {
 						const password = this.getNodeParameter('password', i) as string;
 						path = `/dedicatedCloud/${serviceName}/user/${userId}/changePassword`;
 						body = { password };
+					} else if (operation === 'changeProperties') {
+						method = 'POST';
+						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const userUpdateProperties = this.getNodeParameter('userUpdateProperties', i) as IDataObject;
+						path = `/dedicatedCloud/${serviceName}/user/${userId}/changeProperties`;
+						body = {};
+						// Add optional parameters
+						if (userUpdateProperties.canManageIpFailOvers !== undefined) body.canManageIpFailOvers = userUpdateProperties.canManageIpFailOvers;
+						if (userUpdateProperties.canManageNetwork !== undefined) body.canManageNetwork = userUpdateProperties.canManageNetwork;
+						if (userUpdateProperties.canManageRights !== undefined) body.canManageRights = userUpdateProperties.canManageRights;
+						if (userUpdateProperties.email !== undefined && userUpdateProperties.email !== '') body.email = userUpdateProperties.email;
+						if (userUpdateProperties.encryptionRight !== undefined) body.encryptionRight = userUpdateProperties.encryptionRight;
+						if (userUpdateProperties.firstName !== undefined && userUpdateProperties.firstName !== '') body.firstName = userUpdateProperties.firstName;
+						if (userUpdateProperties.fullAdminRo !== undefined) body.fullAdminRo = userUpdateProperties.fullAdminRo;
+						if (userUpdateProperties.lastName !== undefined && userUpdateProperties.lastName !== '') body.lastName = userUpdateProperties.lastName;
+						if (userUpdateProperties.nsxRight !== undefined) body.nsxRight = userUpdateProperties.nsxRight;
+						if (userUpdateProperties.phoneNumber !== undefined && userUpdateProperties.phoneNumber !== '') body.phoneNumber = userUpdateProperties.phoneNumber;
+						if (userUpdateProperties.receiveAlerts !== undefined) body.receiveAlerts = userUpdateProperties.receiveAlerts;
+						if (userUpdateProperties.tokenValidator !== undefined) body.tokenValidator = userUpdateProperties.tokenValidator;
 					} else if (operation === 'confirmPhoneNumber') {
 						method = 'POST';
 						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
@@ -5104,8 +5452,10 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'createObjectRight') {
 						method = 'POST';
 						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
+						const propagate = this.getNodeParameter('propagate', i) as boolean;
 						path = `/dedicatedCloud/${serviceName}/user/${userId}/objectRight`;
-						// TODO: Add object right creation parameters
+						body = {};
+						if (propagate !== undefined) body.propagate = propagate;
 					} else if (operation === 'deleteObjectRight') {
 						method = 'DELETE';
 						const userId = parseInt(this.getNodeParameter('userId', i) as string, 10);
@@ -5163,7 +5513,11 @@ export class OvhPrivateCloud implements INodeType {
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/backup`;
 					} else if (operation === 'batchRestore') {
 						method = 'POST';
+						const backupRepositoryName = this.getNodeParameter('backupRepositoryName', i) as string;
+						const backupJobName = this.getNodeParameter('backupJobName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/backup/batchRestore`;
+						body = { backupRepositoryName };
+						if (backupJobName) body.backupJobName = backupJobName;
 					} else if (operation === 'canOptimizeProxies') {
 						path = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/backup/canOptimizeProxies`;
 					} else if (operation === 'changeProperties') {

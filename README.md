@@ -1,10 +1,10 @@
 # n8n-nodes-ovh
 
-**⚠️ BETA VERSION - Currently OVH AI, OVH Dedicated Server, OVH Domain, and OVH Private Cloud nodes are active**
+**⚠️ BETA VERSION - Currently OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, and OVH Kubernetes nodes are active**
 
 This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, Web PaaS, and private network tasks.
 
-**Note**: This is a beta release. Currently enabled nodes are OVH AI, OVH Dedicated Server, OVH Domain, and OVH Private Cloud. Other nodes will be activated in future releases after thorough testing.
+**Note**: This is a beta release. Currently enabled nodes are OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, and OVH Kubernetes. Other nodes will be activated in future releases after thorough testing.
 
 **Developed by [Ascenzia](https://ascenzia.fr)** - Your trusted partner for AI agent creation and automation.
 
@@ -48,912 +48,311 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 #### Server Operations
 - **Get**: Get server information
-- **Get Many**: List all your dedicated servers
-- **Get Hardware**: Get server hardware specifications
-- **Get Network**: Get server network specifications
-- **Get Service Info**: Get server service information
-- **Reboot**: Reboot the server
+- **Get Many**: List all dedicated servers
+- **Update**: Update server settings (monitoring, state)
+- **Reboot**: Reboot server
 
-#### Task Operations
-- **Get**: Get task information
-- **Get Many**: List server tasks (with optional status filter)
-- **Cancel**: Cancel a running task
+#### Secondary DNS Operations
+- **Create**: Add secondary DNS
+- **Delete**: Remove secondary DNS
+- **Get**: Get secondary DNS details
+- **Get Many**: List secondary DNS domains
 
-#### IP Operations
-- **Get**: Get information about a specific IP
-- **Get Many**: List all IPs associated with a server
+#### Service Info Operations
+- **Get**: Get billing and service information
+- **Update**: Update service renewal settings
 
 #### Installation Operations
-- **Get Status**: Get server installation/reinstallation status (gracefully handles "no installation in progress")
-- **Get Templates**: Get available OS templates compatible with the server
-- **Start**: Start OS installation with template and partition scheme selection
+- **Get Status**: Get installation status
+- **Get Templates**: List available OS templates
+- **Install**: Install OS on server
+
+#### IP Block Operations
+- **Get**: Get IP block information
+- **Get Many**: List IP blocks
 
 #### Network Operations
-- **Get Virtual MACs**: List virtual MAC addresses associated with the server
-- **Create Virtual MAC**: Create a new virtual MAC address (OVH or VMware type)
-- **Delete Virtual MAC**: Remove a virtual MAC address
-- **Get Secondary DNS**: List secondary DNS domains configured for the server
-- **Add Secondary DNS**: Add a domain to secondary DNS configuration
-- **Delete Secondary DNS**: Remove a domain from secondary DNS configuration
-- **IP Block Merge**: Merge IP blocks for network management
+- **Get Specifications**: Get network specifications
+- **Get Public Bandwidth**: Get bandwidth usage
+
+#### Virtual MAC Operations
+- **Create**: Create virtual MAC address
+- **Delete**: Delete virtual MAC
+- **Get**: Get virtual MAC details
+- **Get Many**: List virtual MACs
+
+#### Virtual Address Operations
+- **Create**: Create virtual address
+- **Delete**: Delete virtual address
+- **Get**: Get virtual address details
+- **Get Many**: List virtual addresses
+
+#### Firewall Operations
+- **Create Rule**: Add firewall rule
+- **Delete Rule**: Remove firewall rule
+- **Enable**: Enable firewall
+- **Disable**: Disable firewall
+- **Get**: Get firewall status
+- **Get Rules**: List firewall rules
+- **Update Rule**: Update firewall rule
+
+#### IP Mitigation Operations
+- **Get**: Get IP mitigation status
+- **Get Statistics**: Get mitigation statistics
+
+#### License Operations
+- **Delete**: Delete license
+- **Get**: Get license information
 
 #### Security Operations
-- **Get Firewall**: Get firewall configuration (gracefully handles servers without firewall)
-- **Update Firewall**: Configure firewall settings (enabled/disabled, routed/transparent mode)
-- **Get IP Spoof**: Get IP spoof protection status
-
-#### Options Operations
-- **Get Available Options**: List available server options and add-ons
-
-#### Intervention Operations
-- **Get**: Get information about a specific intervention
-- **Get Many**: List all interventions for the server
+- **Get Spoof**: Get IP spoof protection status
+- **Update Spoof**: Configure IP spoof protection
 
 ### OVH Private Cloud Node
 
-#### Service Operations
-- **Get**: Get service information
-- **Get Many**: List all your private cloud services
-- **Get Service Info**: Get service subscription information
-- **Update**: Update service properties (description, user limits, access policy, etc.)
+Comprehensive VMware Private Cloud management with over 300+ operations across 30+ resources.
 
-#### Datacenter Operations
-- **Get**: Get datacenter information
-- **Get Many**: List all datacenters in a service
-- **Create**: Create a new datacenter
-- **Update**: Update datacenter information
-- **Get Task**: Get datacenter task information
-- **Get Tasks**: List all datacenter tasks
-- **Reset Task State**: Reset datacenter task state
-- **Update Task Maintenance Date**: Update datacenter task maintenance date
-- **Order Filer**: Order new filer for datacenter
-- **Order Host**: Order new host for datacenter
-- **Order Host Hour**: Order host on hourly basis
+#### Core Resources
+- **Allowed Network**: Firewall ACL management
+- **Backup & Backup Repository**: Backup configuration and management
+- **Cluster**: Cluster operations and configuration
+- **Datacenter**: Virtual datacenter management
+- **Disaster Recovery**: Zerto disaster recovery configuration
+- **Filer**: Storage filer management
+- **HCX, HDS, HIPAA**: Compliance and migration tools
+- **Host**: ESXi host management
+- **IAM**: Identity and Access Management
+- **IP**: IP block management
+- **Location**: Datacenter location information
+- **NSX-T Edge**: Network edge management
+- **Private Gateway**: Private network gateway
+- **Robot**: Robot account management
+- **Security Options**: Security configuration
+- **Service**: Global service operations
+- **Service Pack**: Service pack management
+- **Tag**: Resource tagging
+- **Task**: Task monitoring
+- **Two FA Whitelist**: Two-factor authentication
+- **User**: User management with comprehensive rights
+- **Virtual Machine**: VM lifecycle management
+- **VLAN**: VLAN configuration
+- **VM Encryption**: Encryption key management
+- **vRack**: Virtual rack networking
+- **vROps**: vRealize Operations management
 
-#### Virtual Machine Operations
-- **Get**: Get virtual machine information
-- **Get Many**: List all virtual machines in a datacenter
-- **Power Off**: Power off a virtual machine
-- **Power On**: Power on a virtual machine
-- **Reset**: Reset a virtual machine
-- **Revert Snapshot**: Revert VM to a specific snapshot
-- **Get Backup**: Get VM backup information
-- **Enable Backup**: Enable VM backup
-- **Disable Backup**: Disable VM backup
-- **Create Backup**: Create VM backup
-- **Restore Backup**: Restore VM from backup
-- **Get Backup Offer Types**: Get available backup offer types
-- **Get CARP**: Get CARP configuration
-- **Update CARP**: Update CARP configuration
-- **Get License**: Get VM license information
-
-#### User Operations
-- **Get**: Get user information
-- **Get Many**: List all users in a service
-- **Create**: Create a new user
-- **Update**: Update user information
-- **Delete**: Delete a user
-
-#### Task Operations
-- **Get**: Get task information
-- **Get Many**: List all tasks for a service
-
-#### Backup Operations
-- **Get**: Get backup information
-- **Batch Restore**: Batch restore backups
-- **Can Optimize Proxies**: Check if proxies can be optimized
-- **Change Properties**: Change backup properties
-- **Check Jobs**: Check backup jobs
-- **Disable**: Disable backup
-- **Generate Report**: Generate backup report
-- **Get Offer Capabilities**: Get backup offer capabilities
-- **Optimize Proxies**: Optimize backup proxies
-
-#### Cluster Operations
-- **Get**: Get cluster information
-- **Get Many**: List all clusters
-- **Create NSX-T**: Create NSX-T on cluster
-- **Delete NSX-T**: Delete NSX-T from cluster
-- **Update NSX-T**: Update NSX-T on cluster
-
-#### Disaster Recovery Operations
-- **Configure VPN**: Configure VPN for Zerto Single
-- **Create Remote Site**: Create remote site
-- **Create VRA Resources**: Create VRA resources
-- **Delete Remote Site**: Delete remote site
-- **Disable Zerto**: Disable Zerto
-- **Disable Zerto Single**: Disable Zerto Single
-- **End Migration**: End Zerto migration
-- **Get Default Local VRA Network**: Get default local VRA network
-- **Get Endpoint Public IP**: Get endpoint public IP
-- **Get Remote Sites**: Get remote sites
-- **Get Status**: Get Zerto status
-- **Get Usage Report**: Get Zerto usage report
-- **Get VRA Resources**: Get VRA resources
-- **Request Pairing Token**: Request pairing token for Zerto Single
-- **Start Migration**: Start Zerto migration
-
-#### Filer Operations
-- **Get**: Get filer information
-- **Get Many**: List all filers
-- **Get Location**: Get filer location
-- **Get Task**: Get filer task
-- **Get Tasks**: Get filer tasks
-- **Check Global Compatible**: Check if filer is global compatible
-- **Convert To Global**: Convert filer to global
-- **Remove**: Remove filer
-- **Reset Task State**: Reset task state
-- **Update Task Maintenance Date**: Update task maintenance date
-
-#### Host Operations
-- **Get**: Get host information
-- **Get Many**: List all hosts
-- **Get Location**: Get host location
-- **Add Host Spare**: Add host spare
-- **Remove**: Remove host
-- **Get Resilience**: Get host resilience status
-- **Check Resilience Can Be Enabled**: Check if resilience can be enabled on host
-- **Enable Resilience**: Enable resilience on host
-- **Disable Resilience**: Disable resilience on host
-- **Get Task**: Get host task information
-- **Get Tasks**: Get host tasks
-- **Reset Task State**: Reset host task state
-- **Update Task Maintenance Date**: Update host task maintenance date
-
-#### NSX-T Edge Operations
-- **Get**: Get NSX-T edge information
-- **Get Many**: List all NSX-T edges
-- **Create**: Create NSX-T edge
-- **Delete**: Delete NSX-T edge
-- **Relocate**: Relocate edge
-- **Get Resilience**: Get edge resilience status
-- **Check Resilience Can Be Enabled**: Check if resilience can be enabled on edge
-- **Enable Resilience**: Enable resilience on edge
-- **Disable Resilience**: Disable resilience on edge
-
-#### Private Gateway Operations
-- **Get**: Get private gateway information
-- **Enable**: Enable private gateway
-- **Disable**: Disable private gateway
-
-### OVH AI Node
-
-#### Project Operations
-- **Get**: Get cloud project information
-- **Get Many**: List all your cloud projects
-
-#### AI App Operations
-- **Get**: Get AI application information (includes status)
-- **Get Many**: List all AI applications in a project
-- **Get Logs**: Retrieve AI application logs
-- **Create**: Create a new AI application with:
-  - Docker image configuration
-  - Resource allocation (CPU, Memory, GPU)
-  - Region selection
-  - Environment variables
-  - Volume mounting
-  - Port configuration
-  - Health check probes
-  - Scaling strategy (fixed/automatic)
-- **Start**: Start a stopped AI application
-- **Stop**: Stop a running AI application
-- **Delete**: Delete an AI application
-
-#### Training Job Operations
-- **Get**: Get training job information
-- **Get Many**: List all training jobs in a project
-- **Create**: Create a new training job with:
-  - Docker image and region selection
-  - Resource allocation (CPU, Memory, GPU)
-  - Command execution configuration
-  - Environment variables
-  - Volume mounting
-  - Timeout settings
-- **Delete**: Delete a training job
-
-#### Datastore Operations
-- **Get Aliases**: Get datastore aliases in a region
-- **Get Alias**: Get specific datastore alias information
-- **Get Alias Auth**: Get datastore alias authentication info
-- **Create Alias**: Create a new datastore alias with storage credentials
-- **Update Alias**: Update datastore alias credentials
-- **Delete Alias**: Delete a datastore alias
-
-#### Notebook Operations
-- **Get**: Get notebook information
-- **Get Many**: List all notebooks in a project
-- **Create**: Create a new notebook with:
-  - Framework selection (Jupyter, JupyterLab, VSCode)
-  - Environment selection (TensorFlow, PyTorch, Scikit-Learn, R)
-  - Resource allocation (CPU cores 1-28, GPU units 0-4)
-  - Region selection and deployment
-  - Custom notebook naming
-  - Optional timeout configuration
-  - Proper OVH API spec structure
-- **Start**: Start a notebook instance
-- **Stop**: Stop a notebook instance
-- **Delete**: Delete a notebook
-- **Get Backups**: List all backups for a notebook
-- **Get Backup**: Get specific backup information
-- **Fork Backup**: Create a new notebook from a backup
-- **Data Sync**: Synchronize notebook data with backup
-- **Update Labels**: Update notebook labels for organization
-- **Get Logs**: Retrieve notebook execution logs
-- **Restart**: Restart a notebook instance
-- **Get Backup Policy**: Get workspace backup retention policy
-- **Update Backup Policy**: Set backup retention days
-- **Run Command**: Execute a command in the notebook
-
-### OVH Data Processing Node
-
-#### Job Operations
-- **Get**: Get data processing job information
-- **Get Many**: List all data processing jobs in a project (with optional status filter)
-- **Create**: Create a new data processing job (Spark with configurable resources)
-- **Stop**: Stop a running data processing job
-- **Delete**: Delete a data processing job
-- **Get Logs**: Retrieve job execution logs
-
-#### Capability Operations
-- **Get Many**: List available data processing capabilities
-
-#### Metrics Operations
-- **Get**: Get job execution metrics and performance data
-
-### OVH Database Node
-
-#### Service Operations
-- **Get**: Get database service information
-- **Get Many**: List all database services in a project
-- **Create**: Create a new managed database service (MySQL, PostgreSQL, Redis, MongoDB)
-- **Update**: Update database service settings (description, maintenance time, backup time)
-- **Delete**: Delete a database service
-
-#### Database Operations
-- **Get**: Get database information
-- **Get Many**: List all databases in a service
-- **Create**: Create a new database in a service
-- **Delete**: Delete a database
-
-#### User Operations
-- **Get**: Get database user information
-- **Get Many**: List all database users in a service
-- **Create**: Create a new database user
-- **Reset Password**: Reset a user's password
-- **Delete**: Delete a database user
-
-#### Backup Operations
-- **Get**: Get backup information
-- **Get Many**: List all backups for a service
-- **Create**: Create a manual backup
-- **Restore**: Restore from a backup
-- **Delete**: Delete a backup
-
-#### Capability Operations
-- **Get Many**: List database service capabilities and available engines
-
-#### Availability Operations
-- **Get Many**: List database service availability by region
+#### Key Features
+- Complete CRUD operations for all resources
+- Task monitoring and management
+- Comprehensive user rights management
+- Disaster recovery configuration
+- Network security and firewall rules
+- VM backup and restore operations
+- Service pack ordering and management
+- Compliance certifications (HDS, HIPAA, PCI-DSS)
+- NSX-T integration
+- vROps monitoring and configuration
 
 ### OVH Kubernetes Node
 
 #### Cluster Operations
-- **Get**: Get Kubernetes cluster information
-- **Get Many**: List all Kubernetes clusters in a project
-- **Create**: Create a new Kubernetes cluster with specified version and region
-- **Update**: Update cluster settings (name, version)
-- **Reset**: Reset cluster to default configuration
+- **Create**: Create a new managed Kubernetes cluster
 - **Delete**: Delete a Kubernetes cluster
+- **Get**: Get cluster information
+- **Get Many**: List all clusters
+- **Reset**: Reset cluster to default configuration
+- **Restart**: Restart control plane API server
+- **Update**: Update cluster configuration
+- **Update Load Balancers Subnet**: Update load balancers subnet ID
+- **Update Patches**: Force cluster and node update to latest patch
 
 #### Node Pool Operations
-- **Get**: Get node pool information
-- **Get Many**: List all node pools in a cluster
-- **Create**: Create a new node pool with autoscaling configuration
-- **Update**: Update node pool settings (desired nodes, min/max nodes, autoscaling)
+- **Create**: Create a new node pool
 - **Delete**: Delete a node pool
+- **Get**: Get node pool information
+- **Get Many**: List all node pools
+- **Get Nodes**: List all nodes in a node pool
+- **Update**: Update node pool configuration
+
+#### Node Operations
+- **Delete**: Delete a specific node
+- **Get**: Get node information
+- **Get Many**: List all nodes
+
+#### IP Restriction Operations
+- **Append**: Add IP restrictions to cluster
+- **Delete**: Remove an IP restriction
+- **Get Many**: List IP restrictions
+- **Replace**: Replace all IP restrictions
 
 #### Kubeconfig Operations
-- **Get**: Get kubeconfig file for cluster access
+- **Get**: Download kubeconfig file
 - **Reset**: Reset kubeconfig credentials
 
-### OVH Container Registry Node
-
-#### Registry Operations
-- **Get**: Get container registry information
-- **Get Many**: List all container registries in a project
-- **Create**: Create a new managed container registry with specified plan and region
-- **Update**: Update registry settings (name)
-- **Delete**: Delete a container registry
-
-#### User Operations
-- **Get**: Get registry user information
-- **Get Many**: List all users with access to a registry
-- **Create**: Create a new registry user with email and login
-- **Update**: Update user settings (email)
-- **Delete**: Delete a registry user
-
-#### Plan Operations
-- **Get Many**: List available container registry plans and pricing
-
-### OVH Public Cloud Compute Node
-
-#### Instance Operations
-- **Get**: Get compute instance information
-- **Get Many**: List all compute instances in a project
-- **Create**: Create a new compute instance with specified flavor, image, and region
-- **Update**: Update instance settings (name)
-- **Delete**: Delete a compute instance
-- **Start**: Start a stopped compute instance
-- **Stop**: Stop a running compute instance
-- **Reboot**: Reboot a compute instance (soft or hard reboot)
-- **Reinstall**: Reinstall a compute instance with a new image
-- **Resize**: Resize a compute instance to a different flavor
-
-#### Instance Backup Operations
-- **Get**: Get instance backup information
-- **Get Many**: List all backups for an instance
-- **Create**: Create a manual backup of an instance
-- **Restore**: Restore an instance from a backup
-- **Delete**: Delete an instance backup
-
-#### SSH Key Operations
-- **Get**: Get SSH key information
-- **Get Many**: List all SSH keys in a project
-- **Create**: Create a new SSH key pair
-- **Delete**: Delete an SSH key
-
 #### Flavor Operations
-- **Get**: Get flavor (instance type) information
-- **Get Many**: List all available flavors
+- **Get Many**: List available instance types
 
-#### Image Operations
-- **Get**: Get image information
-- **Get Many**: List all available images
+#### Customization Operations
+- **Get**: Get cluster customization
+- **Update**: Update cluster customization
 
-#### Region Operations
-- **Get Many**: List all available regions
+#### Metrics Operations
+- **Get Etcd Usage**: Get cluster etcd usage and quota
 
-### OVH Public Cloud Storage Node
-
-#### Container Operations
-- **Get**: Get storage container information
-- **Get Many**: List all storage containers in a project
-- **Create**: Create a new storage container with specified region
-- **Update**: Update container settings (versioning, type)
-- **Delete**: Delete a storage container
-
-#### Credential Operations
-- **Get**: Get storage credentials information
-- **Get Many**: List all storage credentials for a project
-- **Create**: Create new storage access credentials
-- **Delete**: Delete storage credentials
-
-#### User Operations
-- **Get**: Get storage user information
-- **Get Many**: List all storage users in a project
-- **Create**: Create a new storage user with description
-- **Delete**: Delete a storage user
-
-#### Presigned URL Operations
-- **Create**: Create presigned URLs for secure object access (GET/PUT operations)
-
-#### Storage Operations
-- **Get Many**: List all storage services in a project
-
-#### Region Operations
-- **Get Many**: List all available storage regions
-
-### OVH Web PaaS Node
-
-#### Project Operations
-- **Get**: Get Web PaaS project information
-- **Get Many**: List all Web PaaS projects
-- **Create**: Create a new Web PaaS project with specified plan and region
-- **Update**: Update project settings (title, default branch)
-- **Delete**: Delete a Web PaaS project
-
-#### Subscription Operations
-- **Get**: Get subscription information and service details
-- **Get Many**: List all Web PaaS subscriptions
-
-#### Environment Operations
-- **Get**: Get environment information
-- **Get Many**: List all environments in a project
-- **Activate**: Activate an environment
-- **Deactivate**: Deactivate an environment
-
-#### Deployment Operations
-- **Get**: Get deployment information
-- **Get Many**: List all deployments for an environment
-- **Trigger**: Trigger a new deployment
-
-#### User Operations
-- **Get**: Get user information
-- **Get Many**: List all users in a project
-- **Add**: Add a new user to the project with specified role
-- **Update**: Update user permissions and role
-- **Remove**: Remove a user from the project
-
-#### Certificate Operations
-- **Get**: Get SSL certificate information
-- **Get Many**: List all certificates for an environment
-- **Add**: Add a new SSL certificate with private key
-- **Delete**: Delete an SSL certificate
-
-#### Capability Operations
-- **Get Many**: List all available Web PaaS capabilities and features
-
-### OVH Private Network Node
-
-#### vRack Operations
-- **Get**: Get vRack information and configuration
-- **Get Many**: List all vRacks available
-- **Update**: Update vRack settings (name, description)
-
-#### Service Operations
-- **Get Many**: List all services allowed in vRack
-- **Add**: Add a service to vRack (assign)
-- **Remove**: Remove a service from vRack (unassign)
-
-#### Cloud Project Operations
-- **Get Many**: List all cloud projects in vRack
-- **Add**: Add a cloud project to vRack
-- **Remove**: Remove a cloud project from vRack
-
-#### Dedicated Server Operations
-- **Get Many**: List all dedicated servers in vRack
-- **Add**: Add a dedicated server to vRack
-- **Remove**: Remove a dedicated server from vRack
-
-#### IP Block Operations
-- **Get Many**: List all IP blocks in vRack
-- **Add**: Add an IP block to vRack
-- **Remove**: Remove an IP block from vRack
+#### OpenID Connect Operations
+- **Configure**: Configure OpenID Connect integration
+- **Delete**: Remove OpenID Connect integration
+- **Get**: Get OpenID Connect parameters
+- **Update**: Update OpenID Connect parameters
 
 #### Private Network Operations
-- **Get**: Get private network information
-- **Get Many**: List all private networks in a project
-- **Create**: Create a new private network with VLAN configuration
-- **Update**: Update private network settings (name)
-- **Delete**: Delete a private network
-
-#### Task Operations
-- **Get**: Get task information
-- **Get Many**: List all tasks for vRack operations
-
-## Latest Features & Updates
-
-### Version 0.11.9 - July 2025
-- **🚀 Phase 4 Parameter Enhancement** - Added comprehensive body parameters for Service and Backup operations:
-  - **Service Operations Enhanced**: Added complete parameters for `changeContact` (3 params), `changeProperties` (5 params), `confirmTermination` (3 params), and `orderNewFilerHourly`
-  - **Backup Management Upgraded**: Enhanced `changeProperties` with 8 parameters including backup offer type, email reports configuration, and scheduling options
-  - **Complete API Coverage**: All Service-level operations now have full parameter support for production use
-  - **Professional Features**: Support for contact management, service configuration, termination workflows, and advanced backup configurations
-
-### Version 0.11.8 - July 2025
-- **🔧 Critical Parameter Fixes** - Fixed major parameter deficiencies discovered through comprehensive API audit:
-  - **Datacenter Create Fixed**: Corrected `commercialRangeName` parameter (was `commerceRangeName`) and added optional `vrackName` parameter
-  - **User Create Enhanced**: Added 14 missing optional parameters including `canAddRessource`, `canManageRights`, `encryptionRight`, `networkRole`, `nsxRight`, `right`, `tokenValidator`, `vmNetworkRole`, and more
-  - **Complete User Management**: Now supports comprehensive user creation with roles, permissions, contact info, and advanced options
-  - **API Compliance**: Fixed critical issues preventing proper datacenter and user creation in production environments
-
-### Version 0.11.7 - July 2025
-- **🚀 Phase 2 Service Operations Expansion** - Added 9 missing Service operations to complete OVH Private Cloud coverage:
-  - **New Service Operations**: Added newPrices, nsx, nsxt, orderableIpCountries, passwordPolicy, pcidss (GET operations)
-  - **Service Actions**: Added orderNewFilerHourly, resetTriggeredAlarm, terminate (POST operations)  
-  - **Complete API Alignment**: All 242 production OVH dedicatedCloud endpoints now systematically verified and implemented
-  - **ESLint Compliance**: Maintained alphabetical ordering and proper n8n conventions throughout expansion
-
-### Version 0.11.6 - July 2025
-- **🔧 Critical API Compliance Fixes** - Fixed major inconsistencies with actual OVH API:
-  - **allowedNetwork**: Added missing PUT operation for updating allowed networks
-  - **commercialRange**: Fixed incorrect endpoint paths - moved compliance and orderable operations from global to service-level endpoints
-  - **API Verification**: Comprehensive audit against OVH dedicatedCloud production API endpoints
-  - All corrections maintain full backward compatibility while fixing incorrect API calls
-
-### Version 0.11.5 - July 2025
-- **🌍 Global Operations & Final Expansion** - Added comprehensive global operations and new resource management:
-  - **Global Operations**: Added global dedicated cloud operations without serviceName requirement (get all services, commercial ranges, locations)
-  - **Allowed Network**: Complete network access management (create, get, delete with proper CIDR validation)
-  - **Backup Repository**: Backup repository information retrieval (get single, get all repositories)
-  - **Commercial Range**: Commercial range compliance checking and orderable ranges listing
-  - **Enhanced Service Operations**: Added capabilities check, contact change, termination confirmation, and NSX-T edge deployment validation
-  - All new operations include proper field definitions, parameter validation, and complete execute logic
-
-### Version 0.11.4 - July 2025
-- **🚀 Third massive expansion of OVH Private Cloud node** - Added complete VM encryption, vRack and vROps management:
-  - **VM Encryption enhancements**: Added delete KMS and update KMS operations with changeProperties endpoint
-  - **vRack**: Complete vRack management (get all, get specific, delete association)
-  - **vROps**: Full vROps management including outgoing flows (create, get, update, delete), can be enabled/disabled checks, and upgrade
-  - **Enhanced Service operations**: Added VMware Cloud Director eligibility check
-  - All new operations include proper field definitions, parameter validation, and complete execute logic
-
-### Version 0.11.3 - July 2025
-- **🚀 Second massive expansion of OVH Private Cloud node** - Added even more comprehensive operations:
-  - **Two FA Whitelist**: Complete 2FA whitelist management (create, get, update, delete)
-  - **VLAN**: Get VLAN information and list all VLANs
-  - **VM Encryption**: Full VM encryption management with KMS configuration
-  - **Enhanced Service operations**: Added vCenter upgrade, version check, vendor information, and object type mapping
-  - **Enhanced User operations**: Added password change, phone confirmation, enable/disable, object rights, rights management, and user task operations
-  - All new operations include proper field definitions, parameter validation, and execute logic
-
-### Version 0.11.2 - July 2025
-- **🚀 Massive expansion of OVH Private Cloud node** - Added comprehensive datacenter operations:
-  - **HCX**: Get status and disable HCX functionality
-  - **HDS**: Get HDS (Healthcare Data Security) certification status
-  - **HIPAA**: Get HIPAA compliance certification status
-  - **IAM**: Identity and Access Management with role operations
-  - **IP**: Complete IP block management with task operations
-  - **Location**: Get datacenter location, host profiles, and hypervisors
-  - **Service**: Generate NSXv inventory and VXLAN to vRack mapping
-  - **Filer operations**: Comprehensive existing operations now properly integrated
-  - All new operations include proper field definitions and execute logic
-
-### Version 0.11.1 - July 2025
-- **🔧 OVH Private Cloud fixes and additions** - Corrected endpoint paths and added missing operations:
-  - **Fixed endpoint paths**: Changed from `updateMaintenanceExecutionDate` to `changeMaintenanceExecutionDate`
-  - **Added VM Disaster Recovery**: Configure VPN for Zerto Single disaster recovery
-  - **Added Service Global Tasks**: Check global task list and get global tasks operations
-  - **Improved API compliance**: All endpoints now exactly match OVH API documentation
-
-### Version 0.11.0 - July 2025
-- **🚀 OVH Private Cloud major enhancement** - Massive expansion of datacenter and infrastructure operations:
-  - **Host Resilience Management**: New operations for checking, enabling, and disabling host resilience
-  - **Host Task Management**: Get tasks, reset task states, and update maintenance dates for hosts
-  - **NSX-T Edge Support**: Complete NSX-T Edge resource management with CRUD operations and resilience controls
-  - **Private Gateway Operations**: Enable/disable private gateway functionality at datacenter level
-  - **VM Backup Management**: Create, restore, enable/disable VM backups with offer type discovery
-  - **VM CARP Configuration**: Get and update CARP (Common Address Redundancy Protocol) settings
-  - **VM License Management**: Retrieve VM licensing information
-  - **Datacenter Task Operations**: Comprehensive task management at datacenter level
-  - **Order Operations**: Order new hosts and filers for datacenters (monthly and hourly billing)
-  - **Service Properties Update**: Update private cloud service settings including access policies and user limits
-  - **Dynamic Field Loading**: Added dynamic dropdowns for hosts and NSX-T edges with intelligent loading
-  - **Enhanced User Experience**: All resources now support dynamic selection with proper name display
-
-### Version 0.9.26 - July 2025
-- **🔧 OVH AI node fix** - Fixed HTTP methods for notebook operations:
-  - **Start/Stop operations**: Changed from POST to PUT for notebook start/stop operations
-  - **Correct API compliance**: Now matches OVH API requirements for state change operations
-  - **Consistent behavior**: Already correct for AI apps, now fixed for notebooks
-
-### Version 0.9.25 - July 2025
-- **🔧 OVH AI node fix** - Critical fixes for notebook creation:
-  - **Memory conversion fix**: Changed from MB to bytes (memory is now correctly sent in bytes)
-  - **Flavor placement fix**: Flavor is now properly added to resources before body creation
-  - **GPU configuration**: Enhanced flavor field description - REQUIRED for GPU configurations
-  - **Memory guidance**: Updated description to suggest 80GB for GPU instances
-
-### Version 0.9.24 - July 2025
-- **🚀 OVH AI node enhancement** - Added custom framework version support:
-  - **Custom Framework Version**: New field to specify exact framework versions (e.g., 2.7.1-py312-cudadevel128-gpu)
-  - **Full flexibility**: Override default versions with any OVH-supported framework version
-  - **GPU-optimized versions**: Support for CUDA-enabled and development versions
-  - **Better compatibility**: Use specific Python versions and GPU configurations
-
-### Version 0.9.23 - July 2025
-- **🔧 OVH AI node fix** - Extended CPU limit for notebooks:
-  - **Increased CPU limit**: Maximum CPU cores increased from 12 to 28
-  - **Better resource allocation**: Support for more powerful notebook configurations
-  - **Matches OVH capabilities**: Now supports all available CPU configurations
-
-### Version 0.9.22 - July 2025
-- **🚀 OVH AI node enhancement** - Added missing notebook creation parameters:
-  - **Timeout configuration**: Added timeout parameter for notebook session duration
-  - **IP restrictions**: Added authorizedIps parameter for access control
-  - **Complete API coverage**: All parameters from the full OVH API specification now supported
-  - **Security enhancements**: Control access with IP whitelisting
-
-### Version 0.9.21 - July 2025
-- **🔧 OVH AI node fix** - Removed spec wrapper completely:
-  - **No spec object**: API expects all properties directly at root level
-  - **Matches curl example**: Structure now matches the official API documentation
-  - **All properties at root**: name, region, env, resources, volumes, etc. all at root
-  - **Resolves "[spec] Unknown parameter" error**: Correct request structure
-
-### Version 0.9.20 - July 2025
-- **🔧 OVH AI node fix** - Added all required properties at root level:
-  - **All properties at root**: name, region, env, resources, plus all optional ones
-  - **Dual structure**: Properties exist both at root and in spec
-  - **API validation**: Satisfies all mandatory property requirements
-  - **Resolves "[resources] Property is mandatory" error**: Complete structure
-
-### Version 0.9.19 - July 2025
-- **🔧 OVH AI node fix** - Added region at root level along with env:
-  - **Region at root level**: API also requires region at root for creation
-  - **Both env and region at root**: API validation requires these at root level
-  - **Keep spec structure intact**: All parameters still maintained inside spec
-  - **Resolves "[region] Property is mandatory" error**: Complete API validation
-
-### Version 0.9.18 - July 2025
-- **🔧 OVH AI node fix** - Added env at both root and spec levels:
-  - **Env at root level**: API requires env at root for creation requests
-  - **Keep spec structure**: Maintain all parameters inside spec as documented
-  - **Dual placement**: env appears both at root and inside spec
-  - **Resolves "[env] Property is mandatory" error**: API validation now passes
-
-### Version 0.9.17 - July 2025
-- **🔧 OVH AI node fix** - Fixed notebook create structure based on actual API response:
-  - **Correct spec structure**: Everything goes inside a spec object at root level
-  - **Name and region inside spec**: Not at root level but inside spec
-  - **Flavor restored**: Added back flavor parameter, goes in both spec and resources
-  - **All parameters in spec**: env, resources, volumes, sshPublicKeys, labels all inside spec
-  - **Matches API documentation**: Structure now matches the JSON example from OVH API
-
-### Version 0.9.16 - July 2025
-- **🔧 OVH AI node fix** - Fixed notebook create parameter types:
-  - **Removed flavor parameter**: This parameter is not supported by the API
-  - **Fixed memory type**: Changed from string "8Gi" to number in MB (e.g., 8192 for 8GB)
-  - **Memory is now a long type**: Converts GB input to MB as required by API
-  - **Resolves "Unknown parameter" and "not valid for type long" errors**
-
-### Version 0.9.15 - July 2025
-- **🔧 OVH AI node fix** - Final fix for Notebook Create structure:
-  - **Moved env back to root level**: API requires env at root, not in spec
-  - **Removed timeout parameter**: This parameter doesn't exist in the OVH API
-  - **Removed spec wrapper completely**: No spec object needed
-  - **Correct structure**: name, region, env, resources, volumes, sshPublicKeys, labels, flavor all at root
-  - **Memory format**: Kept Kubernetes-style format (e.g., "8Gi")
-  - **Resolves all API errors**: Final working structure based on API requirements
-
-### Version 0.9.14 - July 2025
-- **🔧 OVH AI node fix** - Fixed Notebook Create with proper spec structure:
-  - **Restored spec wrapper**: env and resources must be inside spec object
-  - **Fixed memory format**: Use Kubernetes-style format (e.g., "8Gi" instead of MB)
-  - **Added flavor option**: Optional flavor ID for specific notebook configurations
-  - **Proper structure**: name, region at root; env, resources, volumes, sshPublicKeys in spec
-  - **Resolves capability matching error**: Proper notebook spec structure for OVH API
-
-### Version 0.9.13 - July 2025
-- **🔧 OVH AI node fix** - Fixed Notebook Create env parameter placement:
-  - **Moved env back to root level**: Not inside spec object (as was correctly done in v0.9.10)
-  - **Kept resources at root level**: Both env and resources should be at root level
-  - **Removed spec wrapper**: OVH API expects env and resources at root, not wrapped
-  - **Resolves "[env] Property is mandatory" error**: Proper request body structure restored
-
-### Version 0.9.12 - July 2025
-- **🔧 OVH AI node fix** - Complete Notebook Create implementation with spec structure:
-  - **Added memory parameter**: Required memory allocation in GB (converts to MB for API)
-  - **Proper spec structure**: Wrapped env and resources in spec object as required by API
-  - **Additional fields**: Support for labels, SSH public keys, and volume mounting
-  - **Volume configuration**: Mount object storage containers with read/write permissions
-  - **SSH access**: Add multiple SSH public keys for notebook access
-  - **Complete parameter set**: All required and optional parameters now supported
-  - **Fixes capability matching error**: Resolves "notebook spec did not match with notebook capabilities"
-
-### Version 0.9.11 - July 2025
-- **🚀 OVH AI node enhancement** - Complete Notebook backup and management operations:
-  - **Backup operations**: Get backups list, get specific backup, fork from backup
-  - **Data sync**: Synchronize notebook workspace data
-  - **Label management**: Update notebook labels for better organization
-  - **Advanced operations**: Get logs, restart instance, run commands
-  - **Backup policy**: Get and update workspace backup retention settings
-  - **Complete notebook lifecycle**: 10 new operations for comprehensive notebook management
-  - **API endpoints**: Full implementation of all notebook API endpoints
-  - **Enhanced productivity**: Better notebook management and backup capabilities
-
-### Version 0.9.10 - July 2025
-- **🔧 OVH AI node fix** - Fixed Notebook Create request structure:
-  - **Restructured request body**: Moved `env` to root level (not inside `spec`)
-  - **Removed spec wrapper**: Direct properties at root level as expected by OVH API
-  - **Simplified structure**: name, env, resources, region at root level
-  - **Resolves "[env] Property is mandatory" error**: Correct request body structure
-
-### Version 0.9.9 - July 2025
-- **🔧 OVH AI node fix** - Fixed Notebook Create framework mapping:
-  - **Fixed frameworkId mapping**: TensorFlow → "tensorflow", PyTorch → "pytorch" (instead of always "conda")
-  - **Updated framework versions**: TensorFlow → "tensorflow-2.11.0", PyTorch → "pytorch-1.13.1"
-  - **Resolves "[env] Property is mandatory" error**: Proper framework identification for OVH API
-  - **Better environment handling**: Accurate mapping between UI selections and OVH framework IDs
-
-### Version 0.9.8 - July 2025
-- **🚀 OVH AI node enhancement** - Complete Notebook Create implementation:
-  - **Added missing parameters**: Notebook Name, Region, CPU/GPU allocation, Timeout
-  - **Fixed API structure**: Request body now uses proper "spec" object structure
-  - **Resource configuration**: CPU (1-12 cores), GPU (0-4 units) selection
-  - **Framework versions**: Automatic mapping to OVH framework versions
-  - **Enhanced functionality**: Complete notebook creation with all required OVH parameters
-  - **API compliance**: Fully aligned with OVH AI Notebook API requirements
-
-### Version 0.9.7 - July 2025
-- **🔧 OVH AI node fix** - Removed non-existent Datastore region operations:
-  - **Removed Get Regions**: This endpoint doesn't exist in OVH AI API (was causing 404 errors)
-  - **Removed Get Region**: This endpoint doesn't exist in OVH AI API (was causing 404 errors)
-  - **Working operations**: 6 confirmed working Datastore operations remain
-  - **API alignment**: Now accurately reflects actual OVH AI Datastore API capabilities
-  - **Error resolution**: Fixes 404 "Not Found" errors on region-specific operations
-
-### Version 0.9.6 - July 2025
-- **🚀 OVH AI node enhancement** - Complete Datastore API implementation:
-  - **Fixed broken operations**: Corrected resource references from 'data' to 'datastore'
-  - **Added missing operations**: Get Regions, Get Region, Update Alias
-  - **Complete API coverage**: Now supports all 8 OVH AI Datastore API endpoints
-  - **Proper parameter structure**: Fixed Create/Update alias credential parameters
-  - **Enhanced functionality**: Update existing aliases with new credentials
-  - All operations now properly functional after fixing resource reference bug
-
-### Version 0.9.5 - July 2025
-- **🔄 OVH AI node refactoring** - Renamed Data resource to Datastore:
-  - Renamed "Data" resource to "Datastore" for better alignment with OVH AI terminology
-  - Updated all operation descriptions to use "datastore alias" instead of "data alias"
-  - Maintained backward compatibility with existing API endpoints
-  - Clearer terminology reflects the actual OVH AI Datastore service functionality
-
-### Version 0.9.4 - July 2025
-- **🚀 OVH AI node enhancement** - Complete Datastore Create Alias implementation:
-  - Added missing storage credentials parameters (Access Key, Secret Key, Optional Endpoint)
-  - Fixed request body structure to include required credentials object
-  - Request now sends: `{alias: aliasName, credentials: {accessKey, secretKey, endpoint?}}`
-  - Resolves "[credentials] Property is mandatory" error when creating datastore aliases
-  - Secret key field properly masked for security
-
-### Version 0.9.3 - July 2025
-- **🔧 OVH AI node fix** - Fixed Datastore Create Alias operation parameter:
-  - Fixed Create Alias parameter structure: API expects `alias` field, not `name` field
-  - Corrected request body from `{name: aliasName}` to `{alias: aliasName}`
-  - Resolves "Property is mandatory" error when creating datastore aliases
-
-### Version 0.9.2 - July 2025
-- **🔧 OVH AI node fix** - Removed non-existent Datastore Get Regions operation:
-  - Removed Get Regions operation (endpoint doesn't exist in OVH AI API)
-  - Datastore resource now has 5 working operations: Get Aliases, Get Alias, Get Alias Auth, Create Alias, Delete Alias
-  - All operations tested and confirmed working with actual OVH API
-
-### Version 0.9.0 - July 2025
-- **🚀 OVH AI node enhancement** - Replace non-existent Model resource with Datastore resource:
-  - Removed Model operations (endpoints don't exist in OVH AI API)
-  - Added Datastore resource with operations for datastore alias management
-  - Proper implementation of OVH AI Datastore API endpoints
-  - Support for datastore alias management across regions
-
-### Version 0.8.18 - July 2025
-- **🚀 OVH AI node enhancement** - Improved DELETE operation response with success confirmation:
-  - Replace empty array response with informative success message
-  - Show resource type (training job, app, data alias, notebook) and ID in response
-  - Better user experience for DELETE operations
-  - Returns: `{success: true, message: 'training job deleted successfully', operation: 'delete', resource: 'job', id: 'xxx'}`
-
-### Version 0.8.17 - July 2025
-- **🔧 OVH AI node fix** - Fixed Invalid signature error caused by whitespace in parameters:
-  - Add .trim() to all ID parameters (projectId, jobId, appId, modelId, notebookId) 
-  - Removes leading/trailing whitespace including tabs that corrupt OVH signatures
-  - Prevents malformed URLs in API calls
-  - Root cause: jobId contained trailing tab character causing signature mismatch
-
-### Version 0.8.14 - July 2025
-- **🔧 OVH AI node fix** - Aligned request options with OvhDedicatedServer for consistent signature generation:
-  - Always use json: true for all requests (matches working OvhDedicatedServer pattern)
-  - Only add Content-Type for POST/PUT requests with body
-  - Ensures consistent OVH signature generation across all node types
-
-### Version 0.8.13 - July 2025
-- **🔧 OVH AI node fix** - Fixed Invalid signature error on Job Delete operations:
-  - Improved request options handling for different HTTP methods
-  - Separated json option and Content-Type handling for POST/PUT vs GET/DELETE requests
-  - Ensures correct OVH signature generation for all request types
-
-### Version 0.8.12 - July 2025
-- **🔧 OVH AI node fix** - Removed non-existent Job Stop operation:
-  - Removed Stop operation from Job operations (not supported by OVH AI Job API)
-  - Fixed 405 Method Not Allowed error when trying to stop training jobs
-  - Updated documentation to reflect actual available operations
-
-### Version 0.8.11 - July 2025
-- **🔧 OVH AI node fix** - Fixed parameter format errors in Job Create operation:
-  - Changed memory parameter from string (1Gi) to number (MB) - fixes proto uint64 field error
-  - Changed volume size parameter from string (10Gi) to number (GB) for API compatibility
-  - Updated parameter descriptions to clarify units (MB for memory, GB for volumes)
-
-### Version 0.8.10 - July 2025
-- **🚀 OVH AI node enhancement** - Complete Job Create operation with resources and additional parameters:
-  - Added required parameters: name, image, region, resources (CPU, Memory, GPU)
-  - Added additional fields: command, environment variables, volumes, timeout, partner ID
-  - Properly structured resource allocation object for OVH API compliance
-
-### Version 0.8.9 - July 2025
-- **🔧 OVH AI node fix** - Improved response handling for Start/Stop operations (handle non-JSON responses)
-
-### Version 0.8.8 - July 2025
-- **🔧 OVH AI node cleanup** - Removed non-existent Update operation for AI apps
-
-### Version 0.8.7 - July 2025
-- **🔧 OVH AI node fix** - Fixed signature error for Start/Stop operations by not sending empty body
-
-### Version 0.8.6 - July 2025
-- **🔧 OVH AI node fix** - Corrected Get Logs endpoint to use /log (not /logs) and Start/Stop operations to use PUT method (not POST)
-
-### Version 0.8.5 - January 2025
-- **🔧 OVH AI node fix** - Fixed 415 "Unsupported Media Type" error on Update operation by always sending Content-Type header
-
-### Version 0.8.4 - January 2025
-- **🔧 OVH AI node update** - Re-added Start, Stop and Get Logs operations with corrected endpoint paths
-
-### Version 0.8.3 - January 2025
-- **🔧 OVH AI node fix** - Removed unsupported operations (Get Logs, Get Status, Start, Stop) that don't exist in OVH API
-
-### Version 0.8.2 - January 2025
-- **🔧 OVH AI node fix** - Fixed "Could not get parameter" error on App Get Many operation
-
-### Version 0.8.1 - January 2025
-- **🔧 OVH AI node fix** - Fixed resources parameter structure for app creation
-- **📝 Documentation update** - Added required API permissions for each OVH service
-
-### Version 0.8.0 - January 2025
-- **🤖 New OVH AI node** - Complete AI/ML services management:
-  - **AI Applications**: Full lifecycle management with enhanced creation options (environment variables, volumes, health checks, scaling strategies)
-  - **Training Jobs**: Create and manage ML training jobs with Docker containers
-  - **Models**: Deploy and manage AI models
-  - **Notebooks**: Create and control Jupyter/VSCode notebooks for development
-  - **Comprehensive parameters**: Support for GPU allocation, custom ports, probe configuration
-
-### Version 0.7.6 - July 2025
-- **🚀 Complete OVH Domain node implementation** - Full domain and DNS management capabilities
-- **🔧 Major API improvements and bug fixes**:
-  - **Contact Get**: Fixed to properly extract contact IDs from OVH API structure (`contactOwner.id`, etc.)
-  - **Nameserver Get Many**: Now returns nameserver names, IDs, and types instead of just IDs
-  - **Zone Export**: Returns complete zone content in `zoneContent` field instead of individual characters
-  - **DNS Records**: Removed redundant "Get Many" operation, enhanced "Get All Detailed" for better data structure
-- **✨ Enhanced OVH Dedicated Server** with comprehensive server management:
-  - **Installation management**: OS template installation with status monitoring
-  - **Network management**: Virtual MAC, secondary DNS, IP block operations
-  - **Security management**: Firewall and IP spoof protection configuration
-  - **Server options**: Available options and add-ons management
-  - **Interventions**: Hardware intervention tracking and management
-
-### Key Improvements (v0.7.1 - v0.7.6)
-- **Correct API mapping**: Fixed Contact operations to use proper OVH API response structure
-- **Enhanced data presentation**: Nameserver operations return meaningful object structures
-- **Better zone handling**: Zone Export returns complete content instead of parsing errors
-- **Simplified interface**: Removed redundant operations to improve user experience
-- **Graceful degradation**: Features unavailable on specific servers return informative messages instead of errors
-- **Robust validation**: Empty field validation with clear error messages
-- **Optimized API calls**: Proper content-type handling and signature generation
-
-## Credentials
-
-To use this node, you need to create OVH API credentials:
-
-1. Go to the OVH API token creation page for your region:
-   - EU: https://eu.api.ovh.com/createToken/
-   - CA: https://ca.api.ovh.com/createToken/
-   - US: https://api.us.ovhcloud.com/createToken/
-
-2. Set the required rights for your application based on the nodes you want to use:
-   - **OVH Domain**: GET/PUT/POST/DELETE on `/domain/*`
-   - **OVH Dedicated Server**: GET/PUT/POST/DELETE on `/dedicated/server/*`
-   - **OVH AI**: GET/PUT/POST/DELETE on `/cloud/project/*/ai/*`
-   - **OVH Private Cloud**: GET/PUT/POST/DELETE on `/dedicatedCloud/*`
-   - For all cloud services: GET on `/cloud/project` and `/cloud/project/*`
-
-3. You'll receive:
-   - Application Key
-   - Application Secret
-   - Consumer Key
-
-4. Add these credentials in n8n when configuring the OVH node
-
-## About Ascenzia
-
-[Ascenzia](https://ascenzia.fr) is a French technology company specializing in AI agent creation and intelligent automation solutions. We help businesses build and deploy sophisticated AI agents that can interact with various APIs and automate complex workflows.
-
-### Our Services
-- **AI Agent Development**: Design and creation of custom AI agents for business automation
-- **Intelligent Workflow Automation**: Building smart workflows with AI decision-making capabilities
-- **API Integration**: Connecting AI agents with external services and platforms
-- **Custom AI Solutions**: Tailored artificial intelligence solutions for specific business needs
-
-Visit [ascenzia.fr](https://ascenzia.fr) for your AI agent development projects.
-
-## Resources
-
-- [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
-- [OVH API documentation](https://api.ovh.com/)
-- [Ascenzia website](https://ascenzia.fr)
+- **Get**: Get private network configuration
+- **Update**: Update private network configuration
+
+#### Update Policy Operations
+- **Update**: Change cluster update policy
+
+### OVH AI Node
+
+#### AI Application Operations
+- **Create**: Deploy AI applications with custom configurations
+- **Delete**: Remove AI applications
+- **Get**: Get application details
+- **Get Logs**: Retrieve application logs
+- **Get Many**: List all AI applications
+- **Get Status**: Check application status
+- **Start**: Start an application
+- **Stop**: Stop an application
+
+#### Training Job Operations
+- **Create**: Launch training jobs
+- **Delete**: Cancel training jobs
+- **Get**: Get job details
+- **Get Logs**: Retrieve job logs
+- **Get Many**: List all training jobs
+
+#### Datastore Operations
+- **Get Datastore Alias**: Get datastore alias information by region
+- **Delete Datastore Alias**: Remove datastore alias
+
+#### Notebook Operations
+- **Create**: Create Jupyter/VSCode notebooks
+- **Delete**: Delete notebooks
+- **Get**: Get notebook details
+- **Get Many**: List all notebooks
+- **Start**: Start a notebook
+- **Stop**: Stop a notebook
+
+## Authentication
+
+### Required API Permissions
+
+To use these nodes, you need to create OVH API credentials with appropriate permissions:
+
+1. Go to [OVH API](https://api.ovh.com/createToken/) to create your credentials
+2. Set the following permissions based on the services you want to use:
+
+#### For OVH Domain:
+- GET /domain*
+- PUT /domain*
+- POST /domain*
+- DELETE /domain*
+
+#### For OVH Dedicated Server:
+- GET /dedicated/server*
+- PUT /dedicated/server*
+- POST /dedicated/server*
+- DELETE /dedicated/server*
+
+#### For OVH Private Cloud:
+- GET /dedicatedCloud*
+- PUT /dedicatedCloud*
+- POST /dedicatedCloud*
+- DELETE /dedicatedCloud*
+
+#### For OVH AI:
+- GET /cloud/project/*/ai*
+- PUT /cloud/project/*/ai*
+- POST /cloud/project/*/ai*
+- DELETE /cloud/project/*/ai*
+
+#### For OVH Kubernetes:
+- GET /cloud/project/*/kube*
+- PUT /cloud/project/*/kube*
+- POST /cloud/project/*/kube*
+- DELETE /cloud/project/*/kube*
+
+## Release v0.12.0 - Complete Feature Set
+
+### 🚀 Comprehensive OVH Integration Suite
+
+This release represents the complete implementation of OVH API integration for n8n, providing over 530+ operations across all major OVH services.
+
+#### **OVH Private Cloud (VMware) - 300+ Operations**
+- **Complete Resource Coverage**: 30+ resource types with full CRUD operations
+- **Advanced Features**:
+  - Disaster Recovery with Zerto/ZertoSingle configuration
+  - NSX-T Edge deployment and management
+  - vROps monitoring and alerting
+  - VM encryption with KMS
+  - Two-factor authentication management
+  - Comprehensive backup and restore operations
+- **Enhanced Parameter Support**: 100% API parameter coverage for all POST/PUT operations
+- **Compliance**: HDS, HIPAA, PCI-DSS certification management
+
+#### **OVH Domain - Complete DNS Management**
+- Full domain lifecycle management
+- Advanced DNS zone operations with import/export
+- Complete DNS record management (A, AAAA, MX, CNAME, TXT, etc.)
+- Nameserver configuration
+- Contact management with proper ID extraction
+
+#### **OVH Dedicated Server - Infrastructure Automation**
+- Server lifecycle management with OS installation
+- Network configuration (Virtual MAC, IP blocks)
+- Security features (Firewall, IP mitigation, spoof protection)
+- Monitoring and statistics
+- License management
+
+#### **OVH AI - ML/AI Workload Automation**
+- AI application deployment with custom resources
+- Training job management
+- Jupyter/VSCode notebook automation
+- Datastore operations
+- Complete lifecycle management with logs and monitoring
+
+#### **OVH Kubernetes - Managed Kubernetes Automation**
+- Complete cluster lifecycle management
+- Node pool and node operations
+- IP restrictions and security management
+- OpenID Connect integration
+- Private network configuration
+- Metrics and monitoring
+- Update policy management
+- 30+ operations across 11 resources
+
+### Technical Improvements
+- **Full ESLint Compliance**: All code follows n8n coding standards
+- **Comprehensive Error Handling**: Proper error messages and recovery
+- **Optimized API Calls**: Efficient batching and caching
+- **Type Safety**: Full TypeScript implementation
+- **Load Options**: Dynamic loading for all resource selections
+
+### API Coverage
+- **530+ Operations**: Complete coverage of OVH production APIs
+- **100% Parameter Implementation**: All required and optional parameters
+- **Authenticated Requests**: OVH signature v1 implementation
+- **Rate Limiting**: Respects OVH API limits
+
+This release provides enterprise-grade automation capabilities for OVH infrastructure, enabling complex workflows and complete infrastructure-as-code implementations.
+
+## Support
+
+For issues and feature requests, please visit the [GitHub repository](https://github.com/lfinmauritius/n8n-nodes-ovh).
 
 ## License
 
-[MIT](LICENSE.md)
+MIT - see [LICENSE](LICENSE.md) file for details.
 
 ---
 
-**© 2025 Ascenzia - Powering AI Agent Innovation**
+**Developed with ❤️ by [Ascenzia](https://ascenzia.fr)**
