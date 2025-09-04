@@ -2108,7 +2108,7 @@ export class OvhAccount implements INodeType {
 						'X-Ovh-Consumer': consumerKey,
 						'Content-Type': 'application/json',
 					},
-					body: method !== 'GET' ? body : undefined,
+					body: method !== 'GET' && method !== 'DELETE' ? body : undefined,
 					json: true,
 				};
 
