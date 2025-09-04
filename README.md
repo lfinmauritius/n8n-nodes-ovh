@@ -1,10 +1,10 @@
 # n8n-nodes-ovh
 
-**⚠️ BETA VERSION - Currently OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, OVH Kubernetes, and OVH Account nodes are active**
+**⚠️ BETA VERSION - Currently OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, OVH Kubernetes, OVH Account, and OVH Private Network nodes are active**
 
 This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, account management, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, and private network tasks.
 
-**Note**: This is a beta release. Currently enabled nodes are OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, OVH Kubernetes, and OVH Account. Other nodes will be activated in future releases after thorough testing.
+**Note**: This is a beta release. Currently enabled nodes are OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, OVH Kubernetes, OVH Account, and OVH Private Network. Other nodes will be activated in future releases after thorough testing.
 
 **Developed by [Ascenzia](https://ascenzia.fr)** - Your trusted partner for AI agent creation and automation.
 
@@ -378,6 +378,76 @@ Comprehensive account management with 100+ operations across 20+ resources for m
 - **Communication**: SMS services integration
 - **Task Management**: Task workflow operations
 
+### OVH Private Network Node
+
+Comprehensive vRack (Virtual Rack) private network management with 35+ operations across 11 resources for managing OVH's private networking infrastructure.
+
+#### IP Block Operations
+- **Get**: Get IP block information and usage details
+- **Get Many**: List all IP blocks in vRack
+- **Create**: Allocate IP blocks to vRack
+- **Delete**: Remove IP blocks from vRack
+
+#### Allowed Service Operations
+- **Get Many**: List services allowed to access the vRack
+- **Create**: Add service access to vRack
+- **Delete**: Remove service access from vRack
+
+#### Dedicated Cloud Operations
+- **Get**: Get dedicated cloud datacenter information
+- **Get Many**: List dedicated cloud datacenters in vRack
+- **Create**: Connect dedicated cloud datacenter to vRack
+- **Delete**: Disconnect dedicated cloud datacenter from vRack
+
+#### Dedicated Server Operations
+- **Get**: Get dedicated server information
+- **Get Many**: List dedicated servers in vRack
+- **Create**: Connect dedicated server to vRack
+- **Delete**: Remove dedicated server from vRack
+
+#### Dedicated Server Interface Operations
+- **Get**: Get server interface information
+- **Get Many**: List server network interfaces in vRack
+
+#### Public Cloud Project Operations
+- **Get**: Get public cloud project information
+- **Get Many**: List public cloud projects in vRack
+- **Create**: Connect public cloud project to vRack
+- **Delete**: Remove public cloud project from vRack
+
+#### Legacy vRack Operations
+- **Get**: Get legacy vRack information
+- **Get Many**: List legacy vRacks
+- **Create**: Create legacy vRack connection
+- **Delete**: Remove legacy vRack connection
+
+#### Task Operations
+- **Get**: Get task information and status
+- **Get Many**: List all vRack tasks with filtering
+
+#### vRack Operations
+- **Get**: Get vRack information and settings
+- **Get Many**: List all vRacks
+- **Update**: Update vRack configuration (name, description)
+
+#### vRack Service Operations
+- **Get**: Get vRack service information
+- **Get Many**: List available vRack services
+
+#### CloudConnect Operations
+- **Get**: Get CloudConnect information
+- **Get Many**: List CloudConnect services in vRack
+- **Create**: Connect CloudConnect to vRack
+- **Delete**: Remove CloudConnect from vRack
+
+#### Features
+- **Complete Network Management**: Full control over private network infrastructure
+- **Service Integration**: Connect various OVH services (dedicated servers, public cloud, dedicated cloud)
+- **IP Address Management**: Comprehensive IP block allocation and management
+- **Task Monitoring**: Real-time task tracking and status monitoring
+- **Secure Connectivity**: Private network isolation and security
+- **Legacy Support**: Support for legacy vRack infrastructure
+
 ## Authentication
 
 ### Required API Permissions
@@ -422,6 +492,12 @@ To use these nodes, you need to create OVH API credentials with appropriate perm
 - PUT /me*
 - POST /me*
 - DELETE /me*
+
+#### For OVH Private Network:
+- GET /vrack*
+- PUT /vrack*
+- POST /vrack*
+- DELETE /vrack*
 
 ## Release v0.12.0 - Complete Feature Set
 
