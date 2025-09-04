@@ -640,16 +640,28 @@ export class OvhAccount implements INodeType {
 						action: 'Get order',
 					},
 					{
-						name: 'Get Invoice',
-						value: 'getInvoice',
-						description: 'Get order invoice',
-						action: 'Get order invoice',
+						name: 'Get Associated Object',
+						value: 'getAssociatedObject',
+						description: 'Get object associated with order',
+						action: 'Get associated object',
+					},
+					{
+						name: 'Get Details',
+						value: 'getDetails',
+						description: 'Get order details',
+						action: 'Get order details',
 					},
 					{
 						name: 'Get Many',
 						value: 'getMany',
 						description: 'Get all orders',
 						action: 'Get many orders',
+					},
+					{
+						name: 'Get Payment',
+						value: 'getPayment',
+						description: 'Get order payment information',
+						action: 'Get order payment',
 					},
 					{
 						name: 'Get Status',
@@ -1291,7 +1303,7 @@ export class OvhAccount implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['order'],
-						operation: ['get', 'getStatus', 'pay', 'getInvoice'],
+						operation: ['get', 'getStatus', 'pay', 'getAssociatedObject', 'getDetails', 'getPayment'],
 					},
 				},
 
@@ -1910,9 +1922,15 @@ export class OvhAccount implements INodeType {
 						if (paymentMeanId) {
 							body = { paymentMeanId };
 						}
-					} else if (operation === 'getInvoice') {
+					} else if (operation === 'getAssociatedObject') {
 						const orderId = this.getNodeParameter('orderId', i) as number;
-						path = `/me/order/${orderId}/invoice`;
+						path = `/me/order/${orderId}/associatedObject`;
+					} else if (operation === 'getDetails') {
+						const orderId = this.getNodeParameter('orderId', i) as number;
+						path = `/me/order/${orderId}/details`;
+					} else if (operation === 'getPayment') {
+						const orderId = this.getNodeParameter('orderId', i) as number;
+						path = `/me/order/${orderId}/payment`;
 					}
 				}
 				// Payment Mean resource
