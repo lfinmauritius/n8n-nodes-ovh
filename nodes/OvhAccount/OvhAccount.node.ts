@@ -2060,12 +2060,20 @@ export class OvhAccount implements INodeType {
 				}
 
 				// Create signature
+				let bodyForSignature = '';
+				if (method !== 'GET' && method !== 'DELETE' && Object.keys(body).length > 0) {
+					// Match official OVH SDK: JSON.stringify + unicode escaping
+					bodyForSignature = JSON.stringify(body).replace(/[\u0080-\uFFFF]/g, (m) => {
+						return '\\u' + ('0000' + m.charCodeAt(0).toString(16)).slice(-4);
+					});
+				}
+
 				const signatureElements = [
 					applicationSecret,
 					consumerKey,
 					method,
 					url + queryString,
-					JSON.stringify(body),
+					bodyForSignature,
 					timestamp,
 				];
 

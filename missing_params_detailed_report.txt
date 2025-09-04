@@ -1,0 +1,188 @@
+# Missing Parameters by Endpoint Report
+
+This report shows all endpoints that have parameters not yet implemented in OvhPrivateCloud.node.ts
+
+
+## 🔴 BACKUP OPERATIONS
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/backup/batchRestore
+**Missing Parameters:**
+- `backupJobName` (string) - Optional
+  - Stable production version
+- `backupRepositoryName` (string) - Required
+  - The backup files location name bkp-XXXXX, it can be retrieved in the report sent by generateReport
+
+
+## 🔴 DISASTER RECOVERY OPERATIONS
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/disasterRecovery/zerto/disable
+**Missing Parameters:**
+- `secondaryDatacenterId` (long) - Required
+  - Id of the Datacenter
+- `secondaryServiceName` (string) - Required
+  - Your secondary datacenter id
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/disasterRecovery/zerto/endpointPublicIp
+**Missing Parameters:**
+- `newEndpointPublicIp` (ip) - Required
+  - Id of the Datacenter
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/disasterRecovery/zerto/remoteSites
+**Missing Parameters:**
+- `label` (string) - Required
+  - Id of the Datacenter
+- `remoteEndpointPublicIp` (ipv4) - Required
+  - Pre-Shared Key to secure data transfer between both sites
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/disasterRecovery/zerto/vraResources
+**Missing Parameters:**
+- `resourcesSize` (dedicatedCloud.disasterRecovery.ZertoVraResourceSizeEnum) - Required
+  - Id of the Datacenter
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/disasterRecovery/zertoSingle/configureVpn
+**Missing Parameters:**
+- `remoteEndpointInternalIp` (ipv4) - Required
+  - Pre-Shared Key to secure data transfer between both sites
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/disasterRecovery/zertoSingle/endpointPublicIp
+**Missing Parameters:**
+- `newEndpointPublicIp` (ip) - Required
+  - Id of the Datacenter
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/disasterRecovery/zertoSingle/remoteSites
+**Missing Parameters:**
+- `label` (string) - Required
+  - Id of the Datacenter
+- `remoteEndpointPublicIp` (ipv4) - Required
+  - Pre-Shared Key to secure data transfer between both sites
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/disasterRecovery/zertoSingle/vraResources
+**Missing Parameters:**
+- `resourcesSize` (dedicatedCloud.disasterRecovery.ZertoVraResourceSizeEnum) - Required
+  - Id of the Datacenter
+
+
+## 🔴 USER OPERATIONS
+
+### POST /dedicatedCloud/{serviceName}/user/{userId}/changeProperties
+**Missing Parameters:**
+- `canManageIpFailOvers` (boolean) - Optional
+  - Stable production version
+- `canManageNetwork` (boolean) - Optional
+  - Defines if the user can manage ip failovers
+
+### POST /dedicatedCloud/{serviceName}/user/{userId}/objectRight
+**Missing Parameters:**
+- `propagate` (boolean) - Optional
+  - Stable production version
+
+
+## 🔴 VM OPERATIONS
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/vm/{vmId}/disableCarp
+**Missing Parameters:**
+- `macAddress` (string) - Required
+  - Id of the Datacenter
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/vm/{vmId}/enableCarp
+**Missing Parameters:**
+- `macAddress` (string) - Required
+  - Id of the Datacenter
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/vm/{vmId}/restoreBackup
+**Missing Parameters:**
+- `filerType` (dedicatedCloud.filer.FilerTypeEnum) - Required
+  - Id of the filer where we should restore this Backup
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/vm/{vmId}/setLicense
+**Missing Parameters:**
+- `bypassGuestOsFamilyCheck` (boolean) - Required
+  - Stable production version
+- `kmsLicense` (dedicatedCloud.spla.KmsLicenseEnum) - Required
+  - Id of the Datacenter
+
+
+## 🔴 SERVICE-LEVEL OPERATIONS
+
+### POST /dedicatedCloud/{serviceName}/confirmTermination
+**Missing Parameters:**
+- `futureUse` (service.TerminationFutureUseEnum) - Optional
+  - Commentary about your termination request
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/host/{hostId}/resilience/enable
+**Missing Parameters:**
+- `duration` (long) - Required
+  - Id of the Datacenter
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/nsxtEdge/{nsxtEdgeId}/relocateEdge
+**Missing Parameters:**
+- `datastore` (string) - Required
+  - Id of the Datacenter
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/nsxtEdge/{nsxtEdgeId}/resilience/enable
+**Missing Parameters:**
+- `duration` (long) - Required
+  - Id of the Datacenter
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/orderNewHostHourly
+**Missing Parameters:**
+- `vmwareClusterId` (string) - Required
+  - Domain of the service
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/privateGateway/enable
+**Missing Parameters:**
+- `netmask` (ip) - Required
+  - Ip to set on your private gateway in your network
+- `portgroup` (string) - Required
+  - Your netmask to set on the private gateway
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/privateGateway/reconfigure
+**Missing Parameters:**
+- `netmask` (ip) - Optional
+  - Ip to set on your private gateway in your network
+- `newDatacenterId` (long) - Optional
+  - Your netmask to set on the private gateway
+
+### POST /dedicatedCloud/{serviceName}/datacenter/{datacenterId}/resizeNsxtEdgeCluster
+**Missing Parameters:**
+- `size` (dedicatedCloud.nsxt.NsxtEdgeSizeEnum) - Required
+  - Domain of the service
+
+### POST /dedicatedCloud/{serviceName}/securityOptions/resumePendingEnabling
+**Missing Parameters:**
+- `option` (dedicatedCloud.securityOption.SecurityOptionEnum) - Required
+  - Stable production version
+
+### POST /dedicatedCloud/{serviceName}/upgradeVcenter
+**Missing Parameters:**
+- `release` (dedicatedCloud.releaseEnum) - Optional
+  - Stable production version
+
+### POST /dedicatedCloud/{serviceName}/vendor/ovhId
+**Missing Parameters:**
+- `objectType` (dedicatedCloud.VendorObjectTypeEnum) - Required
+  - Stable production version
+- `vendorId` (string) - Required
+  - Domain of the service
+
+### POST /dedicatedCloud/{serviceName}/vrops/outgoingFlow
+**Missing Parameters:**
+- `servicePort` (long) - Required
+  - Domain of the service
+
+### POST /dedicatedCloud/{serviceName}/vrops/upgrade
+**Missing Parameters:**
+- `version` (string) - Required
+  - Domain of the service
+
+
+## SUMMARY
+
+- Total endpoints with missing parameters: 28
+- Total missing parameters: 37
+- Backup operations: 1
+- Disaster Recovery operations: 8
+- User operations: 2
+- VM operations: 4
+- Service operations: 13
+- Other operations: 0

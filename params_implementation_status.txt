@@ -1,0 +1,107 @@
+# Body Parameters Implementation Check
+
+## Checking which body parameters are implemented in OvhPrivateCloud.node.ts
+
+### Parameters found in implementation:
+
+✓ backupDays
+✓ backupDurationInReport
+✓ backupOffer
+✓ backupSizeInReport
+✓ canAddRessource
+✓ canManageRights
+✓ commentary
+✓ commercialRangeName
+✓ contactAdmin
+✓ contactBilling
+✓ contactTech
+✓ description
+✓ diskSizeInReport
+✓ email
+✓ encryptionRight
+✓ executionDate
+✓ expirationDate
+✓ filerId
+✓ firstName
+✓ fullDayInReport
+✓ hostId
+✓ ip
+✓ lastName
+✓ mailAddress
+✓ name
+✓ network
+✓ networkRole
+✓ nsxRight
+✓ password
+✓ phoneNumber
+✓ preSharedKey
+✓ reason
+✓ receiveAlerts
+✓ restorePointId
+✓ restorePointInReport
+✓ right
+✓ scheduleHour
+✓ sslThumbprint
+✓ sslV3
+✓ token
+✓ tokenValidator
+✓ type
+✓ userAccessPolicy
+✓ userLimitConcurrentSession
+✓ userLogoutPolicy
+✓ userSessionTimeout
+✓ vmId
+✓ vmNetworkRole
+✓ vrackName
+
+### Parameters NOT found in implementation:
+
+✗ backupJobName
+✗ backupRepositoryName
+✗ baseDnForGroups
+✗ baseDnForUsers
+✗ bypassGuestOsFamilyCheck
+✗ canManageIpFailOvers
+✗ canManageNetwork
+✗ datastore
+✗ domainAlias
+✗ domainName
+✗ duration
+✗ filerType
+✗ fullAdminRo
+✗ futureUse
+✗ groupName
+✗ kind
+✗ kmsLicense
+✗ label
+✗ ldapHostname
+✗ ldapTcpPort
+✗ localVraNetwork
+✗ macAddress
+✗ netmask
+✗ newDatacenterId
+✗ newEndpointPublicIp
+✗ noSsl
+✗ objectType
+✗ option
+✗ ovhEndpointIp
+✗ portgroup
+✗ primaryEndpointIp
+✗ propagate
+✗ release
+✗ remoteEndpointInternalIp
+✗ remoteEndpointPublicIp
+✗ remoteVraNetwork
+✗ remoteZvmInternalIp
+✗ resourcesSize
+✗ secondaryDatacenterId
+✗ secondaryEndpointIp
+✗ secondaryServiceName
+✗ servicePort
+✗ size
+✗ streamId
+✗ username
+✗ vendorId
+✗ version
+✗ vmwareClusterId
+✗ vmwareObjectId

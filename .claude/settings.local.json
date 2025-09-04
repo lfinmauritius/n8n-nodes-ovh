@@ -48,7 +48,9 @@
       "Bash(do echo \"=== $resource ===\")",
       "Bash(python:*)",
       "Bash(ls:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(sed:*)",
+      "Bash(npx eslint:*)"
     ],
     "deny": []
   }
