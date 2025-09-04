@@ -50,7 +50,10 @@
       "Bash(ls:*)",
       "Bash(rg:*)",
       "Bash(sed:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git filter-repo:*)",
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch me_endpoint.html' --prune-empty --tag-name-filter cat -- --all)"
     ],
     "deny": []
   }
