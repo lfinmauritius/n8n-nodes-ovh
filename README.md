@@ -2,7 +2,7 @@
 
 **⚠️ BETA VERSION - Currently OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, OVH Kubernetes, and OVH Account nodes are active**
 
-This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, account management, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, Web PaaS, and private network tasks.
+This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, account management, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, and private network tasks.
 
 **Note**: This is a beta release. Currently enabled nodes are OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, OVH Kubernetes, and OVH Account. Other nodes will be activated in future releases after thorough testing.
 
