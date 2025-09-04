@@ -6,8 +6,9 @@ import {
 	IDataObject,
 	IHttpRequestMethods,
 	IRequestOptions,
+	NodeOperationError,
 } from 'n8n-workflow';
-import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { NodeConnectionType } from 'n8n-workflow';
 import { createHash } from 'crypto';
 
 export class OvhPrivateNetwork implements INodeType {
@@ -18,7 +19,7 @@ export class OvhPrivateNetwork implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH Private Network (vRack)',
+		description: 'Manage OVH Private Network (vRack) - Complete API Integration',
 		defaults: {
 			name: 'OVH Private Network',
 		},
@@ -40,35 +41,63 @@ export class OvhPrivateNetwork implements INodeType {
 					{
 						name: 'Cloud Project',
 						value: 'cloudProject',
+						description: 'Public Cloud Projects in vRack',
+					},
+					{
+						name: 'Dedicated Cloud',
+						value: 'dedicatedCloud',
+						description: 'VMware Private Cloud in vRack',
 					},
 					{
 						name: 'Dedicated Server',
 						value: 'dedicatedServer',
+						description: 'Dedicated Servers in vRack',
 					},
 					{
 						name: 'IP Block',
 						value: 'ipBlock',
+						description: 'IP Blocks management',
 					},
 					{
-						name: 'Private Network',
-						value: 'privateNetwork',
+						name: 'IP Load Balancer',
+						value: 'ipLoadBalancer',
+						description: 'IP Load Balancer in vRack',
 					},
 					{
-						name: 'Service',
-						value: 'service',
+						name: 'IPv6',
+						value: 'ipv6',
+						description: 'IPv6 management',
+					},
+					{
+						name: 'Legacy vRack',
+						value: 'legacyVrack',
+						description: 'Legacy vRack services',
+					},
+					{
+						name: 'OVH Cloud Connect',
+						value: 'cloudConnect',
+						description: 'OVH Cloud Connect services',
 					},
 					{
 						name: 'Task',
 						value: 'task',
+						description: 'Task management',
 					},
 					{
 						name: 'vRack',
 						value: 'vrack',
+						description: 'Main vRack management',
+					},
+					{
+						name: 'vRack Service',
+						value: 'vrackServices',
+						description: 'VRack Services management',
 					},
 				],
 				default: 'vrack',
 			},
-			// vRack operations
+
+			// vRack Operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -87,54 +116,46 @@ export class OvhPrivateNetwork implements INodeType {
 						action: 'Get v rack information',
 					},
 					{
+						name: 'Get Allowed Services',
+						value: 'getAllowedServices',
+						description: 'List services that can be attached',
+						action: 'Get allowed services',
+					},
+					{
+						name: 'Get Eligible Services',
+						value: 'getEligibleServices',
+						description: 'List eligible services',
+						action: 'Get eligible services',
+					},
+					{
 						name: 'Get Many',
-						value: 'getAll',
-						description: 'Get many vRacks',
-						action: 'Get many v racks',
+						value: 'getMany',
+						description: 'List all available vRacks',
+						action: 'List all v racks',
+					},
+					{
+						name: 'Get Service Info',
+						value: 'getServiceInfo',
+						description: 'Get service information',
+						action: 'Get service information',
+					},
+					{
+						name: 'Terminate',
+						value: 'terminate',
+						description: 'Terminate vRack service',
+						action: 'Terminate v rack service',
 					},
 					{
 						name: 'Update',
 						value: 'update',
-						description: 'Update vRack settings',
-						action: 'Update v rack settings',
+						description: 'Update vRack properties',
+						action: 'Update v rack properties',
 					},
 				],
 				default: 'get',
 			},
-			// Service operations
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['service'],
-					},
-				},
-				options: [
-					{
-						name: 'Add',
-						value: 'add',
-						description: 'Add a service to vRack',
-						action: 'Add a service to v rack',
-					},
-					{
-						name: 'Get Many',
-						value: 'getAll',
-						description: 'Get many services in vRack',
-						action: 'Get many services in v rack',
-					},
-					{
-						name: 'Remove',
-						value: 'remove',
-						description: 'Remove a service from vRack',
-						action: 'Remove a service from v rack',
-					},
-				],
-				default: 'getAll',
-			},
-			// Cloud Project operations
+
+			// Cloud Project Operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -147,27 +168,62 @@ export class OvhPrivateNetwork implements INodeType {
 				},
 				options: [
 					{
-						name: 'Add',
-						value: 'add',
-						description: 'Add cloud project to vRack',
-						action: 'Add cloud project to v rack',
-					},
-					{
 						name: 'Get Many',
-						value: 'getAll',
-						description: 'Get many cloud projects in vRack',
-						action: 'Get many cloud projects in v rack',
+						value: 'getMany',
+						description: 'List cloud projects in vRack',
+						action: 'List cloud projects',
 					},
 					{
-						name: 'Remove',
-						value: 'remove',
-						description: 'Remove cloud project from vRack',
-						action: 'Remove cloud project from v rack',
+						name: 'Attach',
+						value: 'attach',
+						description: 'Attach cloud project to vRack',
+						action: 'Attach cloud project',
+					},
+					{
+						name: 'Detach',
+						value: 'detach',
+						description: 'Detach cloud project from vRack',
+						action: 'Detach cloud project',
 					},
 				],
-				default: 'getAll',
+				default: 'getMany',
 			},
-			// Dedicated Server operations
+
+			// Dedicated Cloud Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['dedicatedCloud'],
+					},
+				},
+				options: [
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'List dedicated clouds in vRack',
+						action: 'List dedicated clouds',
+					},
+					{
+						name: 'Attach',
+						value: 'attach',
+						description: 'Attach dedicated cloud to vRack',
+						action: 'Attach dedicated cloud',
+					},
+					{
+						name: 'Detach',
+						value: 'detach',
+						description: 'Detach dedicated cloud from vRack',
+						action: 'Detach dedicated cloud',
+					},
+				],
+				default: 'getMany',
+			},
+
+			// Dedicated Server Operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -180,27 +236,40 @@ export class OvhPrivateNetwork implements INodeType {
 				},
 				options: [
 					{
-						name: 'Add',
-						value: 'add',
-						description: 'Add dedicated server to vRack',
-						action: 'Add dedicated server to v rack',
+						name: 'Attach',
+						value: 'attach',
+						description: 'Attach dedicated server to vRack',
+						action: 'Attach dedicated server',
+					},
+					{
+						name: 'Detach',
+						value: 'detach',
+						description: 'Detach dedicated server from vRack',
+						action: 'Detach dedicated server',
+					},
+					{
+						name: 'Get Interface Details',
+						value: 'getInterfaceDetails',
+						description: 'Get detailed interface information',
+						action: 'Get interface details',
+					},
+					{
+						name: 'Get Interfaces',
+						value: 'getInterfaces',
+						description: 'List server interfaces in vRack',
+						action: 'List server interfaces',
 					},
 					{
 						name: 'Get Many',
-						value: 'getAll',
-						description: 'Get many dedicated servers in vRack',
-						action: 'Get many dedicated servers in v rack',
-					},
-					{
-						name: 'Remove',
-						value: 'remove',
-						description: 'Remove dedicated server from vRack',
-						action: 'Remove dedicated server from v rack',
+						value: 'getMany',
+						description: 'List dedicated servers in vRack',
+						action: 'List dedicated servers',
 					},
 				],
-				default: 'getAll',
+				default: 'getMany',
 			},
-			// IP Block operations
+
+			// IP Block Operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -213,27 +282,40 @@ export class OvhPrivateNetwork implements INodeType {
 				},
 				options: [
 					{
-						name: 'Add',
-						value: 'add',
-						description: 'Add IP block to vRack',
-						action: 'Add i p block to v rack',
+						name: 'Announce in Zone',
+						value: 'announceInZone',
+						description: 'Announce IP block in zone',
+						action: 'Announce IP in zone',
+					},
+					{
+						name: 'Attach',
+						value: 'attach',
+						description: 'Attach IP block to vRack',
+						action: 'Attach IP block',
+					},
+					{
+						name: 'Detach',
+						value: 'detach',
+						description: 'Detach IP block from vRack',
+						action: 'Detach IP block',
+					},
+					{
+						name: 'Get Available Zones',
+						value: 'getAvailableZones',
+						description: 'Get available announcement zones',
+						action: 'Get available zones',
 					},
 					{
 						name: 'Get Many',
-						value: 'getAll',
-						description: 'Get many IP blocks in vRack',
-						action: 'Get many i p blocks in v rack',
-					},
-					{
-						name: 'Remove',
-						value: 'remove',
-						description: 'Remove IP block from vRack',
-						action: 'Remove i p block from v rack',
+						value: 'getMany',
+						description: 'List IP blocks in vRack',
+						action: 'List IP blocks',
 					},
 				],
-				default: 'getAll',
+				default: 'getMany',
 			},
-			// Private Network operations (for cloud projects)
+
+			// IPv6 Operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -241,44 +323,45 @@ export class OvhPrivateNetwork implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
-						resource: ['privateNetwork'],
+						resource: ['ipv6'],
 					},
 				},
 				options: [
 					{
-						name: 'Create',
-						value: 'create',
-						description: 'Create a private network',
-						action: 'Create a private network',
+						name: 'Create Bridged Subrange',
+						value: 'createBridgedSubrange',
+						description: 'Create bridged IPv6 subrange',
+						action: 'Create bridged subrange',
 					},
 					{
-						name: 'Delete',
-						value: 'delete',
-						description: 'Delete a private network',
-						action: 'Delete a private network',
+						name: 'Create Routed Subrange',
+						value: 'createRoutedSubrange',
+						description: 'Create routed IPv6 subrange',
+						action: 'Create routed subrange',
 					},
 					{
-						name: 'Get',
-						value: 'get',
-						description: 'Get private network information',
-						action: 'Get private network information',
+						name: 'Get Bridged Subranges',
+						value: 'getBridgedSubranges',
+						description: 'List bridged IPv6 subranges',
+						action: 'Get bridged subranges',
 					},
 					{
 						name: 'Get Many',
-						value: 'getAll',
-						description: 'Get many private networks',
-						action: 'Get many private networks',
+						value: 'getMany',
+						description: 'List IPv6 blocks in vRack',
+						action: 'List i pv6 blocks',
 					},
 					{
-						name: 'Update',
-						value: 'update',
-						description: 'Update private network',
-						action: 'Update private network',
+						name: 'Get Routed Subranges',
+						value: 'getRoutedSubranges',
+						description: 'List routed IPv6 subranges',
+						action: 'Get routed subranges',
 					},
 				],
-				default: 'get',
+				default: 'getMany',
 			},
-			// Task operations
+
+			// Task Operations
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -298,89 +381,114 @@ export class OvhPrivateNetwork implements INodeType {
 					},
 					{
 						name: 'Get Many',
-						value: 'getAll',
-						description: 'Get many tasks',
-						action: 'Get many tasks',
+						value: 'getMany',
+						description: 'List tasks',
+						action: 'List tasks',
 					},
 				],
-				default: 'get',
+				default: 'getMany',
 			},
-			// vRack ID field
-			{
-				displayName: 'vRack ID',
-				name: 'vrackId',
-				type: 'string',
-				default: '',
-				required: true,
-				placeholder: 'pn-xxxxxx',
-				description: 'The vRack service name',
-				displayOptions: {
-					show: {
-						resource: [
-							'vrack',
-							'service',
-							'cloudProject',
-							'dedicatedServer',
-							'ipBlock',
-							'privateNetwork',
-							'task',
-						],
-					},
-					hide: {
-						resource: ['vrack'],
-						operation: ['getAll'],
-					},
-				},
-			},
-			// Service name field
+
+			// Service Name parameter (required for most operations)
 			{
 				displayName: 'Service Name',
 				name: 'serviceName',
 				type: 'string',
-				default: '',
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['service', 'cloudProject', 'dedicatedServer', 'ipBlock'],
-						operation: ['add', 'remove'],
+						resource: ['vrack', 'cloudProject', 'dedicatedCloud', 'dedicatedServer', 'ipBlock', 'ipv6', 'task'],
+						operation: ['get', 'update', 'getServiceInfo', 'getAllowedServices', 'getEligibleServices', 'terminate', 'getMany', 'attach', 'detach', 'getInterfaces', 'getInterfaceDetails', 'announceInZone', 'getAvailableZones', 'getBridgedSubranges', 'getRoutedSubranges', 'createBridgedSubrange', 'createRoutedSubrange'],
 					},
 				},
-				placeholder: 'service-identifier',
+				default: '',
+				description: 'The internal name of your vRack service',
 			},
-			// Project ID field
+
+			// Project ID for Cloud Project operations
 			{
 				displayName: 'Project ID',
 				name: 'projectId',
 				type: 'string',
-				default: '',
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['privateNetwork'],
+						resource: ['cloudProject'],
+						operation: ['attach', 'detach'],
 					},
 				},
-				placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+				default: '',
+				description: 'Public Cloud Project ID',
 			},
-			// Private Network ID field
+
+			// Dedicated Cloud ID
 			{
-				displayName: 'Private Network ID',
-				name: 'privateNetworkId',
+				displayName: 'Dedicated Cloud ID',
+				name: 'dedicatedCloudId',
 				type: 'string',
-				default: '',
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['privateNetwork'],
-						operation: ['get', 'delete', 'update'],
+						resource: ['dedicatedCloud'],
+						operation: ['attach', 'detach'],
 					},
 				},
+				default: '',
+				description: 'Dedicated Cloud service name',
 			},
-			// Task ID field
+
+			// Dedicated Server ID
+			{
+				displayName: 'Server Name',
+				name: 'serverName',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['dedicatedServer'],
+						operation: ['attach', 'detach'],
+					},
+				},
+				default: '',
+				description: 'Dedicated Server name',
+			},
+
+			// IP Block
+			{
+				displayName: 'IP Block',
+				name: 'ipBlock',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ipBlock'],
+						operation: ['attach', 'detach', 'announceInZone', 'getAvailableZones'],
+					},
+				},
+				default: '',
+				description: 'IP block (e.g., 192.168.1.0/24)',
+			},
+
+			// IPv6 Block
+			{
+				displayName: 'IPv6 Block',
+				name: 'ipv6Block',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ipv6'],
+						operation: ['getBridgedSubranges', 'getRoutedSubranges', 'createBridgedSubrange', 'createRoutedSubrange'],
+					},
+				},
+				default: '',
+			},
+
+			// Task ID
 			{
 				displayName: 'Task ID',
 				name: 'taskId',
 				type: 'number',
-				default: 0,
 				required: true,
 				displayOptions: {
 					show: {
@@ -388,120 +496,116 @@ export class OvhPrivateNetwork implements INodeType {
 						operation: ['get'],
 					},
 				},
-			},
-			// Private Network creation fields
-			{
-				displayName: 'Network Name',
-				name: 'networkName',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['privateNetwork'],
-						operation: ['create'],
-					},
-				},
-				default: '',
-				required: true,
-				placeholder: 'my-private-network',
-			},
-			{
-				displayName: 'VLAN ID',
-				name: 'vlanId',
-				type: 'number',
-				displayOptions: {
-					show: {
-						resource: ['privateNetwork'],
-						operation: ['create'],
-					},
-				},
 				default: 0,
-				placeholder: '100',
-				description: 'VLAN ID (0-4094, 0 for no VLAN)',
 			},
+
+			// Service Family Filter
 			{
-				displayName: 'Regions',
-				name: 'regions',
-				type: 'multiOptions',
+				displayName: 'Service Family',
+				name: 'serviceFamily',
+				type: 'options',
 				displayOptions: {
 					show: {
-						resource: ['privateNetwork'],
-						operation: ['create'],
+						resource: ['vrack'],
+						operation: ['getAllowedServices'],
 					},
 				},
 				options: [
 					{
-						name: 'BHS5',
-						value: 'BHS5',
+						name: 'All',
+						value: '',
 					},
 					{
-						name: 'DE1',
-						value: 'DE1',
+						name: 'Cloud Project',
+						value: 'cloudProject',
 					},
 					{
-						name: 'GRA7',
-						value: 'GRA7',
+						name: 'Dedicated Cloud',
+						value: 'dedicatedCloud',
 					},
 					{
-						name: 'SBG5',
-						value: 'SBG5',
+						name: 'Dedicated Server',
+						value: 'dedicatedServer',
 					},
 					{
-						name: 'UK1',
-						value: 'UK1',
-					},
-					{
-						name: 'WAW1',
-						value: 'WAW1',
+						name: 'IP Load Balancer',
+						value: 'ipLoadbalancing',
 					},
 				],
-				default: ['GRA7'],
-				required: true,
+				default: '',
+				description: 'Filter services by family type',
 			},
-			// vRack update fields
+
+			// Update parameters for vRack
 			{
 				displayName: 'Update Fields',
-				name: 'updateFields',
+				name: 'updateProperties',
 				type: 'collection',
-				placeholder: 'Add Field',
-				default: {},
+				placeholder: 'Add Property',
 				displayOptions: {
 					show: {
 						resource: ['vrack'],
 						operation: ['update'],
 					},
 				},
+				default: {},
 				options: [
 					{
 						displayName: 'Name',
 						name: 'name',
 						type: 'string',
 						default: '',
+						description: 'New name for the vRack',
 					},
 					{
 						displayName: 'Description',
 						name: 'description',
 						type: 'string',
 						default: '',
+						description: 'New description for the vRack',
 					},
 				],
 			},
-			// Private Network update fields
+
+			// Zone for IP announcement
 			{
-				displayName: 'Update Fields',
-				name: 'updateFields',
-				type: 'collection',
-				placeholder: 'Add Field',
-				default: {},
+				displayName: 'Zone',
+				name: 'zone',
+				type: 'string',
 				displayOptions: {
 					show: {
-						resource: ['privateNetwork'],
-						operation: ['update'],
+						resource: ['ipBlock'],
+						operation: ['announceInZone'],
 					},
 				},
+				default: '',
+				description: 'Zone where to announce the IP block',
+			},
+
+			// IPv6 Subrange parameters
+			{
+				displayName: 'Subrange Properties',
+				name: 'subrangeProperties',
+				type: 'collection',
+				placeholder: 'Add Property',
+				displayOptions: {
+					show: {
+						resource: ['ipv6'],
+						operation: ['createBridgedSubrange', 'createRoutedSubrange'],
+					},
+				},
+				default: {},
 				options: [
 					{
-						displayName: 'Name',
-						name: 'name',
+						displayName: 'Subrange',
+						name: 'subrange',
+						type: 'string',
+						default: '',
+						description: 'IPv6 subrange to create',
+					},
+					{
+						displayName: 'Target Service Name',
+						name: 'targetServiceName',
 						type: 'string',
 						default: '',
 					},
@@ -513,164 +617,191 @@ export class OvhPrivateNetwork implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: IDataObject[] = [];
-		const resource = this.getNodeParameter('resource', 0) as string;
-		const operation = this.getNodeParameter('operation', 0) as string;
-
 		const credentials = await this.getCredentials('ovhApi');
-		const endpoint = credentials.endpoint as string;
+
 		const applicationKey = credentials.applicationKey as string;
 		const applicationSecret = credentials.applicationSecret as string;
 		const consumerKey = credentials.consumerKey as string;
+		const endpoint = credentials.endpoint as string;
+
+		const endpoints: { [key: string]: string } = {
+			'ovh-eu': 'https://eu.api.ovh.com/1.0',
+			'ovh-us': 'https://api.us.ovhcloud.com/1.0',
+			'ovh-ca': 'https://ca.api.ovh.com/1.0',
+		};
+
+		const baseURL = endpoints[endpoint];
+		if (!baseURL) {
+			throw new NodeOperationError(this.getNode(), `Unknown endpoint: ${endpoint}`);
+		}
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				let responseData;
-				let method = 'GET' as IHttpRequestMethods;
+				const resource = this.getNodeParameter('resource', i) as string;
+				const operation = this.getNodeParameter('operation', i) as string;
+
+				let method: IHttpRequestMethods = 'GET';
 				let path = '';
 				let body: IDataObject = {};
+				let qs: IDataObject = {};
 
+				// Build path and method based on resource and operation
 				if (resource === 'vrack') {
-					if (operation === 'get') {
-						const vrackId = this.getNodeParameter('vrackId', i) as string;
-						path = `/vrack/${vrackId}`;
-					} else if (operation === 'getAll') {
+					if (operation === 'getMany') {
 						path = '/vrack';
+					} else if (operation === 'get') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/vrack/${serviceName}`;
 					} else if (operation === 'update') {
 						method = 'PUT';
-						const vrackId = this.getNodeParameter('vrackId', i) as string;
-						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
-						path = `/vrack/${vrackId}`;
-
-						if (updateFields.name) body.name = updateFields.name;
-						if (updateFields.description) body.description = updateFields.description;
-					}
-				} else if (resource === 'service') {
-					const vrackId = this.getNodeParameter('vrackId', i) as string;
-
-					if (operation === 'getAll') {
-						path = `/vrack/${vrackId}/allowedServices`;
-					} else if (operation === 'add') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						const updateProperties = this.getNodeParameter('updateProperties', i) as IDataObject;
+						path = `/vrack/${serviceName}`;
+						body = updateProperties;
+					} else if (operation === 'getServiceInfo') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/vrack/${serviceName}/serviceInfos`;
+					} else if (operation === 'getAllowedServices') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/vrack/${serviceName}/allowedServices`;
+						const serviceFamily = this.getNodeParameter('serviceFamily', i) as string;
+						if (serviceFamily) {
+							qs.serviceFamily = serviceFamily;
+						}
+					} else if (operation === 'getEligibleServices') {
+						const serviceName = this.getNodeParameter('serviceName', i) as string;
+						path = `/vrack/${serviceName}/eligibleServices`;
+					} else if (operation === 'terminate') {
 						method = 'POST';
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/vrack/${vrackId}/assign`;
-						body = { service: serviceName };
-					} else if (operation === 'remove') {
-						method = 'POST';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/vrack/${vrackId}/unassign`;
-						body = { service: serviceName };
+						path = `/vrack/${serviceName}/terminate`;
 					}
 				} else if (resource === 'cloudProject') {
-					const vrackId = this.getNodeParameter('vrackId', i) as string;
-
-					if (operation === 'getAll') {
-						path = `/vrack/${vrackId}/cloudProject`;
-					} else if (operation === 'add') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getMany') {
+						path = `/vrack/${serviceName}/cloudProject`;
+					} else if (operation === 'attach') {
 						method = 'POST';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/vrack/${vrackId}/cloudProject`;
-						body = { project: serviceName };
-					} else if (operation === 'remove') {
+						const projectId = this.getNodeParameter('projectId', i) as string;
+						path = `/vrack/${serviceName}/cloudProject`;
+						body = { project: projectId };
+					} else if (operation === 'detach') {
 						method = 'DELETE';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/vrack/${vrackId}/cloudProject/${serviceName}`;
+						const projectId = this.getNodeParameter('projectId', i) as string;
+						path = `/vrack/${serviceName}/cloudProject/${projectId}`;
+					}
+				} else if (resource === 'dedicatedCloud') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getMany') {
+						path = `/vrack/${serviceName}/dedicatedCloud`;
+					} else if (operation === 'attach') {
+						method = 'POST';
+						const dedicatedCloudId = this.getNodeParameter('dedicatedCloudId', i) as string;
+						path = `/vrack/${serviceName}/dedicatedCloud`;
+						body = { dedicatedCloud: dedicatedCloudId };
+					} else if (operation === 'detach') {
+						method = 'DELETE';
+						const dedicatedCloudId = this.getNodeParameter('dedicatedCloudId', i) as string;
+						path = `/vrack/${serviceName}/dedicatedCloud/${dedicatedCloudId}`;
 					}
 				} else if (resource === 'dedicatedServer') {
-					const vrackId = this.getNodeParameter('vrackId', i) as string;
-
-					if (operation === 'getAll') {
-						path = `/vrack/${vrackId}/dedicatedServer`;
-					} else if (operation === 'add') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getMany') {
+						path = `/vrack/${serviceName}/dedicatedServer`;
+					} else if (operation === 'attach') {
 						method = 'POST';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/vrack/${vrackId}/dedicatedServer`;
-						body = { dedicatedServer: serviceName };
-					} else if (operation === 'remove') {
+						const serverName = this.getNodeParameter('serverName', i) as string;
+						path = `/vrack/${serviceName}/dedicatedServer`;
+						body = { dedicatedServer: serverName };
+					} else if (operation === 'detach') {
 						method = 'DELETE';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/vrack/${vrackId}/dedicatedServer/${serviceName}`;
+						const serverName = this.getNodeParameter('serverName', i) as string;
+						path = `/vrack/${serviceName}/dedicatedServer/${serverName}`;
+					} else if (operation === 'getInterfaces') {
+						path = `/vrack/${serviceName}/dedicatedServerInterface`;
+					} else if (operation === 'getInterfaceDetails') {
+						path = `/vrack/${serviceName}/dedicatedServerInterfaceDetails`;
 					}
 				} else if (resource === 'ipBlock') {
-					const vrackId = this.getNodeParameter('vrackId', i) as string;
-
-					if (operation === 'getAll') {
-						path = `/vrack/${vrackId}/ip`;
-					} else if (operation === 'add') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getMany') {
+						path = `/vrack/${serviceName}/ip`;
+					} else if (operation === 'attach') {
 						method = 'POST';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/vrack/${vrackId}/ip`;
-						body = { block: serviceName };
-					} else if (operation === 'remove') {
+						const ipBlock = this.getNodeParameter('ipBlock', i) as string;
+						path = `/vrack/${serviceName}/ip`;
+						body = { ip: ipBlock };
+					} else if (operation === 'detach') {
 						method = 'DELETE';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/vrack/${vrackId}/ip/${encodeURIComponent(serviceName)}`;
+						const ipBlock = this.getNodeParameter('ipBlock', i) as string;
+						path = `/vrack/${serviceName}/ip/${encodeURIComponent(ipBlock)}`;
+					} else if (operation === 'announceInZone') {
+						method = 'POST';
+						const ipBlock = this.getNodeParameter('ipBlock', i) as string;
+						const zone = this.getNodeParameter('zone', i) as string;
+						path = `/vrack/${serviceName}/ip/${encodeURIComponent(ipBlock)}/announceInZone`;
+						body = { zone };
+					} else if (operation === 'getAvailableZones') {
+						const ipBlock = this.getNodeParameter('ipBlock', i) as string;
+						path = `/vrack/${serviceName}/ip/${encodeURIComponent(ipBlock)}/availableZone`;
 					}
-				} else if (resource === 'privateNetwork') {
-					const projectId = this.getNodeParameter('projectId', i) as string;
-
-					if (operation === 'get') {
-						const privateNetworkId = this.getNodeParameter('privateNetworkId', i) as string;
-						path = `/cloud/project/${projectId}/network/private/${privateNetworkId}`;
-					} else if (operation === 'getAll') {
-						path = `/cloud/project/${projectId}/network/private`;
-					} else if (operation === 'create') {
+				} else if (resource === 'ipv6') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getMany') {
+						path = `/vrack/${serviceName}/ipv6`;
+					} else if (operation === 'getBridgedSubranges') {
+						const ipv6Block = this.getNodeParameter('ipv6Block', i) as string;
+						path = `/vrack/${serviceName}/ipv6/${encodeURIComponent(ipv6Block)}/bridgedSubrange`;
+					} else if (operation === 'getRoutedSubranges') {
+						const ipv6Block = this.getNodeParameter('ipv6Block', i) as string;
+						path = `/vrack/${serviceName}/ipv6/${encodeURIComponent(ipv6Block)}/routedSubrange`;
+					} else if (operation === 'createBridgedSubrange') {
 						method = 'POST';
-						const networkName = this.getNodeParameter('networkName', i) as string;
-						const vlanId = this.getNodeParameter('vlanId', i) as number;
-						const regions = this.getNodeParameter('regions', i) as string[];
-						const vrackId = this.getNodeParameter('vrackId', i) as string;
-
-						path = `/cloud/project/${projectId}/network/private`;
-						body = {
-							name: networkName,
-							regions,
-							vlanId: vlanId > 0 ? vlanId : undefined,
-							vrackId,
-						};
-					} else if (operation === 'delete') {
-						method = 'DELETE';
-						const privateNetworkId = this.getNodeParameter('privateNetworkId', i) as string;
-						path = `/cloud/project/${projectId}/network/private/${privateNetworkId}`;
-					} else if (operation === 'update') {
-						method = 'PUT';
-						const privateNetworkId = this.getNodeParameter('privateNetworkId', i) as string;
-						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
-						path = `/cloud/project/${projectId}/network/private/${privateNetworkId}`;
-
-						if (updateFields.name) body.name = updateFields.name;
+						const ipv6Block = this.getNodeParameter('ipv6Block', i) as string;
+						const subrangeProps = this.getNodeParameter('subrangeProperties', i) as IDataObject;
+						path = `/vrack/${serviceName}/ipv6/${encodeURIComponent(ipv6Block)}/bridgedSubrange`;
+						body = subrangeProps;
+					} else if (operation === 'createRoutedSubrange') {
+						method = 'POST';
+						const ipv6Block = this.getNodeParameter('ipv6Block', i) as string;
+						const subrangeProps = this.getNodeParameter('subrangeProperties', i) as IDataObject;
+						path = `/vrack/${serviceName}/ipv6/${encodeURIComponent(ipv6Block)}/routedSubrange`;
+						body = subrangeProps;
 					}
 				} else if (resource === 'task') {
-					const vrackId = this.getNodeParameter('vrackId', i) as string;
-
-					if (operation === 'get') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getMany') {
+						path = `/vrack/${serviceName}/task`;
+					} else if (operation === 'get') {
 						const taskId = this.getNodeParameter('taskId', i) as number;
-						path = `/vrack/${vrackId}/task/${taskId}`;
-					} else if (operation === 'getAll') {
-						path = `/vrack/${vrackId}/task`;
+						path = `/vrack/${serviceName}/task/${taskId}`;
 					}
 				}
 
-				// Build the request
-				const timestamp = Math.round(Date.now() / 1000);
-				const fullUrl = `${endpoint}${path}`;
+				// Construct full URL
+				const timestamp = Math.floor(Date.now() / 1000);
+				const queryString =
+					Object.keys(qs).length > 0
+						? '?' +
+						  Object.keys(qs)
+								.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(qs[key] as string)}`)
+								.join('&')
+						: '';
+				const url = baseURL + path + queryString;
 
-				// Prepare body for signature exactly like official OVH SDK
+				// Create signature
 				let bodyForSignature = '';
-				if (method === 'POST' || method === 'PUT') {
-					if (Object.keys(body).length > 0) {
-						// Match official OVH SDK: JSON.stringify + unicode escaping
-						bodyForSignature = JSON.stringify(body).replace(/[\u0080-\uFFFF]/g, (m) => {
-							return '\\u' + ('0000' + m.charCodeAt(0).toString(16)).slice(-4);
-						});
-					}
+				if (method !== 'GET' && method !== 'DELETE' && Object.keys(body).length > 0) {
+					bodyForSignature = JSON.stringify(body).replace(/[\u0080-\uFFFF]/g, (m) => {
+						return '\\u' + ('0000' + m.charCodeAt(0).toString(16)).slice(-4);
+					});
 				}
 
-				// Generate signature exactly like official OVH SDK
 				const signatureElements = [
 					applicationSecret,
 					consumerKey,
 					method,
-					fullUrl,
+					url,
 					bodyForSignature,
 					timestamp,
 				];
@@ -678,51 +809,36 @@ export class OvhPrivateNetwork implements INodeType {
 				const signature =
 					'$1$' + createHash('sha1').update(signatureElements.join('+')).digest('hex');
 
-				const headers: any = {
-					'X-Ovh-Application': applicationKey,
-					'X-Ovh-Consumer': consumerKey,
-					'X-Ovh-Signature': signature,
-					'X-Ovh-Timestamp': timestamp.toString(),
-				};
-
+				// Prepare request options
 				const options: IRequestOptions = {
 					method,
-					url: fullUrl,
-					headers,
-					json: true, // Always parse JSON responses
+					url,
+					headers: {
+						'X-Ovh-Application': applicationKey,
+						'X-Ovh-Timestamp': timestamp.toString(),
+						'X-Ovh-Signature': signature,
+						'X-Ovh-Consumer': consumerKey,
+						'Content-Type': 'application/json',
+					},
+					body: method !== 'GET' && method !== 'DELETE' ? body : undefined,
+					json: true,
 				};
 
-				// Only add body and content-type for POST/PUT requests
-				if (method === 'POST' || method === 'PUT') {
-					if (Object.keys(body).length > 0) {
-						options.body = body;
-						headers['Content-Type'] = 'application/json';
-					}
-				}
+				const responseData = await this.helpers.request(options);
 
-				responseData = await this.helpers.request(options);
-
-				// Parse JSON manually for GET requests
-				if (method === 'GET' && typeof responseData === 'string') {
-					try {
-						responseData = JSON.parse(responseData);
-					} catch (error) {
-						// If JSON parsing fails, keep the original response
-					}
-				}
-
+				// Handle array responses
 				if (Array.isArray(responseData)) {
-					// For arrays, create proper objects based on the operation
 					responseData.forEach((item) => {
 						if (typeof item === 'string' || typeof item === 'number') {
-							returnData.push({ json: { value: item } });
+							returnData.push({ value: item, resource, operation });
 						} else {
-							returnData.push({ json: item });
+							returnData.push({ ...item, resource, operation });
 						}
 					});
 				} else {
-					returnData.push(responseData as IDataObject);
+					returnData.push(responseData || { resource, operation });
 				}
+
 			} catch (error) {
 				if (this.continueOnFail()) {
 					returnData.push({ json: { error: error.message }, pairedItem: { item: i } });
