@@ -2158,6 +2158,13 @@ export class OvhAccount implements INodeType {
 						resource: resource,
 						data: responseData,
 					});
+				} else if (operation === 'getStatus' && typeof responseData === 'string') {
+					// For getStatus operation, return the string status directly
+					returnData.push({
+						status: responseData,
+						resource: resource,
+						operation: operation,
+					});
 				} else if (Array.isArray(responseData)) {
 					// For arrays, add each item
 					responseData.forEach((item) => {
