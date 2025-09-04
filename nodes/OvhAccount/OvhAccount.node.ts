@@ -2165,45 +2165,6 @@ export class OvhAccount implements INodeType {
 						resource: resource,
 						operation: operation,
 					});
-				} else if (resource === 'bill' && operation === 'getMany' && Array.isArray(responseData)) {
-					// For bill getMany, fetch detailed information for each bill
-					for (const billId of responseData) {
-						try {
-							const timestamp = Math.floor(Date.now() / 1000);
-							const method = 'GET';
-							const url = `${options.baseURL}/me/bill/${billId}`;
-							
-							// Calculate signature for bill detail request
-							let bodyForSignature = '';
-							const fullUrl = url;
-							const preHash = `${credentials.applicationSecret}+${credentials.consumerKey}+${method}+${fullUrl}+${bodyForSignature}+${timestamp}`;
-							const signature = '$1$' + createHash('sha1').update(preHash).digest('hex');
-							
-							const billDetailOptions = {
-								method: method as IHttpRequestMethods,
-								url: fullUrl,
-								headers: {
-									'X-Ovh-Application': credentials.applicationKey,
-									'X-Ovh-Consumer': credentials.consumerKey,
-									'X-Ovh-Signature': signature,
-									'X-Ovh-Timestamp': timestamp.toString(),
-									'Content-Type': 'application/json',
-								},
-								json: true,
-							};
-							
-							const billDetail = await this.helpers.request(billDetailOptions);
-							returnData.push({ ...billDetail, resource, operation });
-						} catch (error) {
-							// If we can't get details for a specific bill, add the ID with error info
-							returnData.push({ 
-								billId: billId, 
-								error: `Could not fetch details: ${error.message}`,
-								resource, 
-								operation 
-							});
-						}
-					}
 				} else if (Array.isArray(responseData)) {
 					// For arrays, add each item
 					responseData.forEach((item) => {
