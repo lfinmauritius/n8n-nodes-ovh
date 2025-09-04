@@ -6,3 +6,23 @@ dist
 npm-debug.log*
 yarn.lock
 .vscode/launch.json
+
+# Analysis files - development tools, not for git/npm
+README_OLD.md
+add_missing_params.md
+all_post_put_parameters_complete.txt
+all_post_put_raw.txt
+analyze_missing_params.py
+analyze_post_put_params.py
+check_missing_params.sh
+compare_with_implementation.py
+endpoints_with_body_params.txt
+extract_all_post_put_params.js
+find_endpoints_for_params.sh
+kubeendpoint.json
+me_endpoint.html
+missing_body_parameters_report.txt
+missing_params_by_endpoint.txt
+missing_params_detailed_report.txt
+params_implementation_status.txt
+vrack_endpoint.html
