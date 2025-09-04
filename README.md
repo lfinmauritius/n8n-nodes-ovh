@@ -1,10 +1,10 @@
 # n8n-nodes-ovh
 
-**⚠️ BETA VERSION - Currently OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, and OVH Kubernetes nodes are active**
+**⚠️ BETA VERSION - Currently OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, OVH Kubernetes, and OVH Account nodes are active**
 
-This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, Web PaaS, and private network tasks.
+This package provides n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, account management, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, Web PaaS, and private network tasks.
 
-**Note**: This is a beta release. Currently enabled nodes are OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, and OVH Kubernetes. Other nodes will be activated in future releases after thorough testing.
+**Note**: This is a beta release. Currently enabled nodes are OVH AI, OVH Dedicated Server, OVH Domain, OVH Private Cloud, OVH Kubernetes, and OVH Account. Other nodes will be activated in future releases after thorough testing.
 
 **Developed by [Ascenzia](https://ascenzia.fr)** - Your trusted partner for AI agent creation and automation.
 
@@ -242,6 +242,142 @@ Comprehensive VMware Private Cloud management with over 300+ operations across 3
 - **Start**: Start a notebook
 - **Stop**: Stop a notebook
 
+### OVH Account Node
+
+Comprehensive account management with 100+ operations across 20+ resources for managing your OVH account, billing, contacts, and API credentials.
+
+#### Account Operations
+- **Get**: Get account information
+- **Update**: Update account settings
+
+#### API Credential Operations
+- **Get**: Get API credential details
+- **Get Many**: List all API credentials
+- **Delete**: Delete API credential
+
+#### API OAuth2 Operations
+- **Get Client**: Get OAuth2 client information
+- **Get Many Clients**: List OAuth2 clients
+
+#### Bill Operations
+- **Get**: Get specific bill details with complete information
+- **Get Many**: List bill IDs with filtering options (date range, order ID)
+- **Download**: Download bill PDF
+- **Get Payment**: Get bill payment information
+
+#### Contact Operations
+- **Get**: Get contact information
+- **Get Many**: List all contacts
+- **Create**: Create new contact
+- **Update**: Update contact details
+- **Delete**: Delete contact
+
+#### Document Operations
+- **Get**: Get document details
+- **Get Many**: List documents with filtering
+- **Create**: Create new document
+- **Delete**: Delete document
+
+#### Identity User Operations
+- **Get**: Get identity user information
+- **Get Many**: List identity users
+- **Create**: Create identity user
+- **Update**: Update identity user
+- **Delete**: Delete identity user
+- **Disable**: Disable user account
+- **Enable**: Enable user account
+
+#### Identity Group Operations
+- **Get**: Get group information
+- **Get Many**: List identity groups
+- **Create**: Create new group
+- **Update**: Update group
+- **Delete**: Delete group
+
+#### Order Operations
+- **Get**: Get order information
+- **Get Many**: List orders
+- **Get Status**: Get order status
+- **Pay**: Pay pending order
+- **Get Associated Object**: Get order associated object
+- **Get Details**: Get order details
+- **Get Payment**: Get order payment information
+
+#### Payment Mean Operations
+**Credit Card**:
+- **Get**: Get credit card details
+- **Get Many**: List credit cards
+- **Create**: Add credit card
+- **Delete**: Remove credit card
+- **Set Default**: Set as default payment method
+
+**Bank Account**:
+- **Get**: Get bank account details  
+- **Get Many**: List bank accounts
+- **Create**: Add bank account
+- **Delete**: Remove bank account
+- **Set Default**: Set as default payment method
+
+**PayPal**:
+- **Get**: Get PayPal details
+- **Get Many**: List PayPal accounts
+- **Create**: Add PayPal account
+- **Delete**: Remove PayPal account
+- **Set Default**: Set as default payment method
+
+#### SMS Operations
+- **Get**: Get SMS service details
+- **Get Many**: List SMS services
+- **Create**: Create SMS service
+- **Update**: Update SMS settings
+- **Delete**: Delete SMS service
+- **Get History**: Get SMS history
+- **Send**: Send SMS message
+
+#### SSH Key Operations
+- **Get**: Get SSH key details
+- **Get Many**: List SSH keys
+- **Create**: Add SSH key
+- **Update**: Update SSH key
+- **Delete**: Delete SSH key
+- **Set Default**: Set as default SSH key
+
+#### Task Operations
+- **Get**: Get task information
+- **Get Many**: List tasks with filtering
+- **Accept**: Accept pending task
+- **Refuse**: Refuse pending task
+
+#### TOTP Operations
+- **Create**: Create TOTP (Time-based One-Time Password)
+- **Delete**: Delete TOTP
+- **Disable**: Disable TOTP
+- **Enable**: Enable TOTP
+- **Get**: Get TOTP details
+- **Get Many**: List TOTP devices
+
+#### User Operations
+- **Get**: Get user information
+- **Update**: Update user settings
+
+#### Access Restriction Operations
+- **Get IP**: Get IP restriction details
+- **Get Many IPs**: List IP restrictions
+- **Create IP**: Add IP restriction
+- **Delete IP**: Remove IP restriction
+- **Update Default IP Rule**: Update default IP rule
+- **Update Developer Mode**: Enable/disable developer mode
+
+#### Features
+- **Complete CRUD Operations**: Full create, read, update, delete support
+- **Comprehensive Filtering**: Advanced filtering for lists (date ranges, status, etc.)
+- **Payment Management**: Complete payment method management
+- **Security**: IP restrictions, TOTP, SSH key management
+- **Billing**: Invoice and payment tracking
+- **Identity Management**: User and group management
+- **Communication**: SMS services integration
+- **Task Management**: Task workflow operations
+
 ## Authentication
 
 ### Required API Permissions
@@ -280,6 +416,12 @@ To use these nodes, you need to create OVH API credentials with appropriate perm
 - PUT /cloud/project/*/kube*
 - POST /cloud/project/*/kube*
 - DELETE /cloud/project/*/kube*
+
+#### For OVH Account:
+- GET /me*
+- PUT /me*
+- POST /me*
+- DELETE /me*
 
 ## Release v0.12.0 - Complete Feature Set
 
