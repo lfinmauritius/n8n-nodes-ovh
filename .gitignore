@@ -26,3 +26,9 @@ missing_params_by_endpoint.txt
 missing_params_detailed_report.txt
 params_implementation_status.txt
 vrack_endpoint.html
+RESUME_EXECUTIF_PARAMETRES_MANQUANTS.txt
+dedicatedcloud.json
+parameters_audit.txt
+parameters_summary.txt
+post_put_parameters.txt
+production_endpoints.txt
