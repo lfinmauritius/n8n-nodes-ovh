@@ -56,7 +56,8 @@
       "dist/nodes/OvhDedicatedServer/OvhDedicatedServer.node.js",
       "dist/nodes/OvhKubernetes/OvhKubernetes.node.js",
       "dist/nodes/OvhAccount/OvhAccount.node.js",
-      "dist/nodes/OvhPrivateNetwork/OvhPrivateNetwork.node.js"
+      "dist/nodes/OvhPrivateNetwork/OvhPrivateNetwork.node.js",
+      "dist/nodes/OvhHostedPrivateCloud/OvhHostedPrivateCloud.node.js"
     ]
   },
   "devDependencies": {
