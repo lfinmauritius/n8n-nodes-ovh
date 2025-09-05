@@ -1272,7 +1272,17 @@ export class OvhKubernetes implements INodeType {
 					}
 				}
 
-				if (Array.isArray(responseData)) {
+				// Handle DELETE operations with proper success message
+				if (method === 'DELETE') {
+					returnData.push({ 
+						json: { 
+							success: true, 
+							message: `${resource} deleted successfully`,
+							operation: operation,
+							resource: resource
+						} 
+					});
+				} else if (Array.isArray(responseData)) {
 					// For arrays, create proper objects based on the operation
 					responseData.forEach((item) => {
 						if (typeof item === 'string' || typeof item === 'number') {
@@ -1287,7 +1297,18 @@ export class OvhKubernetes implements INodeType {
 						}
 					});
 				} else {
-					returnData.push({ json: responseData as IDataObject });
+					// Handle null/empty responses from successful operations
+					if (responseData === null || responseData === undefined) {
+						returnData.push({ 
+							json: { 
+								success: true, 
+								message: `${operation} completed successfully`,
+								resource: resource
+							} 
+						});
+					} else {
+						returnData.push({ json: responseData as IDataObject });
+					}
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {
