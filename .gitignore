@@ -10,6 +10,7 @@ yarn.lock
 .vscode/
 .claude/
 .git-rewrite/
+CLAUDE.md
 
 # Analysis files - development tools, not for git/npm
 README_OLD.md
