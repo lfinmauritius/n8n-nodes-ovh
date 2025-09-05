@@ -1140,7 +1140,10 @@ export class OvhKubernetes implements INodeType {
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const ip = this.getNodeParameter('ip', i) as string;
-						path = `/cloud/project/${projectId}/kube/${clusterId}/ipRestrictions/${ip}`;
+						if (!ip) {
+							throw new NodeOperationError(this.getNode(), 'IP address is required for delete operation. Please provide the IP address to remove from restrictions.', { itemIndex: i });
+						}
+						path = `/cloud/project/${projectId}/kube/${clusterId}/ipRestrictions/${encodeURIComponent(ip)}`;
 					}
 				} else if (resource === 'flavor') {
 					const clusterId = this.getNodeParameter('clusterId', i) as string;
@@ -1273,7 +1276,12 @@ export class OvhKubernetes implements INodeType {
 					// For arrays, create proper objects based on the operation
 					responseData.forEach((item) => {
 						if (typeof item === 'string' || typeof item === 'number') {
-							returnData.push({ json: { value: item } });
+							// For IP restrictions, return the IP directly as 'ip' field for easier use in delete operations
+							if (resource === 'ipRestriction' && operation === 'getAll') {
+								returnData.push({ json: { ip: item, value: item } });
+							} else {
+								returnData.push({ json: { id: item, value: item } });
+							}
 						} else {
 							returnData.push({ json: item });
 						}
