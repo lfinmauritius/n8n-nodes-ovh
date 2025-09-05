@@ -5,7 +5,10 @@ tmp
 dist
 npm-debug.log*
 yarn.lock
-.vscode/launch.json
+
+# IDE and development environment folders
+.vscode/
+.claude/
 
 # Analysis files - development tools, not for git/npm
 README_OLD.md
