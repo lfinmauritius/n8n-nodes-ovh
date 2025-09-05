@@ -404,16 +404,28 @@ export class OvhHostedPrivateCloud implements INodeType {
 					}
 				} else if (resource === 'datacenter') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					
+					if (!serviceName) {
+						throw new NodeOperationError(this.getNode(), 'Service Name is required for datacenter operations. Please provide a valid Private Cloud service name (e.g., pcc-123-456-789-123)', { itemIndex: i });
+					}
+					
 					if (operation === 'getAll') {
 						endpoint = `/dedicatedCloud/${serviceName}/datacenter`;
 					} else if (operation === 'get') {
 						const datacenterId = this.getNodeParameter('datacenterId', i) as number;
+						if (!datacenterId) {
+							throw new NodeOperationError(this.getNode(), 'Datacenter ID is required for get operation', { itemIndex: i });
+						}
 						endpoint = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}`;
 					} else if (operation === 'create') {
 						endpoint = `/dedicatedCloud/${serviceName}/datacenter`;
 						method = 'POST';
+						const datacenterName = this.getNodeParameter('datacenterName', i) as string;
+						if (!datacenterName) {
+							throw new NodeOperationError(this.getNode(), 'Datacenter Name is required for create operation', { itemIndex: i });
+						}
 						body = {
-							name: this.getNodeParameter('datacenterName', i),
+							name: datacenterName,
 						};
 					}
 				} else if (resource === 'host') {
@@ -524,7 +536,23 @@ export class OvhHostedPrivateCloud implements INodeType {
 					returnData.push({ error: error.message, json: {} });
 					continue;
 				}
-				throw new NodeOperationError(this.getNode(), error, {
+				
+				// Provide more helpful error messages
+				let errorMessage = error.message;
+				if (error.response && error.response.body) {
+					const body = error.response.body;
+					if (body.class === 'Client::NotFound' && body.message === 'This service does not exist') {
+						errorMessage = `Service '${this.getNodeParameter('serviceName', i)}' not found. Please verify:
+1. The service name is correct (format: pcc-123-456-789-123)
+2. You have access to this Private Cloud service
+3. The service exists in the selected OVH region
+4. Your API credentials have the required permissions`;
+					} else if (body.message) {
+						errorMessage = body.message;
+					}
+				}
+				
+				throw new NodeOperationError(this.getNode(), errorMessage, {
 					itemIndex: i,
 				});
 			}
