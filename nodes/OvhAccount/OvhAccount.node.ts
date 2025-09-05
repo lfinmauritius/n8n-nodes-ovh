@@ -1936,7 +1936,8 @@ export class OvhAccount implements INodeType {
 				// Identity resource
 				else if (resource === 'identity') {
 					if (operation === 'get') {
-						path = '/me/identity';
+						// Get current user's identity information
+						path = '/me';
 					} else if (operation === 'requestValidation') {
 						method = 'POST';
 						path = '/me/identity/validation';
