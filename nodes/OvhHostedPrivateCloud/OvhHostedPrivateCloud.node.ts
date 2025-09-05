@@ -5,7 +5,6 @@ import {
 	INodeTypeDescription,
 	IDataObject,
 	IHttpRequestMethods,
-	IHttpRequestOptions,
 } from 'n8n-workflow';
 import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 import { createHash } from 'crypto';
@@ -478,20 +477,22 @@ export class OvhHostedPrivateCloud implements INodeType {
 				const timestamp = Math.floor(Date.now() / 1000).toString();
 				const hasBody = method === 'POST';
 				const bodyString = hasBody ? JSON.stringify(body) : '';
+				const fullUrl = `https://eu.api.ovh.com/1.0${endpoint}`;
+				
 				const signatureData = [
 					credentials.applicationSecret,
 					credentials.consumerKey,
 					method,
-					`https://eu.api.ovh.com/1.0${endpoint}`,
+					fullUrl,
 					bodyString,
 					timestamp,
 				].join('+');
 
 				const signature = '$1$' + createHash('sha1').update(signatureData).digest('hex');
-
-				const options: IHttpRequestOptions = {
+				
+				const options = {
 					method,
-					url: endpoint,
+					uri: fullUrl,
 					headers: {
 						'X-Ovh-Application': credentials.applicationKey,
 						'X-Ovh-Consumer': credentials.consumerKey,
@@ -503,7 +504,7 @@ export class OvhHostedPrivateCloud implements INodeType {
 					json: true,
 				};
 
-				const responseData = await this.helpers.httpRequestWithAuthentication.call(this, 'ovhApi', options);
+				const responseData = await this.helpers.request(options);
 
 				// Handle array responses for getAll operations
 				if (operation === 'getAll' && Array.isArray(responseData)) {
