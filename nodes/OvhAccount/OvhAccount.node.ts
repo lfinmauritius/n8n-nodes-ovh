@@ -1856,7 +1856,61 @@ export class OvhAccount implements INodeType {
 					if (operation === 'getBalance') {
 						path = '/me/credit/balance';
 					} else if (operation === 'getMovements') {
-						path = '/me/credit/movements';
+						// Handle special case for movements - need to fetch from multiple endpoints
+						const ts = Math.round(Date.now() / 1000);
+						
+						// First get all balances
+						const balancesResponse = await this.helpers.request({
+							method: 'GET',
+							url: `${endpoint}/me/credit/balance`,
+							headers: {
+								'X-Ovh-Application': applicationKey,
+								'X-Ovh-Timestamp': ts.toString(),
+								'X-Ovh-Signature': '$1$' + createHash('sha1').update([applicationSecret, consumerKey, 'GET', `${endpoint}/me/credit/balance`, '', ts].join('+')).digest('hex'),
+								'X-Ovh-Consumer': consumerKey,
+							},
+							json: true,
+						});
+
+						// Then get movements for each balance
+						const allMovements = [];
+						for (const balanceName of balancesResponse) {
+							const movementsPath = `/me/credit/balance/${balanceName}/movement`;
+							const ts2 = Math.round(Date.now() / 1000);
+							const movementsResponse = await this.helpers.request({
+								method: 'GET',
+								url: `${endpoint}${movementsPath}`,
+								headers: {
+									'X-Ovh-Application': applicationKey,
+									'X-Ovh-Timestamp': ts2.toString(),
+									'X-Ovh-Signature': '$1$' + createHash('sha1').update([applicationSecret, consumerKey, 'GET', `${endpoint}${movementsPath}`, '', ts2].join('+')).digest('hex'),
+									'X-Ovh-Consumer': consumerKey,
+								},
+								json: true,
+							});
+							
+							// Get details for each movement
+							for (const movementId of movementsResponse) {
+								const movementDetailPath = `/me/credit/balance/${balanceName}/movement/${movementId}`;
+								const ts3 = Math.round(Date.now() / 1000);
+								const movementDetail = await this.helpers.request({
+									method: 'GET',
+									url: `${endpoint}${movementDetailPath}`,
+									headers: {
+										'X-Ovh-Application': applicationKey,
+										'X-Ovh-Timestamp': ts3.toString(),
+										'X-Ovh-Signature': '$1$' + createHash('sha1').update([applicationSecret, consumerKey, 'GET', `${endpoint}${movementDetailPath}`, '', ts3].join('+')).digest('hex'),
+										'X-Ovh-Consumer': consumerKey,
+									},
+									json: true,
+								});
+								allMovements.push({ ...movementDetail, balanceName });
+							}
+						}
+						
+						// Return all movements directly
+						returnData.push(...allMovements.map(movement => ({ json: movement })));
+						continue; // Skip the normal processing
 					}
 				}
 				// Document resource
