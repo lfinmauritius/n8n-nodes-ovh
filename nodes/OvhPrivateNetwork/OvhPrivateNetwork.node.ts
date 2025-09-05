@@ -60,7 +60,7 @@ export class OvhPrivateNetwork implements INodeType {
 					},
 					{
 						name: 'IP Load Balancer',
-						value: 'ipLoadBalancer',
+						value: 'ipLoadbalancing',
 						description: 'IP Load Balancer in vRack',
 					},
 					{
@@ -75,7 +75,7 @@ export class OvhPrivateNetwork implements INodeType {
 					},
 					{
 						name: 'OVH Cloud Connect',
-						value: 'cloudConnect',
+						value: 'ovhCloudConnect',
 						description: 'OVH Cloud Connect services',
 					},
 					{
@@ -282,12 +282,6 @@ export class OvhPrivateNetwork implements INodeType {
 				},
 				options: [
 					{
-						name: 'Announce in Zone',
-						value: 'announceInZone',
-						description: 'Announce IP block in zone',
-						action: 'Announce IP in zone',
-					},
-					{
 						name: 'Attach',
 						value: 'attach',
 						description: 'Attach IP block to vRack',
@@ -298,12 +292,6 @@ export class OvhPrivateNetwork implements INodeType {
 						value: 'detach',
 						description: 'Detach IP block from vRack',
 						action: 'Detach IP block',
-					},
-					{
-						name: 'Get Available Zones',
-						value: 'getAvailableZones',
-						description: 'Get available announcement zones',
-						action: 'Get available zones',
 					},
 					{
 						name: 'Get Many',
@@ -328,16 +316,16 @@ export class OvhPrivateNetwork implements INodeType {
 				},
 				options: [
 					{
-						name: 'Create Bridged Subrange',
-						value: 'createBridgedSubrange',
-						description: 'Create bridged IPv6 subrange',
-						action: 'Create bridged subrange',
-					},
-					{
 						name: 'Create Routed Subrange',
 						value: 'createRoutedSubrange',
 						description: 'Create routed IPv6 subrange',
 						action: 'Create routed subrange',
+					},
+					{
+						name: 'Delete Routed Subrange',
+						value: 'deleteRoutedSubrange',
+						description: 'Delete routed IPv6 subrange',
+						action: 'Delete routed subrange',
 					},
 					{
 						name: 'Get Bridged Subranges',
@@ -356,6 +344,114 @@ export class OvhPrivateNetwork implements INodeType {
 						value: 'getRoutedSubranges',
 						description: 'List routed IPv6 subranges',
 						action: 'Get routed subranges',
+					},
+					{
+						name: 'Update Bridged Subrange',
+						value: 'updateBridgedSubrange',
+						description: 'Update bridged IPv6 subrange SLAAC status',
+						action: 'Update bridged subrange',
+					},
+				],
+				default: 'getMany',
+			},
+
+			// OVH Cloud Connect Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['ovhCloudConnect'],
+					},
+				},
+				options: [
+					{
+						name: 'Attach',
+						value: 'attach',
+						description: 'Attach OVH Cloud Connect to vRack',
+						action: 'Attach ovh cloud connect',
+					},
+					{
+						name: 'Detach',
+						value: 'detach',
+						description: 'Detach OVH Cloud Connect from vRack',
+						action: 'Detach ovh cloud connect',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'List OVH Cloud Connect services in vRack',
+						action: 'List ovh cloud connect services',
+					},
+				],
+				default: 'getMany',
+			},
+
+			// Legacy vRack Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['legacyVrack'],
+					},
+				},
+				options: [
+					{
+						name: 'Attach',
+						value: 'attach',
+						description: 'Attach legacy vRack to vRack',
+						action: 'Attach legacy v rack',
+					},
+					{
+						name: 'Detach',
+						value: 'detach',
+						description: 'Detach legacy vRack from vRack',
+						action: 'Detach legacy v rack',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'List legacy vRack services',
+						action: 'List legacy v rack services',
+					},
+				],
+				default: 'getMany',
+			},
+
+			// vRack Services Operations
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['vrackServices'],
+					},
+				},
+				options: [
+					{
+						name: 'Attach',
+						value: 'attach',
+						description: 'Attach vRack service to vRack',
+						action: 'Attach v rack service',
+					},
+					{
+						name: 'Detach',
+						value: 'detach',
+						description: 'Detach vRack service from vRack',
+						action: 'Detach v rack service',
+					},
+					{
+						name: 'Get Many',
+						value: 'getMany',
+						description: 'List vRack services',
+						action: 'List v rack services',
 					},
 				],
 				default: 'getMany',
@@ -397,8 +493,8 @@ export class OvhPrivateNetwork implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['vrack', 'cloudProject', 'dedicatedCloud', 'dedicatedServer', 'ipBlock', 'ipv6', 'task'],
-						operation: ['get', 'update', 'getServiceInfo', 'getAllowedServices', 'getEligibleServices', 'terminate', 'getMany', 'attach', 'detach', 'getInterfaces', 'getInterfaceDetails', 'announceInZone', 'getAvailableZones', 'getBridgedSubranges', 'getRoutedSubranges', 'createBridgedSubrange', 'createRoutedSubrange'],
+						resource: ['vrack', 'cloudProject', 'dedicatedCloud', 'dedicatedServer', 'ipBlock', 'ipv6', 'ovhCloudConnect', 'legacyVrack', 'vrackServices', 'task'],
+						operation: ['get', 'update', 'getServiceInfo', 'getAllowedServices', 'getEligibleServices', 'terminate', 'getMany', 'attach', 'detach', 'getInterfaces', 'getInterfaceDetails', 'getBridgedSubranges', 'getRoutedSubranges', 'createRoutedSubrange', 'deleteRoutedSubrange', 'updateBridgedSubrange'],
 					},
 				},
 				default: '',
@@ -462,7 +558,7 @@ export class OvhPrivateNetwork implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['ipBlock'],
-						operation: ['attach', 'detach', 'announceInZone', 'getAvailableZones'],
+						operation: ['attach', 'detach'],
 					},
 				},
 				default: '',
@@ -478,10 +574,42 @@ export class OvhPrivateNetwork implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['ipv6'],
-						operation: ['getBridgedSubranges', 'getRoutedSubranges', 'createBridgedSubrange', 'createRoutedSubrange'],
+						operation: ['getBridgedSubranges', 'getRoutedSubranges', 'createRoutedSubrange', 'deleteRoutedSubrange', 'updateBridgedSubrange'],
 					},
 				},
 				default: '',
+			},
+
+			// Routed Subrange
+			{
+				displayName: 'Routed Subrange',
+				name: 'routedSubrange',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ipv6'],
+						operation: ['deleteRoutedSubrange'],
+					},
+				},
+				default: '',
+				description: 'IPv6 routed subrange to delete',
+			},
+
+			// Bridged Subrange
+			{
+				displayName: 'Bridged Subrange',
+				name: 'bridgedSubrange',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ipv6'],
+						operation: ['updateBridgedSubrange'],
+					},
+				},
+				default: '',
+				description: 'IPv6 bridged subrange to update',
 			},
 
 			// Task ID
@@ -567,21 +695,6 @@ export class OvhPrivateNetwork implements INodeType {
 				],
 			},
 
-			// Zone for IP announcement
-			{
-				displayName: 'Zone',
-				name: 'zone',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['ipBlock'],
-						operation: ['announceInZone'],
-					},
-				},
-				default: '',
-				description: 'Zone where to announce the IP block',
-			},
-
 			// IPv6 Subrange parameters
 			{
 				displayName: 'Subrange Properties',
@@ -591,7 +704,7 @@ export class OvhPrivateNetwork implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['ipv6'],
-						operation: ['createBridgedSubrange', 'createRoutedSubrange'],
+						operation: ['createRoutedSubrange'],
 					},
 				},
 				default: {},
@@ -610,6 +723,78 @@ export class OvhPrivateNetwork implements INodeType {
 						default: '',
 					},
 				],
+			},
+
+			// Bridged Subrange Update Properties
+			{
+				displayName: 'Update Properties',
+				name: 'bridgedSubrangeUpdateProperties',
+				type: 'collection',
+				placeholder: 'Add Property',
+				displayOptions: {
+					show: {
+						resource: ['ipv6'],
+						operation: ['updateBridgedSubrange'],
+					},
+				},
+				default: {},
+				options: [
+					{
+						displayName: 'SLAAC',
+						name: 'slaac',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to enable SLAAC for the bridged subrange',
+					},
+				],
+			},
+
+			// OVH Cloud Connect ID
+			{
+				displayName: 'OVH Cloud Connect ID',
+				name: 'ovhCloudConnectId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ovhCloudConnect'],
+						operation: ['attach', 'detach'],
+					},
+				},
+				default: '',
+				description: 'OVH Cloud Connect service ID',
+			},
+
+			// Legacy vRack ID
+			{
+				displayName: 'Legacy vRack ID',
+				name: 'legacyVrackId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['legacyVrack'],
+						operation: ['attach', 'detach'],
+					},
+				},
+				default: '',
+				description: 'Legacy vRack service ID',
+			},
+
+			// vRack Service ID
+			{
+				displayName: 'vRack Service ID',
+				name: 'vrackServiceId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vrackServices'],
+						operation: ['attach', 'detach'],
+					},
+				},
+				default: '',
+
 			},
 		],
 	};
@@ -735,15 +920,6 @@ export class OvhPrivateNetwork implements INodeType {
 						method = 'DELETE';
 						const ipBlock = this.getNodeParameter('ipBlock', i) as string;
 						path = `/vrack/${serviceName}/ip/${encodeURIComponent(ipBlock)}`;
-					} else if (operation === 'announceInZone') {
-						method = 'POST';
-						const ipBlock = this.getNodeParameter('ipBlock', i) as string;
-						const zone = this.getNodeParameter('zone', i) as string;
-						path = `/vrack/${serviceName}/ip/${encodeURIComponent(ipBlock)}/announceInZone`;
-						body = { zone };
-					} else if (operation === 'getAvailableZones') {
-						const ipBlock = this.getNodeParameter('ipBlock', i) as string;
-						path = `/vrack/${serviceName}/ip/${encodeURIComponent(ipBlock)}/availableZone`;
 					}
 				} else if (resource === 'ipv6') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
@@ -755,18 +931,66 @@ export class OvhPrivateNetwork implements INodeType {
 					} else if (operation === 'getRoutedSubranges') {
 						const ipv6Block = this.getNodeParameter('ipv6Block', i) as string;
 						path = `/vrack/${serviceName}/ipv6/${encodeURIComponent(ipv6Block)}/routedSubrange`;
-					} else if (operation === 'createBridgedSubrange') {
-						method = 'POST';
-						const ipv6Block = this.getNodeParameter('ipv6Block', i) as string;
-						const subrangeProps = this.getNodeParameter('subrangeProperties', i) as IDataObject;
-						path = `/vrack/${serviceName}/ipv6/${encodeURIComponent(ipv6Block)}/bridgedSubrange`;
-						body = subrangeProps;
 					} else if (operation === 'createRoutedSubrange') {
 						method = 'POST';
 						const ipv6Block = this.getNodeParameter('ipv6Block', i) as string;
 						const subrangeProps = this.getNodeParameter('subrangeProperties', i) as IDataObject;
 						path = `/vrack/${serviceName}/ipv6/${encodeURIComponent(ipv6Block)}/routedSubrange`;
 						body = subrangeProps;
+					} else if (operation === 'deleteRoutedSubrange') {
+						method = 'DELETE';
+						const ipv6Block = this.getNodeParameter('ipv6Block', i) as string;
+						const routedSubrange = this.getNodeParameter('routedSubrange', i) as string;
+						path = `/vrack/${serviceName}/ipv6/${encodeURIComponent(ipv6Block)}/routedSubrange/${encodeURIComponent(routedSubrange)}`;
+					} else if (operation === 'updateBridgedSubrange') {
+						method = 'PUT';
+						const ipv6Block = this.getNodeParameter('ipv6Block', i) as string;
+						const bridgedSubrange = this.getNodeParameter('bridgedSubrange', i) as string;
+						const updateProps = this.getNodeParameter('bridgedSubrangeUpdateProperties', i) as IDataObject;
+						path = `/vrack/${serviceName}/ipv6/${encodeURIComponent(ipv6Block)}/bridgedSubrange/${encodeURIComponent(bridgedSubrange)}`;
+						body = updateProps;
+					}
+				} else if (resource === 'ovhCloudConnect') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getMany') {
+						path = `/vrack/${serviceName}/ovhCloudConnect`;
+					} else if (operation === 'attach') {
+						method = 'POST';
+						const ovhCloudConnectId = this.getNodeParameter('ovhCloudConnectId', i) as string;
+						path = `/vrack/${serviceName}/ovhCloudConnect`;
+						body = { ovhCloudConnect: ovhCloudConnectId };
+					} else if (operation === 'detach') {
+						method = 'DELETE';
+						const ovhCloudConnectId = this.getNodeParameter('ovhCloudConnectId', i) as string;
+						path = `/vrack/${serviceName}/ovhCloudConnect/${ovhCloudConnectId}`;
+					}
+				} else if (resource === 'legacyVrack') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getMany') {
+						path = `/vrack/${serviceName}/legacyVrack`;
+					} else if (operation === 'attach') {
+						method = 'POST';
+						const legacyVrackId = this.getNodeParameter('legacyVrackId', i) as string;
+						path = `/vrack/${serviceName}/legacyVrack`;
+						body = { legacyVrack: legacyVrackId };
+					} else if (operation === 'detach') {
+						method = 'DELETE';
+						const legacyVrackId = this.getNodeParameter('legacyVrackId', i) as string;
+						path = `/vrack/${serviceName}/legacyVrack/${legacyVrackId}`;
+					}
+				} else if (resource === 'vrackServices') {
+					const serviceName = this.getNodeParameter('serviceName', i) as string;
+					if (operation === 'getMany') {
+						path = `/vrack/${serviceName}/vrackServices`;
+					} else if (operation === 'attach') {
+						method = 'POST';
+						const vrackServiceId = this.getNodeParameter('vrackServiceId', i) as string;
+						path = `/vrack/${serviceName}/vrackServices`;
+						body = { vrackServices: vrackServiceId };
+					} else if (operation === 'detach') {
+						method = 'DELETE';
+						const vrackServiceId = this.getNodeParameter('vrackServiceId', i) as string;
+						path = `/vrack/${serviceName}/vrackServices/${vrackServiceId}`;
 					}
 				} else if (resource === 'task') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
