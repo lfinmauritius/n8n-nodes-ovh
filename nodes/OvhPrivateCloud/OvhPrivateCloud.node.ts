@@ -379,25 +379,10 @@ export class OvhPrivateCloud implements INodeType {
 						action: 'Update service properties',
 					},
 					{
-						name: 'Check Global Task List',
-						value: 'checkGlobalTaskList',
-						action: 'Check global task list',
-					},
-					{
 						name: 'Confirm Termination',
 						value: 'confirmTermination',
 						description: 'Confirm service termination',
 						action: 'Confirm service termination',
-					},
-					{
-						name: 'Generate NSXv Inventory',
-						value: 'generateNsxvInventory',
-						action: 'Generate ns xv inventory',
-					},
-					{
-						name: 'Generate VXLAN to vRack Mapping',
-						value: 'generateVxlanToVrackMapping',
-						action: 'Generate vxlan to v rack mapping',
 					},
 					{
 						name: 'Get',
@@ -417,33 +402,10 @@ export class OvhPrivateCloud implements INodeType {
 						action: 'Get orderable commercial ranges',
 					},
 					{
-						name: 'Get Global Tasks',
-						value: 'getGlobalTasks',
-						action: 'Get global tasks',
-					},
-					{
 						name: 'Get Many',
 						value: 'getAll',
 						description: 'Get many services',
 						action: 'Get many services',
-					},
-					{
-						name: 'Get New Prices',
-						value: 'getNewPrices',
-						description: 'Get new prices for service',
-						action: 'Get new prices for service',
-					},
-					{
-						name: 'Get NSX',
-						value: 'getNsx',
-						description: 'Get NSX information',
-						action: 'Get NSX information',
-					},
-					{
-						name: 'Get NSXt',
-						value: 'getNsxt',
-						description: 'Get NSXt information',
-						action: 'Get ns xt information',
 					},
 					{
 						name: 'Get Orderable IP Countries',
@@ -452,55 +414,16 @@ export class OvhPrivateCloud implements INodeType {
 						action: 'Get countries where i ps can be ordered',
 					},
 					{
-						name: 'Get OVH ID',
-						value: 'getOvhId',
-						description: 'Get OVH ID from object moref',
-						action: 'Get OVH ID from object moref',
-					},
-					{
-						name: 'Get Password Policy',
-						value: 'getPasswordPolicy',
-						action: 'Get password policy',
-					},
-					{
-						name: 'Get PCI DSS',
-						value: 'getPcidss',
-						description: 'Get PCI DSS information',
-						action: 'Get PCI DSS information',
-					},
-					{
 						name: 'Get Service Info',
 						value: 'getServiceInfo',
 						description: 'Get service subscription information',
 						action: 'Get service subscription information',
 					},
 					{
-						name: 'Get vCenter Version',
-						value: 'getVcenterVersion',
-						description: 'Get available vCenter versions',
-						action: 'Get available v center versions',
-					},
-					{
-						name: 'Get Vendor Information',
-						value: 'getVendor',
-						action: 'Get vendor information',
-					},
-					{
-						name: 'Get Vendor Object Type',
-						value: 'getVendorObjectType',
-						description: 'Get vendor object type from object moref',
-						action: 'Get vendor object type from object moref',
-					},
-					{
 						name: 'Order New Filer Hourly',
 						value: 'orderNewFilerHourly',
 						description: 'Order new filer with hourly billing',
 						action: 'Order new filer with hourly billing',
-					},
-					{
-						name: 'Reset Triggered Alarm',
-						value: 'resetTriggeredAlarm',
-						action: 'Reset triggered alarm',
 					},
 					{
 						name: 'Terminate',
@@ -513,18 +436,6 @@ export class OvhPrivateCloud implements INodeType {
 						value: 'update',
 						description: 'Update service properties',
 						action: 'Update service properties',
-					},
-					{
-						name: 'Upgrade vCenter',
-						value: 'upgradeVcenter',
-						description: 'Upgrade vCenter version',
-						action: 'Upgrade v center version',
-					},
-					{
-						name: 'VMware Cloud Director Eligibility',
-						value: 'vmwareCloudDirectorEligibility',
-						description: 'Check VMware Cloud Director eligibility',
-						action: 'Check v mware cloud director eligibility',
 					},
 				],
 				default: 'get',
@@ -2010,7 +1921,7 @@ export class OvhPrivateCloud implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['service'],
-						operation: ['canDeployNsxtEdgesOnGlobalDatastores', 'capabilities', 'changeContact', 'changeProperties', 'checkGlobalTaskList', 'confirmTermination', 'generateNsxvInventory', 'generateVxlanToVrackMapping', 'get', 'getCommercialRangeCompliance', 'getCommercialRangeOrderable', 'getGlobalTasks', 'getNewPrices', 'getNsx', 'getNsxt', 'getOrderableIpCountries', 'getOvhId', 'getPasswordPolicy', 'getPcidss', 'getServiceInfo', 'getVcenterVersion', 'getVendor', 'getVendorObjectType', 'orderNewFilerHourly', 'resetTriggeredAlarm', 'terminate', 'update', 'upgradeVcenter', 'vmwareCloudDirectorEligibility'],
+						operation: ['canDeployNsxtEdgesOnGlobalDatastores', 'capabilities', 'changeContact', 'changeProperties', 'confirmTermination', 'get', 'getCommercialRangeCompliance', 'getCommercialRangeOrderable', 'getOrderableIpCountries', 'getServiceInfo', 'orderNewFilerHourly', 'terminate', 'update'],
 					},
 					hide: {
 						resource: ['service'],
@@ -2701,21 +2612,6 @@ export class OvhPrivateCloud implements INodeType {
 				placeholder: 'Reason for resetting task state',
 			},
 			// Vendor object type fields
-			{
-				displayName: 'Managed Object Reference',
-				name: 'managedObjectReference',
-				type: 'string',
-				default: '',
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['service'],
-						operation: ['getVendorObjectType', 'getOvhId'],
-					},
-				},
-				placeholder: 'vm-1234',
-				description: 'The VMware managed object reference',
-			},
 			// Service changeContact fields
 			{
 				displayName: 'Contact Admin',
@@ -5033,24 +4929,9 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'getCommercialRangeOrderable') {
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/commercialRange/orderable`;
-					} else if (operation === 'getNewPrices') {
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/newPrices`;
-					} else if (operation === 'getNsx') {
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/nsx`;
-					} else if (operation === 'getNsxt') {
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/nsxt`;
 					} else if (operation === 'getOrderableIpCountries') {
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/orderableIpCountries`;
-					} else if (operation === 'getPasswordPolicy') {
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/passwordPolicy`;
-					} else if (operation === 'getPcidss') {
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/pcidss`;
 					} else if (operation === 'getServiceInfo') {
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/serviceInfos`;
@@ -5067,52 +4948,16 @@ export class OvhPrivateCloud implements INodeType {
 						if (updateProperties.userSessionTimeout !== undefined) body.userSessionTimeout = updateProperties.userSessionTimeout;
 						if (updateProperties.sslV3 !== undefined) body.sslV3 = updateProperties.sslV3;
 						if (updateProperties.webAccess !== undefined) body.webAccess = updateProperties.webAccess;
-					} else if (operation === 'checkGlobalTaskList') {
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/globalTasks`;
-					} else if (operation === 'getGlobalTasks') {
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/globalTasks`;
-					} else if (operation === 'upgradeVcenter') {
-						method = 'POST';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/upgradeVcenter`;
-					} else if (operation === 'getVcenterVersion') {
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/vcenterVersion`;
-					} else if (operation === 'getVendor') {
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/vendor`;
-					} else if (operation === 'getVendorObjectType') {
-						method = 'POST';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						const managedObjectReference = this.getNodeParameter('managedObjectReference', i) as string;
-						path = `/dedicatedCloud/${serviceName}/vendor/objectType`;
-						body = { managedObjectReference };
 					} else if (operation === 'orderNewFilerHourly') {
 						method = 'POST';
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						const filerName = this.getNodeParameter('filerName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/orderNewFilerHourly`;
 						body = { name: filerName };
-					} else if (operation === 'getOvhId') {
-						method = 'POST';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						const managedObjectReference = this.getNodeParameter('managedObjectReference', i) as string;
-						path = `/dedicatedCloud/${serviceName}/vendor/ovhId`;
-						body = { managedObjectReference };
-					} else if (operation === 'resetTriggeredAlarm') {
-						method = 'POST';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/resetTriggeredAlarm`;
 					} else if (operation === 'terminate') {
 						method = 'POST';
 						const serviceName = this.getNodeParameter('serviceName', i) as string;
 						path = `/dedicatedCloud/${serviceName}/terminate`;
-					} else if (operation === 'vmwareCloudDirectorEligibility') {
-						method = 'POST';
-						const serviceName = this.getNodeParameter('serviceName', i) as string;
-						path = `/dedicatedCloud/${serviceName}/vmwareCloudDirectorEligibility`;
 					}
 				} else if (resource === 'global') {
 					if (operation === 'getAllServices') {
@@ -6007,15 +5852,6 @@ export class OvhPrivateCloud implements INodeType {
 					} else if (operation === 'upgrade') {
 						method = 'POST';
 						path = `/dedicatedCloud/${serviceName}/vrops/upgrade`;
-					}
-				} else if (resource === 'service') {
-					const serviceName = this.getNodeParameter('serviceName', i) as string;
-					if (operation === 'generateNsxvInventory') {
-						method = 'POST';
-						path = `/dedicatedCloud/${serviceName}/generateNsxvInventory`;
-					} else if (operation === 'generateVxlanToVrackMapping') {
-						method = 'POST';
-						path = `/dedicatedCloud/${serviceName}/generateVxlanToVrackMapping`;
 					}
 				}
 
