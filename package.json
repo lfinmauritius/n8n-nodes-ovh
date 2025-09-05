@@ -54,7 +54,6 @@
       "dist/nodes/OvhAi/OvhAi.node.js",
       "dist/nodes/OvhDomain/OvhDomain.node.js",
       "dist/nodes/OvhDedicatedServer/OvhDedicatedServer.node.js",
-      "dist/nodes/OvhPrivateCloud/OvhPrivateCloud.node.js",
       "dist/nodes/OvhKubernetes/OvhKubernetes.node.js",
       "dist/nodes/OvhAccount/OvhAccount.node.js",
       "dist/nodes/OvhPrivateNetwork/OvhPrivateNetwork.node.js"
