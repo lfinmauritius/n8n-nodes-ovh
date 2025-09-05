@@ -2012,6 +2012,10 @@ export class OvhPrivateCloud implements INodeType {
 						resource: ['service'],
 						operation: ['canDeployNsxtEdgesOnGlobalDatastores', 'capabilities', 'changeContact', 'changeProperties', 'checkGlobalTaskList', 'confirmTermination', 'generateNsxvInventory', 'generateVxlanToVrackMapping', 'get', 'getCommercialRangeCompliance', 'getCommercialRangeOrderable', 'getGlobalTasks', 'getNewPrices', 'getNsx', 'getNsxt', 'getOrderableIpCountries', 'getOvhId', 'getPasswordPolicy', 'getPcidss', 'getServiceInfo', 'getVcenterVersion', 'getVendor', 'getVendorObjectType', 'orderNewFilerHourly', 'resetTriggeredAlarm', 'terminate', 'update', 'upgradeVcenter', 'vmwareCloudDirectorEligibility'],
 					},
+					hide: {
+						resource: ['service'],
+						operation: ['getAll'],
+					},
 				},
 				placeholder: 'pcc-xxx-xxx-xxx-xxx',
 				description: 'The Private Cloud service name. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
