@@ -86,10 +86,6 @@ export class OvhAccount implements INodeType {
 						value: 'identity',
 					},
 					{
-						name: 'Notification',
-						value: 'notification',
-					},
-					{
 						name: 'Order',
 						value: 'order',
 					},
@@ -102,20 +98,8 @@ export class OvhAccount implements INodeType {
 						value: 'sshKey',
 					},
 					{
-						name: 'Sub Account',
-						value: 'subAccount',
-					},
-					{
-						name: 'Support Level',
-						value: 'supportLevel',
-					},
-					{
 						name: 'Task',
 						value: 'task',
-					},
-					{
-						name: 'VIP Status',
-						value: 'vipStatus',
 					},
 				],
 				default: 'account',
@@ -582,45 +566,6 @@ export class OvhAccount implements INodeType {
 				],
 				default: 'get',
 			},
-			// Notification operations
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['notification'],
-					},
-				},
-				options: [
-					{
-						name: 'Get Email',
-						value: 'getEmail',
-						description: 'Get email notification settings',
-						action: 'Get email settings',
-					},
-					{
-						name: 'Update Email',
-						value: 'updateEmail',
-						description: 'Update email notification settings',
-						action: 'Update email settings',
-					},
-					{
-						name: 'Get SMS',
-						value: 'getSms',
-						description: 'Get SMS notification settings',
-						action: 'Get SMS settings',
-					},
-					{
-						name: 'Update SMS',
-						value: 'updateSms',
-						description: 'Update SMS notification settings',
-						action: 'Update SMS settings',
-					},
-				],
-				default: 'getEmail',
-			},
 			// Order operations
 			{
 				displayName: 'Operation',
@@ -810,66 +755,6 @@ export class OvhAccount implements INodeType {
 				],
 				default: 'getMany',
 			},
-			// Sub Account operations
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['subAccount'],
-					},
-				},
-				options: [
-					{
-						name: 'Get',
-						value: 'get',
-						description: 'Get specific sub-account',
-						action: 'Get sub account',
-					},
-					{
-						name: 'Get Many',
-						value: 'getMany',
-						description: 'Get all sub-accounts',
-						action: 'Get many sub accounts',
-					},
-					{
-						name: 'Create',
-						value: 'create',
-						description: 'Create a sub-account',
-						action: 'Create sub account',
-					},
-					{
-						name: 'Update',
-						value: 'update',
-						description: 'Update sub-account',
-						action: 'Update sub account',
-					},
-				],
-				default: 'getMany',
-			},
-			// Support Level operations
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['supportLevel'],
-					},
-				},
-				options: [
-					{
-						name: 'Get',
-						value: 'get',
-						description: 'Get support level',
-						action: 'Get support level',
-					},
-				],
-				default: 'get',
-			},
 			// Task operations
 			{
 				displayName: 'Operation',
@@ -908,27 +793,6 @@ export class OvhAccount implements INodeType {
 					},
 				],
 				default: 'getMany',
-			},
-			// VIP Status operations
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['vipStatus'],
-					},
-				},
-				options: [
-					{
-						name: 'Get',
-						value: 'get',
-						description: 'Get VIP status',
-						action: 'Get VIP status',
-					},
-				],
-				default: 'get',
 			},
 			// Parameters
 			{
@@ -1460,33 +1324,6 @@ export class OvhAccount implements INodeType {
 				description: 'SSH public key content',
 			},
 			{
-				displayName: 'Sub Account ID',
-				name: 'subAccountId',
-				type: 'number',
-				default: 0,
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['subAccount'],
-						operation: ['get', 'update'],
-					},
-				},
-				description: 'Sub-account ID',
-			},
-			{
-				displayName: 'Sub Account Description',
-				name: 'subAccountDescription',
-				type: 'string',
-				default: '',
-				displayOptions: {
-					show: {
-						resource: ['subAccount'],
-						operation: ['create', 'update'],
-					},
-				},
-				description: 'Sub-account description',
-			},
-			{
 				displayName: 'Task ID',
 				name: 'taskId',
 				type: 'number',
@@ -1943,22 +1780,6 @@ export class OvhAccount implements INodeType {
 						path = '/me/identity/validation';
 					}
 				}
-				// Notification resource
-				else if (resource === 'notification') {
-					if (operation === 'getEmail') {
-						path = '/me/notification/email';
-					} else if (operation === 'updateEmail') {
-						method = 'PUT';
-						path = '/me/notification/email';
-						body = {}; // Add email notification settings as needed
-					} else if (operation === 'getSms') {
-						path = '/me/notification/sms';
-					} else if (operation === 'updateSms') {
-						method = 'PUT';
-						path = '/me/notification/sms';
-						body = {}; // Add SMS notification settings as needed
-					}
-				}
 				// Order resource
 				else if (resource === 'order') {
 					if (operation === 'get') {
@@ -2060,34 +1881,6 @@ export class OvhAccount implements INodeType {
 						path = `/me/sshKey/${sshKeyName}`;
 					}
 				}
-				// Sub Account resource
-				else if (resource === 'subAccount') {
-					if (operation === 'get') {
-						const subAccountId = this.getNodeParameter('subAccountId', i) as number;
-						path = `/me/subAccount/${subAccountId}`;
-					} else if (operation === 'getMany') {
-						path = '/me/subAccount';
-					} else if (operation === 'create') {
-						method = 'POST';
-						path = '/me/subAccount';
-						body = {
-							description: this.getNodeParameter('subAccountDescription', i, '') as string,
-						};
-					} else if (operation === 'update') {
-						method = 'PUT';
-						const subAccountId = this.getNodeParameter('subAccountId', i) as number;
-						path = `/me/subAccount/${subAccountId}`;
-						body = {
-							description: this.getNodeParameter('subAccountDescription', i, '') as string,
-						};
-					}
-				}
-				// Support Level resource
-				else if (resource === 'supportLevel') {
-					if (operation === 'get') {
-						path = '/me/supportLevel';
-					}
-				}
 				// Task resource
 				else if (resource === 'task') {
 					if (operation === 'get') {
@@ -2111,12 +1904,6 @@ export class OvhAccount implements INodeType {
 						if (token) {
 							body = { token };
 						}
-					}
-				}
-				// VIP Status resource
-				else if (resource === 'vipStatus') {
-					if (operation === 'get') {
-						path = '/me/vipStatus';
 					}
 				}
 
@@ -2191,8 +1978,7 @@ export class OvhAccount implements INodeType {
 						taskId: this.getNodeParameter('taskId', i) as number,
 					});
 				} else if (operation === 'update' || operation === 'updateDefaultIpRule' || 
-						   operation === 'updateDeveloperMode' || operation === 'updateClient' ||
-						   operation === 'updateEmail' || operation === 'updateSms') {
+						   operation === 'updateDeveloperMode' || operation === 'updateClient') {
 					// For update operations
 					returnData.push({ 
 						success: true, 
