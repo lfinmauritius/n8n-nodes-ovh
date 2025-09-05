@@ -809,16 +809,8 @@ export class OvhPrivateNetwork implements INodeType {
 		const consumerKey = credentials.consumerKey as string;
 		const endpoint = credentials.endpoint as string;
 
-		const endpoints: { [key: string]: string } = {
-			'ovh-eu': 'https://eu.api.ovh.com/1.0',
-			'ovh-us': 'https://api.us.ovhcloud.com/1.0',
-			'ovh-ca': 'https://ca.api.ovh.com/1.0',
-		};
-
-		const baseURL = endpoints[endpoint];
-		if (!baseURL) {
-			throw new NodeOperationError(this.getNode(), `Unknown endpoint: ${endpoint}`);
-		}
+		// Use the endpoint directly from credentials (it's already the full URL)
+		const baseURL = endpoint;
 
 		for (let i = 0; i < items.length; i++) {
 			try {

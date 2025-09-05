@@ -30,7 +30,7 @@ export class OvhHostedPrivateCloud implements INodeType {
 			},
 		],
 		requestDefaults: {
-			baseURL: 'https://eu.api.ovh.com/1.0',
+			baseURL: '={{$credentials.endpoint}}',
 			url: '',
 			headers: {
 				'Accept': 'application/json',
@@ -477,7 +477,7 @@ export class OvhHostedPrivateCloud implements INodeType {
 				const timestamp = Math.floor(Date.now() / 1000).toString();
 				const hasBody = method === 'POST';
 				const bodyString = hasBody ? JSON.stringify(body) : '';
-				const fullUrl = `https://eu.api.ovh.com/1.0${endpoint}`;
+				const fullUrl = `${credentials.endpoint}${endpoint}`;
 				
 				const signatureData = [
 					credentials.applicationSecret,
