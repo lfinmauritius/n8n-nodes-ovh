@@ -1,10 +1,12 @@
 # n8n-nodes-ovh
 
-**🚀 PRODUCTION READY - All OVH nodes are now active and fully operational**
+**⚠️ ACTIVE NODES - Currently 7 OVH nodes are active and fully operational**
 
-This package provides comprehensive n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, account management, data processing, managed database, Kubernetes cluster, container registry, public cloud compute, object storage, and private network tasks.
+This package provides comprehensive n8n nodes for interacting with the OVH API, allowing you to automate domain, DNS, dedicated server, hosted private cloud, AI/ML services, account management, Kubernetes cluster, and private network tasks.
 
-**Currently Active Nodes**: OVH AI, OVH Account, OVH Compute, OVH Container Registry, OVH Database, OVH Data Processing, OVH Dedicated Server, OVH Domain, OVH Hosted Private Cloud, OVH Kubernetes, OVH Private Network, and OVH Storage.
+**Currently Active Nodes**: OVH AI, OVH Account, OVH Dedicated Server, OVH Domain, OVH Hosted Private Cloud, OVH Kubernetes, and OVH Private Network.
+
+**Note**: Additional nodes (OVH Compute, OVH Container Registry, OVH Database, OVH Data Processing, OVH Storage) are implemented but not yet activated. They will be enabled in future releases after thorough testing.
 
 **Developed by [Ascenzia](https://ascenzia.fr)** - Your trusted partner for AI agent creation and automation.
 
@@ -362,90 +364,6 @@ Comprehensive account management with 100+ operations across 20+ resources for m
 - **Communication**: SMS services integration
 - **Task Management**: Task workflow operations
 
-### OVH Compute Node
-
-Comprehensive Public Cloud compute instance management.
-
-#### Instance Operations
-- **Create**: Create a new compute instance
-- **Delete**: Delete a compute instance
-- **Get**: Get compute instance information
-- **Get Many**: List all compute instances
-- **Reboot**: Reboot a compute instance
-- **Reinstall**: Reinstall a compute instance
-- **Resize**: Resize a compute instance
-- **Start**: Start a compute instance
-- **Stop**: Stop a compute instance
-- **Update**: Update compute instance settings
-
-#### Backup Operations
-- **Create**: Create an instance backup
-- **Delete**: Delete an instance backup
-- **Get**: Get instance backup information
-- **Get Many**: List instance backups
-- **Restore**: Restore from instance backup
-
-#### SSH Key Operations
-- **Create**: Create a new SSH key
-- **Delete**: Delete an SSH key
-- **Get**: Get SSH key information
-- **Get Many**: List SSH keys
-
-### OVH Container Registry Node
-
-Managed container registry operations.
-
-#### Registry Operations
-- **Create**: Create a new container registry
-- **Delete**: Delete container registry
-- **Get**: Get registry information
-- **Get Many**: List container registries
-- **Update**: Update registry settings
-
-### OVH Database Node
-
-Managed database services operations.
-
-#### Database Operations
-- **Create**: Create a new managed database
-- **Delete**: Delete database
-- **Get**: Get database information
-- **Get Many**: List databases
-- **Update**: Update database configuration
-
-### OVH Data Processing Node
-
-Data processing and analytics services.
-
-#### Processing Operations
-- **Create**: Create data processing job
-- **Delete**: Delete processing job
-- **Get**: Get job information
-- **Get Many**: List processing jobs
-- **Update**: Update job configuration
-
-### OVH Storage Node
-
-Public Cloud Object Storage management.
-
-#### Container Operations
-- **Create**: Create a new storage container
-- **Delete**: Delete storage container
-- **Get**: Get storage container information
-- **Get Many**: List storage containers
-- **Update**: Update container settings
-
-#### Credential Operations
-- **Create**: Create storage credentials
-- **Delete**: Delete storage credentials
-- **Get**: Get credentials information
-- **Get Many**: List storage credentials
-
-#### User Operations
-- **Create**: Create a new storage user
-- **Delete**: Delete storage user
-- **Get**: Get storage user information
-- **Get Many**: List storage users
 
 ### OVH Private Network Node
 
@@ -544,35 +462,6 @@ To use these nodes, you need to create OVH API credentials with appropriate perm
 - POST /dedicatedCloud*
 - DELETE /dedicatedCloud*
 
-#### For OVH Compute:
-- GET /cloud/project/*/instance*
-- PUT /cloud/project/*/instance*
-- POST /cloud/project/*/instance*
-- DELETE /cloud/project/*/instance*
-
-#### For OVH Container Registry:
-- GET /cloud/project/*/containerRegistry*
-- PUT /cloud/project/*/containerRegistry*
-- POST /cloud/project/*/containerRegistry*
-- DELETE /cloud/project/*/containerRegistry*
-
-#### For OVH Database:
-- GET /cloud/project/*/database*
-- PUT /cloud/project/*/database*
-- POST /cloud/project/*/database*
-- DELETE /cloud/project/*/database*
-
-#### For OVH Data Processing:
-- GET /cloud/project/*/dataProcessing*
-- PUT /cloud/project/*/dataProcessing*
-- POST /cloud/project/*/dataProcessing*
-- DELETE /cloud/project/*/dataProcessing*
-
-#### For OVH Storage:
-- GET /cloud/project/*/storage*
-- PUT /cloud/project/*/storage*
-- POST /cloud/project/*/storage*
-- DELETE /cloud/project/*/storage*
 
 #### For OVH AI:
 - GET /cloud/project/*/ai*
@@ -598,11 +487,11 @@ To use these nodes, you need to create OVH API credentials with appropriate perm
 - POST /vrack*
 - DELETE /vrack*
 
-## Release v0.15.19 - Production Ready
+## Release v0.15.19 - Enhanced Active Nodes
 
-### 🚀 Complete OVH API Integration Suite
+### 🚀 Active OVH API Integration Suite
 
-This release represents the comprehensive implementation of OVH API integration for n8n, providing 12 fully operational nodes with 600+ operations across all major OVH services.
+This release provides 7 fully operational nodes with comprehensive OVH API integration, offering robust automation capabilities for core OVH services.
 
 #### **Recent Improvements (v0.15.x)**
 - **Multi-Region Support**: Dynamic API endpoints supporting EU, Canada, US, SoYouStart, and Kimsufi
@@ -610,20 +499,16 @@ This release represents the comprehensive implementation of OVH API integration 
 - **Improved DELETE Operations**: Meaningful success responses instead of null values
 - **Parameter Validation**: Input validation prevents common API errors
 - **Response Format Consistency**: Standardized data formats across all nodes
+- **New Hosted Private Cloud Node**: Complete VMware Private Cloud management
 
-#### **Complete Node Coverage**
+#### **Active Node Coverage (7 Nodes)**
 - **OVH AI**: ML/AI workload automation with applications, training jobs, and notebooks
 - **OVH Account**: Comprehensive account, billing, and identity management
-- **OVH Compute**: Public Cloud compute instance lifecycle management  
-- **OVH Container Registry**: Managed container registry operations
-- **OVH Database**: Managed database services automation
-- **OVH Data Processing**: Data analytics and processing workflows
 - **OVH Dedicated Server**: Infrastructure automation with security features
 - **OVH Domain**: Complete DNS and domain management
 - **OVH Hosted Private Cloud**: VMware Private Cloud management via dedicatedCloud API
 - **OVH Kubernetes**: Managed Kubernetes with cluster, node pool, and security operations
 - **OVH Private Network**: vRack private networking with service integration
-- **OVH Storage**: Public Cloud Object Storage management
 
 #### **Key Features**
 - **Universal Compatibility**: Works with all OVH regions and brands
@@ -640,13 +525,13 @@ This release represents the comprehensive implementation of OVH API integration 
 - **Response Standardization**: Consistent data formats for optimal workflow integration
 
 ### API Coverage
-- **600+ Operations**: Complete coverage of OVH production APIs
-- **12 Active Nodes**: All major OVH services supported
+- **400+ Operations**: Comprehensive coverage of active OVH APIs
+- **7 Active Nodes**: Core OVH services fully supported
 - **Multi-Region**: EU, CA, US, SoYouStart, Kimsufi support
 - **Authentication**: OVH API v1 signature implementation
 - **Rate Limiting**: Respects OVH API limits and best practices
 
-This release provides enterprise-grade automation capabilities for complete OVH infrastructure management, enabling sophisticated workflows and infrastructure-as-code implementations across all OVH services and regions.
+This release provides reliable automation capabilities for essential OVH infrastructure management, enabling sophisticated workflows for domain management, server operations, AI/ML workloads, Kubernetes orchestration, and private networking.
 
 ## Support
 
