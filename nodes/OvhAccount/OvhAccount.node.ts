@@ -97,10 +97,6 @@ export class OvhAccount implements INodeType {
 						name: 'SSH Key',
 						value: 'sshKey',
 					},
-					{
-						name: 'Task',
-						value: 'task',
-					},
 				],
 				default: 'account',
 			},
@@ -755,45 +751,6 @@ export class OvhAccount implements INodeType {
 				],
 				default: 'getMany',
 			},
-			// Task operations
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
-						resource: ['task'],
-					},
-				},
-				options: [
-					{
-						name: 'Get',
-						value: 'get',
-						description: 'Get specific task',
-						action: 'Get task',
-					},
-					{
-						name: 'Get Many',
-						value: 'getMany',
-						description: 'Get all tasks',
-						action: 'Get many tasks',
-					},
-					{
-						name: 'Accept',
-						value: 'accept',
-						description: 'Accept a task',
-						action: 'Accept task',
-					},
-					{
-						name: 'Refuse',
-						value: 'refuse',
-						description: 'Refuse a task',
-						action: 'Refuse task',
-					},
-				],
-				default: 'getMany',
-			},
 			// Parameters
 			{
 				displayName: 'Abuse ID',
@@ -1322,34 +1279,6 @@ export class OvhAccount implements INodeType {
 					},
 				},
 				description: 'SSH public key content',
-			},
-			{
-				displayName: 'Task ID',
-				name: 'taskId',
-				type: 'number',
-				default: 0,
-				required: true,
-				displayOptions: {
-					show: {
-						resource: ['task'],
-						operation: ['get', 'accept', 'refuse'],
-					},
-				},
-
-			},
-			{
-				displayName: 'Token',
-				name: 'token',
-				type: 'string',
-				typeOptions: { password: true },
-				default: '',
-				displayOptions: {
-					show: {
-						resource: ['task'],
-						operation: ['accept', 'refuse'],
-					},
-				},
-				description: 'Task validation token',
 			},
 			{
 				displayName: 'Additional Fields',
@@ -1881,31 +1810,6 @@ export class OvhAccount implements INodeType {
 						path = `/me/sshKey/${sshKeyName}`;
 					}
 				}
-				// Task resource
-				else if (resource === 'task') {
-					if (operation === 'get') {
-						const taskId = this.getNodeParameter('taskId', i) as number;
-						path = `/me/task/${taskId}`;
-					} else if (operation === 'getMany') {
-						path = '/me/task';
-					} else if (operation === 'accept') {
-						method = 'POST';
-						const taskId = this.getNodeParameter('taskId', i) as number;
-						path = `/me/task/${taskId}/accept`;
-						const token = this.getNodeParameter('token', i, '') as string;
-						if (token) {
-							body = { token };
-						}
-					} else if (operation === 'refuse') {
-						method = 'POST';
-						const taskId = this.getNodeParameter('taskId', i) as number;
-						path = `/me/task/${taskId}/refuse`;
-						const token = this.getNodeParameter('token', i, '') as string;
-						if (token) {
-							body = { token };
-						}
-					}
-				}
 
 				// Prepare the request
 				const timestamp = Math.round(Date.now() / 1000);
@@ -1968,15 +1872,6 @@ export class OvhAccount implements INodeType {
 						operation: operation,
 						resource: resource,
 					});
-				} else if (operation === 'accept' || operation === 'refuse') {
-					// For task operations
-					returnData.push({ 
-						success: true, 
-						message: `Task ${operation}ed successfully`,
-						operation: operation,
-						resource: resource,
-						taskId: this.getNodeParameter('taskId', i) as number,
-					});
 				} else if (operation === 'update' || operation === 'updateDefaultIpRule' || 
 						   operation === 'updateDeveloperMode' || operation === 'updateClient') {
 					// For update operations
@@ -2010,8 +1905,8 @@ export class OvhAccount implements INodeType {
 					// For arrays, add each item
 					responseData.forEach((item) => {
 						if (typeof item === 'string' || typeof item === 'number') {
-							// For simple values, wrap in an object
-							returnData.push({ value: item, resource, operation });
+							// For simple values (IDs), wrap in an object with 'id' field
+							returnData.push({ id: item, resource, operation });
 						} else {
 							// For objects, add directly with metadata
 							returnData.push({ ...item, resource, operation });
