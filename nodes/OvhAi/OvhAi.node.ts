@@ -20,7 +20,7 @@ export class OvhAi implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH AI and Machine Learning services',
+		description: 'Manage OVH AI and Machine Learning services - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH AI',
 		},

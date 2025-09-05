@@ -21,7 +21,7 @@ export class OvhDomain implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH domains',
+		description: 'Manage OVH domains - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH Domain',
 		},

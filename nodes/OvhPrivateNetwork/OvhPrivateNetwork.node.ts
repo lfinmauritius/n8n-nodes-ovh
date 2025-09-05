@@ -19,7 +19,7 @@ export class OvhPrivateNetwork implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH Private Network (vRack) - Complete API Integration',
+		description: 'Manage OVH Private Network (vRack) - Complete API Integration - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH Private Network',
 		},

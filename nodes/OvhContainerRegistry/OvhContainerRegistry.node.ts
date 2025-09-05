@@ -18,7 +18,7 @@ export class OvhContainerRegistry implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH Managed Container Registry',
+		description: 'Manage OVH Managed Container Registry - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH Container Registry',
 		},

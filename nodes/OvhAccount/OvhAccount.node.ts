@@ -18,7 +18,7 @@ export class OvhAccount implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH Account, billing, security and API settings',
+		description: 'Manage OVH Account, billing, security and API settings - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH Account',
 		},

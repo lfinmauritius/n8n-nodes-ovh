@@ -18,7 +18,7 @@ export class OvhKubernetes implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH Managed Kubernetes clusters',
+		description: 'Manage OVH Managed Kubernetes clusters - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH Kubernetes',
 		},

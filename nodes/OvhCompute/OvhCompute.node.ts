@@ -18,7 +18,7 @@ export class OvhCompute implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH Public Cloud Compute instances',
+		description: 'Manage OVH Public Cloud Compute instances - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH Public Cloud Compute',
 		},

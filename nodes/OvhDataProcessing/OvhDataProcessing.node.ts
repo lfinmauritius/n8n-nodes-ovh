@@ -18,7 +18,7 @@ export class OvhDataProcessing implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH Data Processing services',
+		description: 'Manage OVH Data Processing services - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH Data Processing',
 		},

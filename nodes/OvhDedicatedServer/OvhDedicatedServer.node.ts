@@ -20,7 +20,7 @@ export class OvhDedicatedServer implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH dedicated servers',
+		description: 'Manage OVH dedicated servers - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH Dedicated Server',
 		},

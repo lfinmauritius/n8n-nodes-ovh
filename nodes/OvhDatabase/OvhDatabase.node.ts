@@ -18,7 +18,7 @@ export class OvhDatabase implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH Managed Databases',
+		description: 'Manage OVH Managed Databases - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH Database',
 		},

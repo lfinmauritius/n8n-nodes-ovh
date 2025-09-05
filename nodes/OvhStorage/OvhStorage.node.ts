@@ -18,7 +18,7 @@ export class OvhStorage implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Manage OVH Public Cloud Object Storage',
+		description: 'Manage OVH Public Cloud Object Storage - Developed by Ascenzia',
 		defaults: {
 			name: 'OVH Public Cloud Storage',
 		},
