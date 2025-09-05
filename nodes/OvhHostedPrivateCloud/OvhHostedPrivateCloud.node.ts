@@ -420,10 +420,21 @@ export class OvhHostedPrivateCloud implements INodeType {
 				} else if (resource === 'host') {
 					const serviceName = this.getNodeParameter('serviceName', i) as string;
 					const datacenterId = this.getNodeParameter('datacenterId', i) as number;
+					
+					if (!serviceName) {
+						throw new NodeOperationError(this.getNode(), 'Service Name is required for host operations', { itemIndex: i });
+					}
+					if (!datacenterId) {
+						throw new NodeOperationError(this.getNode(), 'Datacenter ID is required for host operations', { itemIndex: i });
+					}
+					
 					if (operation === 'getAll') {
 						endpoint = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/host`;
 					} else if (operation === 'get') {
 						const hostId = this.getNodeParameter('hostId', i) as number;
+						if (!hostId) {
+							throw new NodeOperationError(this.getNode(), 'Host ID is required for get operation', { itemIndex: i });
+						}
 						endpoint = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/host/${hostId}`;
 					} else if (operation === 'create') {
 						endpoint = `/dedicatedCloud/${serviceName}/datacenter/${datacenterId}/host`;
@@ -456,6 +467,11 @@ export class OvhHostedPrivateCloud implements INodeType {
 							description: this.getNodeParameter('description', i) || undefined,
 						};
 					}
+				}
+
+				// Validate endpoint
+				if (!endpoint) {
+					throw new NodeOperationError(this.getNode(), `Invalid operation: ${resource} - ${operation}`, { itemIndex: i });
 				}
 
 				// Prepare request
