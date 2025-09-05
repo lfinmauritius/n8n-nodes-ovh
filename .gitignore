@@ -9,6 +9,7 @@ yarn.lock
 # IDE and development environment folders
 .vscode/
 .claude/
+.git-rewrite/
 
 # Analysis files - development tools, not for git/npm
 README_OLD.md

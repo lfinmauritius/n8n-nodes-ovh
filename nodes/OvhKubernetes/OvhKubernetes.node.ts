@@ -1212,6 +1212,7 @@ export class OvhKubernetes implements INodeType {
 
 				// Prepare body for signature exactly like official OVH SDK
 				let bodyForSignature = '';
+				// DELETE requests should never have body in OVH API
 				if (method === 'POST' || method === 'PUT') {
 					if (Object.keys(body).length > 0) {
 						// Match official OVH SDK: JSON.stringify + unicode escaping
@@ -1249,6 +1250,7 @@ export class OvhKubernetes implements INodeType {
 				};
 
 				// Only add body and content-type for POST/PUT requests
+				// DELETE requests should never have body in OVH API
 				if (method === 'POST' || method === 'PUT') {
 					if (Object.keys(body).length > 0) {
 						options.body = body;
@@ -1277,7 +1279,7 @@ export class OvhKubernetes implements INodeType {
 						}
 					});
 				} else {
-					returnData.push(responseData as IDataObject);
+					returnData.push({ json: responseData as IDataObject });
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {
