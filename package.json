@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-ovh",
-  "version": "0.15.21",
+  "version": "0.15.22",
   "description": "Comprehensive n8n nodes for OVH API integration - Developed by Ascenzia, experts in AI agent creation",
   "keywords": [
     "n8n-community-node-package",
@@ -57,7 +57,8 @@
       "dist/nodes/OvhKubernetes/OvhKubernetes.node.js",
       "dist/nodes/OvhAccount/OvhAccount.node.js",
       "dist/nodes/OvhPrivateNetwork/OvhPrivateNetwork.node.js",
-      "dist/nodes/OvhHostedPrivateCloud/OvhHostedPrivateCloud.node.js"
+      "dist/nodes/OvhHostedPrivateCloud/OvhHostedPrivateCloud.node.js",
+      "dist/nodes/OvhOrder/OvhOrder.node.js"
     ]
   },
   "devDependencies": {

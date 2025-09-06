@@ -5,14 +5,14 @@
 [![npm version](https://img.shields.io/npm/v/n8n-nodes-ovh.svg)](https://www.npmjs.com/package/n8n-nodes-ovh) [![Active Status](https://img.shields.io/badge/status-active-green.svg)] [![License](https://img.shields.io/badge/license-MIT-blue.svg)] [![n8n Community](https://img.shields.io/badge/n8n-community-FF6D5A.svg)] [![OVH API](https://img.shields.io/badge/OVH-API-123F6D.svg)]
 
 **Comprehensive OVH integration for n8n workflow automation**  
-🚀 **Production Ready** - 7 active nodes with 400+ operations  
+🚀 **Production Ready** - 8 active nodes with 450+ operations  
 Developed by [Ascenzia](https://ascenzia.fr)
 
 ## 🌟 Features
 
 This n8n community node provides comprehensive integration with OVH's suite of cloud services, enabling powerful automation workflows for European cloud infrastructure.
 
-### 🔧 Active Nodes (7)
+### 🔧 Active Nodes (8)
 
 | Service | Description | Key Operations |
 |---------|-------------|----------------|
@@ -22,6 +22,7 @@ This n8n community node provides comprehensive integration with OVH's suite of c
 | **Domain** | Domain & DNS management | Domains, DNS Records (CRUD), Nameservers |
 | **Hosted Private Cloud** | VMware Private Cloud | Datacenters, Hosts, Storage, Networks |
 | **Kubernetes** | Managed Kubernetes service | Clusters, Node Pools, IP Restrictions |
+| **Order** (Beta) | Order & cart management | Carts, Items, Coupons, Checkout |
 | **Private Network** | vRack private networking | IP Blocks, Service Integration, Tasks |
 
 ### 🌍 Multi-Region Support
@@ -181,6 +182,7 @@ DELETE /vrack*
 | **[OVH Domain](https://docs.ovh.com/gb/en/domains/)** | Domains, DNS, Nameservers | Domain management, DNS automation |
 | **[OVH Hosted Private Cloud](https://docs.ovh.com/gb/en/private-cloud/)** | VMware infrastructure | Private cloud orchestration |
 | **[OVH Kubernetes](https://docs.ovh.com/gb/en/kubernetes/)** | Clusters, Nodes, Security | Container orchestration |
+| **[OVH Order](https://api.ovh.com/console/)** (Beta) | Carts, Coupons, Checkout | Order automation, cart management |
 | **[OVH Private Network](https://docs.ovh.com/gb/en/vrack/)** | vRack, Services, IP blocks | Network isolation, service integration |
 
 ### Advanced Features
@@ -223,7 +225,12 @@ MIT License - see [LICENSE](LICENSE.md) file for details.
 
 ## 🏷️ Version History
 
-### v0.15.19 - Current
+### v0.15.22 - Current
+- 🆕 **Beta**: OVH Order node for cart and order management
+- ✨ Support for cart operations, coupons, and checkout
+- 🔧 Enhanced endpoint management across all nodes
+
+### v0.15.19 - Previous
 - ✨ Multi-region endpoint support
 - 🐛 Enhanced error handling with troubleshooting
 - 🔧 Improved DELETE operations responses
