@@ -1463,8 +1463,11 @@ export class OvhOrder implements INodeType {
 				try {
 					const response = await this.helpers.httpRequest(options);
 
+					// Handle empty responses (like 204 No Content from assign operation)
+					const jsonResponse = response || { success: true, operation: operation, resource: resource };
+					
 					returnData.push({
-						json: response,
+						json: jsonResponse,
 						pairedItem: { item: i },
 					});
 				} catch (httpError: any) {
