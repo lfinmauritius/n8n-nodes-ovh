@@ -52,6 +52,10 @@ export class OvhOrder implements INodeType {
 						name: 'Checkout',
 						value: 'checkout',
 					},
+					{
+						name: 'Domain Check',
+						value: 'domainCheck',
+					},
 				],
 				default: 'cart',
 			},
@@ -66,6 +70,12 @@ export class OvhOrder implements INodeType {
 					},
 				},
 				options: [
+					{
+						name: 'Assign',
+						value: 'assign',
+						description: 'Assign cart to your account (required before checkout)',
+						action: 'Assign cart to account',
+					},
 					{
 						name: 'Create',
 						value: 'create',
@@ -170,6 +180,26 @@ export class OvhOrder implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
+						resource: ['domainCheck'],
+					},
+				},
+				options: [
+					{
+						name: 'Check Availability',
+						value: 'checkAvailability',
+						description: 'Check if a domain name is available',
+						action: 'Check domain availability',
+					},
+				],
+				default: 'checkAvailability',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
 						resource: ['cartCoupon'],
 					},
 				},
@@ -249,6 +279,21 @@ export class OvhOrder implements INodeType {
 				},
 				default: '',
 				description: 'The coupon code',
+			},
+			{
+				displayName: 'Domain Name',
+				name: 'domainNameCheck',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['domainCheck'],
+						operation: ['checkAvailability'],
+					},
+				},
+				default: '',
+				placeholder: 'example.com',
+				description: 'The domain name to check availability for',
 			},
 			{
 				displayName: 'OVH Subsidiary',
@@ -1150,6 +1195,12 @@ export class OvhOrder implements INodeType {
 						method = 'GET';
 						const cartId = this.getNodeParameter('cartId', i) as string;
 						path = `/order/cart/${cartId}`;
+					} else if (operation === 'assign') {
+						method = 'POST';
+						const cartId = this.getNodeParameter('cartId', i) as string;
+						path = `/order/cart/${cartId}/assign`;
+						// Empty body for assign operation
+						body = {};
 					} else if (operation === 'update') {
 						method = 'PUT';
 						const cartId = this.getNodeParameter('cartId', i) as string;
@@ -1290,6 +1341,72 @@ export class OvhOrder implements INodeType {
 							'waiveRetractationPeriod',
 							i,
 						) as boolean;
+					}
+				} else if (resource === 'domainCheck') {
+					if (operation === 'checkAvailability') {
+						const domainName = this.getNodeParameter('domainNameCheck', i) as string;
+						
+						// First, create a temporary cart to check domain availability
+						const createTimestamp = Math.round(Date.now() / 1000);
+						const createCartPath = '/order/cart';
+						const createMethod = 'POST';
+						const createBody = JSON.stringify({ ovhSubsidiary: 'FR' });
+						
+						const createToSign = applicationSecret + '+' + consumerKey + '+' + createMethod + '+' + baseUrl + createCartPath + '+' + createBody + '+' + createTimestamp;
+						const crypto = require('crypto');
+						const createHash = crypto.createHash('sha1').update(createToSign).digest('hex');
+						const createSig = '$1$' + createHash;
+						
+						const createCartOptions: any = {
+							method: createMethod,
+							url: baseUrl + createCartPath,
+							headers: {
+								'X-Ovh-Application': applicationKey,
+								'X-Ovh-Timestamp': createTimestamp.toString(),
+								'X-Ovh-Signature': createSig,
+								'X-Ovh-Consumer': consumerKey,
+								'Content-Type': 'application/json',
+							},
+							body: JSON.parse(createBody),
+							json: true,
+						};
+						
+						const cartResponse = await this.helpers.httpRequest(createCartOptions);
+						const tempCartId = cartResponse.cartId;
+						
+						// Check domain availability
+						method = 'GET';
+						path = `/order/cart/${tempCartId}/domain?domain=${encodeURIComponent(domainName)}`;
+						
+						// Clean up - delete the temporary cart after checking
+						const deleteTimestamp = Math.round(Date.now() / 1000);
+						const deletePath = `/order/cart/${tempCartId}`;
+						const deleteMethod = 'DELETE';
+						
+						const deleteToSign = applicationSecret + '+' + consumerKey + '+' + deleteMethod + '+' + baseUrl + deletePath + '++' + deleteTimestamp;
+						const deleteHash = crypto.createHash('sha1').update(deleteToSign).digest('hex');
+						const deleteSig = '$1$' + deleteHash;
+						
+						const deleteOptions: any = {
+							method: deleteMethod,
+							url: baseUrl + deletePath,
+							headers: {
+								'X-Ovh-Application': applicationKey,
+								'X-Ovh-Timestamp': deleteTimestamp.toString(),
+								'X-Ovh-Signature': deleteSig,
+								'X-Ovh-Consumer': consumerKey,
+							},
+							json: true,
+						};
+						
+						// Schedule cleanup for after the check
+						setTimeout(async () => {
+							try {
+								await this.helpers.httpRequest(deleteOptions);
+							} catch (error) {
+								// Ignore cleanup errors
+							}
+						}, 1000);
 					}
 				}
 
