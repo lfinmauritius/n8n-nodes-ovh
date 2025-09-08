@@ -382,6 +382,58 @@ export class OvhOrder implements INodeType {
 				description: 'Type of product to add to cart',
 			},
 			{
+				displayName: 'Domain Name',
+				name: 'domainName',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['cartItem'],
+						operation: ['add'],
+						productType: ['domain'],
+					},
+				},
+				description: 'The domain name to register (e.g., example.com)',
+			},
+			{
+				displayName: 'Domain Configuration',
+				name: 'domainConfig',
+				type: 'collection',
+				placeholder: 'Add Configuration',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['cartItem'],
+						operation: ['add'],
+						productType: ['domain'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Duration',
+						name: 'duration',
+						type: 'options',
+						options: [
+							{ name: '1 Year', value: 'P1Y' },
+							{ name: '10 Years', value: 'P10Y' },
+							{ name: '2 Years', value: 'P2Y' },
+							{ name: '3 Years', value: 'P3Y' },
+							{ name: '5 Years', value: 'P5Y' },
+						],
+						default: 'P1Y',
+						description: 'Domain registration duration',
+					},
+					{
+						displayName: 'Quantity',
+						name: 'quantity',
+						type: 'number',
+						default: 1,
+						description: 'Number of years to register',
+					},
+				],
+			},
+			{
 				displayName: 'Product Configuration',
 				name: 'productConfig',
 				type: 'collection',
@@ -391,6 +443,9 @@ export class OvhOrder implements INodeType {
 					show: {
 						resource: ['cartItem'],
 						operation: ['add'],
+					},
+					hide: {
+						productType: ['domain'],
 					},
 				},
 				options: [
@@ -425,13 +480,6 @@ export class OvhOrder implements INodeType {
 								],
 							},
 						],
-					},
-					{
-						displayName: 'Domain Name',
-						name: 'domain',
-						type: 'string',
-						default: '',
-						description: 'The domain name to register (e.g., example.com)',
 					},
 					{
 						displayName: 'Duration',
@@ -997,19 +1045,26 @@ export class OvhOrder implements INodeType {
 						const productType = this.getNodeParameter('productType', i) as string;
 						path = `/order/cart/${cartId}/${productType}`;
 						
-						const productConfig = this.getNodeParameter('productConfig', i) as any;
 						body = {};
 						
 						// Handle domain products specially
 						if (productType === 'domain') {
-							if (productConfig.domain) {
-								body.domain = productConfig.domain;
+							const domainName = this.getNodeParameter('domainName', i) as string;
+							const domainConfig = this.getNodeParameter('domainConfig', i) as any;
+							
+							if (domainName) {
+								body.domain = domainName;
 							}
-							// For domains, duration is typically fixed by the registrar
-							if (productConfig.duration) {
-								body.duration = productConfig.duration;
+							if (domainConfig.duration) {
+								body.duration = domainConfig.duration;
+							}
+							if (domainConfig.quantity !== undefined) {
+								body.quantity = domainConfig.quantity;
 							}
 						} else {
+							// Handle other product types
+							const productConfig = this.getNodeParameter('productConfig', i) as any;
+							
 							// Add basic fields for other product types
 							if (productConfig.planCode) {
 								body.planCode = productConfig.planCode;
@@ -1023,19 +1078,19 @@ export class OvhOrder implements INodeType {
 							if (productConfig.pricingMode) {
 								body.pricingMode = productConfig.pricingMode;
 							}
-						}
-						
-						// Add configuration options
-						if (productConfig.configuration && productConfig.configuration.option) {
-							body.configuration = productConfig.configuration.option.map((opt: any) => ({
-								label: opt.label,
-								value: opt.value,
-							}));
-						}
-						
-						// Add options
-						if (productConfig.options && productConfig.options.option) {
-							body.options = productConfig.options.option;
+							
+							// Add configuration options
+							if (productConfig.configuration && productConfig.configuration.option) {
+								body.configuration = productConfig.configuration.option.map((opt: any) => ({
+									label: opt.label,
+									value: opt.value,
+								}));
+							}
+							
+							// Add options
+							if (productConfig.options && productConfig.options.option) {
+								body.options = productConfig.options.option;
+							}
 						}
 					} else if (operation === 'getAll') {
 						method = 'GET';
