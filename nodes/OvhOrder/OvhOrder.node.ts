@@ -233,7 +233,7 @@ export class OvhOrder implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['cart'],
-						operation: ['get', 'update', 'delete'],
+						operation: ['get', 'assign', 'update', 'delete'],
 					},
 				},
 				default: '',
