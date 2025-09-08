@@ -690,6 +690,7 @@ export class OvhOrder implements INodeType {
 
 					// Get available products for this cart
 					const getProductsTimestamp = Math.round(Date.now() / 1000);
+					// For dedicated servers, try the regular cart endpoint first
 					const getProductsPath = `/order/cart/${cartId}/${productType}`;
 					const getMethod = 'GET';
 
@@ -711,9 +712,60 @@ export class OvhOrder implements INodeType {
 					};
 
 					try {
-						const products = await this.helpers.httpRequest(getProductsOptions);
+						let products = await this.helpers.httpRequest(getProductsOptions);
 						
-						if (Array.isArray(products)) {
+						// For dedicated servers, if the cart endpoint returns empty, try the catalog
+						if (productType === 'dedicated' && (!products || (Array.isArray(products) && products.length === 0))) {
+							try {
+								const catalogTimestamp = Math.round(Date.now() / 1000);
+								const catalogPath = '/order/catalog/formatted/dedicated';
+								const catalogMethod = 'GET';
+								
+								const catalogToSign = applicationSecret + '+' + consumerKey + '+' + catalogMethod + '+' + endpoint + catalogPath + '++' + catalogTimestamp;
+								const catalogHash = crypto.createHash('sha1').update(catalogToSign).digest('hex');
+								const catalogSig = '$1$' + catalogHash;
+								
+								const catalogOptions: any = {
+									method: catalogMethod,
+									url: endpoint + catalogPath,
+									headers: {
+										'X-Ovh-Application': applicationKey,
+										'X-Ovh-Timestamp': catalogTimestamp.toString(),
+										'X-Ovh-Signature': catalogSig,
+										'X-Ovh-Consumer': consumerKey,
+									},
+									json: true,
+								};
+								
+								const catalog = await this.helpers.httpRequest(catalogOptions);
+								if (catalog && catalog.plans) {
+									for (const plan of catalog.plans) {
+										const planCode = plan.planCode || '';
+										const displayName = plan.invoiceName || plan.blobs?.commercial?.name || planCode;
+										const description = plan.blobs?.commercial?.description || '';
+										
+										if (planCode) {
+											returnData.push({
+												name: displayName,
+												value: planCode,
+												description: description || undefined,
+											});
+										}
+									}
+								}
+							} catch (catalogError) {
+								console.error('Error loading dedicated catalog:', catalogError);
+								// Add some default dedicated server options
+								returnData.push(
+									{ name: 'Kimsufi KS-1', value: '24ska01' },
+									{ name: 'Kimsufi KS-2', value: '24ska02' },
+									{ name: 'So you Start Essential', value: '24sys01' },
+									{ name: 'So you Start Power', value: '24sys02' },
+									{ name: 'OVHcloud Advance-1', value: '24adv01' },
+									{ name: 'OVHcloud Advance-2', value: '24adv02' },
+								);
+							}
+						} else if (Array.isArray(products)) {
 							for (const product of products) {
 								let planCode = '';
 								let displayName = '';
