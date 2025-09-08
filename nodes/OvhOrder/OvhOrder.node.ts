@@ -1393,17 +1393,53 @@ export class OvhOrder implements INodeType {
 					options.body = body;
 				}
 
-				const response = await this.helpers.httpRequest(options);
+				try {
+					const response = await this.helpers.httpRequest(options);
 
-				returnData.push({
-					json: response,
-					pairedItem: { item: i },
-				});
-			} catch (error) {
+					returnData.push({
+						json: response,
+						pairedItem: { item: i },
+					});
+				} catch (httpError: any) {
+					// Enhanced error handling with OVH API response details
+					let errorMessage = httpError.message || 'Unknown error';
+					let errorDetails: any = {};
+					
+					// Extract OVH API error details
+					if (httpError.response) {
+						errorDetails.status = httpError.response.status;
+						errorDetails.statusText = httpError.response.statusText;
+						if (httpError.response.data) {
+							errorDetails.apiResponse = httpError.response.data;
+							if (typeof httpError.response.data === 'object' && httpError.response.data.message) {
+								errorMessage = httpError.response.data.message;
+							}
+						}
+					}
+					
+					// Add request details for debugging
+					errorDetails.request = {
+						method: method,
+						url: baseUrl + path,
+						body: body,
+					};
+					
+					console.error('OVH API Error Details:', {
+						message: errorMessage,
+						details: errorDetails,
+					});
+					
+					// Re-throw with enhanced error message
+					const enhancedError = new Error(`OVH API Error: ${errorMessage}${errorDetails.apiResponse ? ` | API Response: ${JSON.stringify(errorDetails.apiResponse)}` : ''}`);
+					enhancedError.cause = httpError;
+					throw enhancedError;
+				}
+			} catch (error: any) {
 				if (this.continueOnFail()) {
 					returnData.push({
 						json: {
 							error: error.message,
+							details: error.cause?.response?.data || undefined,
 						},
 						pairedItem: { item: i },
 					});
