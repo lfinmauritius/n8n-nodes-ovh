@@ -41,10 +41,6 @@ export class OvhOrder implements INodeType {
 						value: 'cart',
 					},
 					{
-						name: 'Cart Assign',
-						value: 'cartAssign',
-					},
-					{
 						name: 'Cart Coupon',
 						value: 'cartCoupon',
 					},
@@ -180,26 +176,6 @@ export class OvhOrder implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
-						resource: ['cartAssign'],
-					},
-				},
-				options: [
-					{
-						name: 'Assign',
-						value: 'assign',
-						description: 'Assign a cart to a logged in client',
-						action: 'Assign cart to client',
-					},
-				],
-				default: 'assign',
-			},
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				noDataExpression: true,
-				displayOptions: {
-					show: {
 						resource: ['cartCoupon'],
 					},
 				},
@@ -246,7 +222,7 @@ export class OvhOrder implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						resource: ['cartAssign', 'cartCoupon', 'cartItem', 'checkout'],
+						resource: ['cartCoupon', 'cartItem', 'checkout'],
 					},
 				},
 				default: '',
@@ -1027,13 +1003,6 @@ export class OvhOrder implements INodeType {
 						method = 'DELETE';
 						const cartId = this.getNodeParameter('cartId', i) as string;
 						path = `/order/cart/${cartId}`;
-					}
-				} else if (resource === 'cartAssign') {
-					const cartId = this.getNodeParameter('cartId', i) as string;
-					if (operation === 'assign') {
-						method = 'POST';
-						path = `/order/cart/${cartId}/assign`;
-						body = {};
 					}
 				} else if (resource === 'cartCoupon') {
 					const cartId = this.getNodeParameter('cartId', i) as string;
