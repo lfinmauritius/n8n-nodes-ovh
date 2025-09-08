@@ -1189,7 +1189,9 @@ export class OvhOrder implements INodeType {
 							body.description = additionalFields.description;
 						}
 						if (additionalFields.expire) {
-							body.expire = additionalFields.expire;
+							// Convert to ISO 8601 format expected by OVH API
+							const expireDate = new Date(additionalFields.expire);
+							body.expire = expireDate.toISOString();
 						}
 					} else if (operation === 'get') {
 						method = 'GET';
@@ -1206,6 +1208,12 @@ export class OvhOrder implements INodeType {
 						path = `/order/cart/${cartId}`;
 						const updateFields = this.getNodeParameter('updateFields', i) as any;
 						body = { ...updateFields };
+						
+						// Convert expire to ISO 8601 format if present
+						if (body.expire) {
+							const expireDate = new Date(body.expire);
+							body.expire = expireDate.toISOString();
+						}
 					} else if (operation === 'delete') {
 						method = 'DELETE';
 						const cartId = this.getNodeParameter('cartId', i) as string;
