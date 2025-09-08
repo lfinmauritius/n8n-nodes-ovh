@@ -790,13 +790,72 @@ export class OvhOrder implements INodeType {
 								
 								// The baremetalServers catalog returns data with plans array
 								if (catalog && catalog.plans && Array.isArray(catalog.plans)) {
+									// Test each plan code by trying to add it to the cart (dry run)
 									for (const plan of catalog.plans) {
 										const planCode = plan.planCode || '';
 										const displayName = plan.invoiceName || planCode;
 										
-										// Make the display name more readable
-										let enhancedName = displayName;
-										if (planCode) {
+										if (!planCode) continue;
+										
+										// Test if this plan code is actually available in the cart
+										try {
+											const testTimestamp = Math.round(Date.now() / 1000);
+											const testPath = `/order/cart/${cartId}/dedicated`;
+											const testMethod = 'POST';
+											const testBody = JSON.stringify({ planCode, quantity: 1 });
+											
+											const testToSign = applicationSecret + '+' + consumerKey + '+' + testMethod + '+' + endpoint + testPath + '+' + testBody + '+' + testTimestamp;
+											const testHash = crypto.createHash('sha1').update(testToSign).digest('hex');
+											const testSig = '$1$' + testHash;
+											
+											const testOptions: any = {
+												method: testMethod,
+												url: endpoint + testPath,
+												headers: {
+													'X-Ovh-Application': applicationKey,
+													'X-Ovh-Timestamp': testTimestamp.toString(),
+													'X-Ovh-Signature': testSig,
+													'X-Ovh-Consumer': consumerKey,
+													'Content-Type': 'application/json',
+												},
+												body: JSON.parse(testBody),
+												json: true,
+											};
+											
+											// Try to add the plan to cart (this will tell us if it's valid)
+											const testResponse = await this.helpers.httpRequest(testOptions);
+											
+											// If we get here, the plan is valid, remove it from cart immediately
+											if (testResponse && testResponse.itemId) {
+												try {
+													const removeTimestamp = Math.round(Date.now() / 1000);
+													const removePath = `/order/cart/${cartId}/item/${testResponse.itemId}`;
+													const removeMethod = 'DELETE';
+													
+													const removeToSign = applicationSecret + '+' + consumerKey + '+' + removeMethod + '+' + endpoint + removePath + '++' + removeTimestamp;
+													const removeHash = crypto.createHash('sha1').update(removeToSign).digest('hex');
+													const removeSig = '$1$' + removeHash;
+													
+													const removeOptions: any = {
+														method: removeMethod,
+														url: endpoint + removePath,
+														headers: {
+															'X-Ovh-Application': applicationKey,
+															'X-Ovh-Timestamp': removeTimestamp.toString(),
+															'X-Ovh-Signature': removeSig,
+															'X-Ovh-Consumer': consumerKey,
+														},
+														json: true,
+													};
+													
+													await this.helpers.httpRequest(removeOptions);
+												} catch (removeError) {
+													// Ignore cleanup errors
+												}
+											}
+											
+											// Plan is valid, add it to the list
+											let enhancedName = displayName;
 											if (planCode.includes('kimsufi') || planCode.includes('ks')) {
 												enhancedName = `Kimsufi - ${displayName}`;
 											} else if (planCode.includes('soyoustart') || planCode.includes('sys')) {
@@ -810,13 +869,15 @@ export class OvhOrder implements INodeType {
 											} else {
 												enhancedName = `Dedicated - ${displayName}`;
 											}
-										}
-										
-										if (planCode) {
+											
 											returnData.push({
 												name: enhancedName,
 												value: planCode,
 											});
+											
+										} catch (testError) {
+											// Plan code is not valid for this cart/region, skip it
+											console.log(`Skipping invalid plan code: ${planCode} - ${testError.message}`);
 										}
 									}
 								}
