@@ -85,19 +85,13 @@ export class OvhOrder implements INodeType {
 						action: 'Get a cart',
 					},
 					{
-						name: 'Get Many',
-						value: 'getAll',
-						description: 'List many order carts',
-						action: 'Get many carts',
-					},
-					{
 						name: 'Update',
 						value: 'update',
 						description: 'Update an order cart',
 						action: 'Update a cart',
 					},
 				],
-				default: 'getAll',
+				default: 'create',
 			},
 			{
 				displayName: 'Operation',
@@ -1215,9 +1209,6 @@ export class OvhOrder implements INodeType {
 						if (additionalFields.expire) {
 							body.expire = additionalFields.expire;
 						}
-					} else if (operation === 'getAll') {
-						method = 'GET';
-						path = '/order/cart';
 					} else if (operation === 'get') {
 						method = 'GET';
 						const cartId = this.getNodeParameter('cartId', i) as string;
