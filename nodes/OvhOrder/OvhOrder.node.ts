@@ -413,8 +413,7 @@ export class OvhOrder implements INodeType {
 					{ name: 'Exchange', value: 'exchange' },
 					{ name: 'Hosting', value: 'hosting' },
 					{ name: 'IP', value: 'ip' },
-					{ name: 'Kubernetes', value: 'kubernetes' },
-					{ name: 'License', value: 'license' },
+					{ name: 'JSON Custom', value: 'jsonCustom' },
 					{ name: 'Private Cloud', value: 'privateCloud' },
 					{ name: 'VPS', value: 'vps' },
 				],
@@ -612,6 +611,20 @@ export class OvhOrder implements INodeType {
 						description: 'Number of items to add',
 					},
 				],
+			},
+			{
+				displayName: 'Custom JSON Configuration',
+				name: 'customJson',
+				type: 'json',
+				displayOptions: {
+					show: {
+						resource: ['cartItem'],
+						operation: ['add'],
+						productType: ['jsonCustom'],
+					},
+				},
+				default: '{\n  "planCode": "",\n  "duration": "P1M",\n  "pricingMode": "default",\n  "quantity": 1,\n  "configuration": [],\n  "options": []\n}',
+				description: 'Custom JSON configuration for advanced product orders. Should contain planCode, duration, quantity, and any required configuration/options.',
 			},
 			{
 				displayName: 'Item Update Fields',
@@ -869,84 +882,6 @@ export class OvhOrder implements INodeType {
 										{ name: 'OVHcloud Advance-2', value: '24adv02' },
 									);
 								}
-							}
-						}
-						
-						// For Kubernetes, get available options from cart endpoint
-						if (productType === 'kubernetes') {
-							try {
-								// Kubernetes plans need to be loaded from /order/cart/{cartId}/kubernetes/options
-								const kubeOptionsTimestamp = Math.round(Date.now() / 1000);
-								const kubeOptionsPath = `/order/cart/${cartId}/kubernetes/options`;
-								const kubeOptionsMethod = 'GET';
-								
-								const kubeOptionsToSign = applicationSecret + '+' + consumerKey + '+' + kubeOptionsMethod + '+' + endpoint + kubeOptionsPath + '++' + kubeOptionsTimestamp;
-								const kubeOptionsHash = crypto.createHash('sha1').update(kubeOptionsToSign).digest('hex');
-								const kubeOptionsSig = '$1$' + kubeOptionsHash;
-								
-								const kubeOptionsOptions: any = {
-									method: kubeOptionsMethod,
-									url: endpoint + kubeOptionsPath,
-									headers: {
-										'X-Ovh-Application': applicationKey,
-										'X-Ovh-Timestamp': kubeOptionsTimestamp.toString(),
-										'X-Ovh-Signature': kubeOptionsSig,
-										'X-Ovh-Consumer': consumerKey,
-									},
-									json: true,
-								};
-								
-								const kubeOptions = await this.helpers.httpRequest(kubeOptionsOptions);
-								
-								// Process Kubernetes options response
-								if (kubeOptions && Array.isArray(kubeOptions)) {
-									for (const option of kubeOptions) {
-										const planCode = option.planCode || option.flavor || option;
-										let displayName = option.name || option.invoiceName || planCode;
-										
-										// Enhance display name for Kubernetes node flavors
-										if (typeof option === 'string') {
-											displayName = `Kubernetes Node Pool - ${option}`;
-										} else if (option.flavor) {
-											displayName = `Kubernetes Node Pool - ${option.flavor}`;
-										}
-										
-										if (planCode) {
-											returnData.push({
-												name: displayName,
-												value: planCode,
-											});
-										}
-									}
-								} else if (kubeOptions && kubeOptions.plans) {
-									// If response has plans structure
-									for (const plan of kubeOptions.plans) {
-										const planCode = plan.planCode || '';
-										const displayName = plan.invoiceName || planCode;
-										
-										if (planCode) {
-											returnData.push({
-												name: `Kubernetes - ${displayName}`,
-												value: planCode,
-											});
-										}
-									}
-								}
-							} catch (kubeError) {
-								console.error('Error loading Kubernetes options:', kubeError);
-								// Fallback to common Kubernetes node pool flavors
-								returnData.push(
-									{ name: 'Kubernetes Node Pool - b2-7', value: 'b2-7' },
-									{ name: 'Kubernetes Node Pool - b2-15', value: 'b2-15' },
-									{ name: 'Kubernetes Node Pool - b2-30', value: 'b2-30' },
-									{ name: 'Kubernetes Node Pool - c2-7', value: 'c2-7' },
-									{ name: 'Kubernetes Node Pool - c2-15', value: 'c2-15' },
-									{ name: 'Kubernetes Node Pool - c2-30', value: 'c2-30' },
-									{ name: 'Kubernetes Node Pool - d2-4', value: 'd2-4' },
-									{ name: 'Kubernetes Node Pool - d2-8', value: 'd2-8' },
-									{ name: 'Kubernetes Node Pool - r2-15', value: 'r2-15' },
-									{ name: 'Kubernetes Node Pool - r2-30', value: 'r2-30' },
-								);
 							}
 						} else if (Array.isArray(products)) {
 							for (const product of products) {
@@ -1295,6 +1230,15 @@ export class OvhOrder implements INodeType {
 							}
 							if (domainConfig.quantity !== undefined) {
 								body.quantity = domainConfig.quantity;
+							}
+						} else if (productType === 'jsonCustom') {
+							// Handle JSON Custom product type
+							const customJson = this.getNodeParameter('customJson', i) as string;
+							try {
+								const parsedJson = JSON.parse(customJson);
+								Object.assign(body, parsedJson);
+							} catch (error) {
+								throw new NodeOperationError(this.getNode(), `Invalid JSON in Custom JSON Configuration: ${error.message}`, { itemIndex: i });
 							}
 						} else {
 							// Handle other product types
