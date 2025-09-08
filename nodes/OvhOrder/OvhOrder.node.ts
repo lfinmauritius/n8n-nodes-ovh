@@ -684,12 +684,85 @@ export class OvhOrder implements INodeType {
 						
 						if (Array.isArray(products)) {
 							for (const product of products) {
-								const displayName = product.productName || product.planCode || product;
-								const value = product.planCode || product;
+								let planCode = '';
+								let displayName = '';
+								let description = '';
+								
+								// Handle different response formats
+								if (typeof product === 'string') {
+									planCode = product;
+									
+									// For VPS, improve display names
+									if (productType === 'vps') {
+										// Parse VPS plan codes like "vps-value-1-2-40", "vps-starter-1-2-20", etc.
+										const vpsMatch = product.match(/vps-([^-]+)-(\d+)-(\d+)-(\d+)/);
+										if (vpsMatch) {
+											const [, tier, vcpu, ram, storage] = vpsMatch;
+											const tierName = tier.charAt(0).toUpperCase() + tier.slice(1);
+											displayName = `VPS ${tierName} - ${vcpu} vCore, ${ram}GB RAM, ${storage}GB SSD`;
+										} else {
+											displayName = product.replace(/^vps-/, 'VPS ').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+										}
+									} else if (productType === 'cloud') {
+										// Improve cloud product names
+										displayName = product.replace(/^project\./, 'Public Cloud - ').replace(/\./g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+									} else if (productType === 'dedicated') {
+										// Improve dedicated server names
+										displayName = product.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+									} else if (productType === 'domain') {
+										// Domain extensions
+										displayName = product.toUpperCase();
+									} else {
+										// Default formatting
+										displayName = product.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+									}
+								} else {
+									// Product is an object
+									planCode = product.planCode || product.productId || product;
+									displayName = product.productName || product.description || planCode;
+									description = product.description || product.longDescription || '';
+								}
+								
+								// Try to get more details about the product
+								if (planCode && productType === 'vps') {
+									try {
+										const detailsTimestamp = Math.round(Date.now() / 1000);
+										const detailsPath = `/order/catalog/public/${productType}`;
+										const detailsMethod = 'GET';
+										
+										const detailsToSign = applicationSecret + '+' + consumerKey + '+' + detailsMethod + '+' + endpoint + detailsPath + '++' + detailsTimestamp;
+										const detailsHash = crypto.createHash('sha1').update(detailsToSign).digest('hex');
+										const detailsSig = '$1$' + detailsHash;
+										
+										const detailsOptions: any = {
+											method: detailsMethod,
+											url: endpoint + detailsPath,
+											headers: {
+												'X-Ovh-Application': applicationKey,
+												'X-Ovh-Timestamp': detailsTimestamp.toString(),
+												'X-Ovh-Signature': detailsSig,
+												'X-Ovh-Consumer': consumerKey,
+											},
+											json: true,
+										};
+										
+										const catalog = await this.helpers.httpRequest(detailsOptions);
+										if (catalog && catalog.plans) {
+											const plan = catalog.plans.find((p: any) => p.planCode === planCode);
+											if (plan && plan.invoiceName) {
+												displayName = plan.invoiceName;
+												description = plan.description || '';
+											}
+										}
+									} catch (catalogError) {
+										// Ignore catalog errors, use fallback name
+									}
+								}
+								
 								returnData.push({
 									name: displayName,
-									value: value,
-									description: product.description || undefined,
+									value: planCode,
+									description: description || undefined,
 								});
 							}
 						}
