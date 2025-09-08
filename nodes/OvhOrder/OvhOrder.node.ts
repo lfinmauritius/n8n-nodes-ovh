@@ -1276,9 +1276,12 @@ export class OvhOrder implements INodeType {
 							body.description = additionalFields.description;
 						}
 						if (additionalFields.expire) {
-							// Convert to ISO 8601 format expected by OVH API
+							// Convert to OVH ISO 8601 format (without milliseconds)
 							const expireDate = new Date(additionalFields.expire);
-							body.expire = expireDate.toISOString();
+							// OVH expects format like 2024-01-01T00:00:00+00:00 (no milliseconds)
+							const isoString = expireDate.toISOString();
+							// Remove milliseconds and replace Z with +00:00
+							body.expire = isoString.slice(0, 19) + '+00:00';
 						}
 					} else if (operation === 'get') {
 						method = 'GET';
@@ -1296,10 +1299,13 @@ export class OvhOrder implements INodeType {
 						const updateFields = this.getNodeParameter('updateFields', i) as any;
 						body = { ...updateFields };
 						
-						// Convert expire to ISO 8601 format if present
+						// Convert expire to OVH ISO 8601 format if present (without milliseconds)
 						if (body.expire) {
 							const expireDate = new Date(body.expire);
-							body.expire = expireDate.toISOString();
+							// OVH expects format like 2024-01-01T00:00:00+00:00 (no milliseconds)
+							const isoString = expireDate.toISOString();
+							// Remove milliseconds and replace Z with +00:00
+							body.expire = isoString.slice(0, 19) + '+00:00';
 						}
 					} else if (operation === 'delete') {
 						method = 'DELETE';
