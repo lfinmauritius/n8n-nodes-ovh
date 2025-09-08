@@ -872,69 +872,22 @@ export class OvhOrder implements INodeType {
 							}
 						}
 						
-						// For Kubernetes, try to get from catalog as cart endpoint often returns empty
+						// For Kubernetes, get available options from cart endpoint
 						if (productType === 'kubernetes') {
-							try {
-								// Get the subsidiary from the cart creation (if available) or default to FR
-								const subsidiary = this.getNodeParameter('ovhSubsidiary', 0) as string || 'FR';
-								const catalogTimestamp = Math.round(Date.now() / 1000);
-								const catalogPath = `/order/catalog/public/kubernetes?ovhSubsidiary=${subsidiary}`;
-								const catalogMethod = 'GET';
-								
-								const catalogToSign = applicationSecret + '+' + consumerKey + '+' + catalogMethod + '+' + endpoint + catalogPath + '++' + catalogTimestamp;
-								const catalogHash = crypto.createHash('sha1').update(catalogToSign).digest('hex');
-								const catalogSig = '$1$' + catalogHash;
-								
-								const catalogOptions: any = {
-									method: catalogMethod,
-									url: endpoint + catalogPath,
-									headers: {
-										'X-Ovh-Application': applicationKey,
-										'X-Ovh-Timestamp': catalogTimestamp.toString(),
-										'X-Ovh-Signature': catalogSig,
-										'X-Ovh-Consumer': consumerKey,
-									},
-									json: true,
-								};
-								
-								const catalog = await this.helpers.httpRequest(catalogOptions);
-								
-								// The kubernetes catalog returns data with plans array
-								if (catalog && catalog.plans && Array.isArray(catalog.plans)) {
-									for (const plan of catalog.plans) {
-										const planCode = plan.planCode || '';
-										const displayName = plan.invoiceName || planCode;
-										
-										// Make the display name more readable for Kubernetes
-										let enhancedName = displayName;
-										if (planCode && displayName) {
-											// Check if it's a node plan
-											if (planCode.includes('node') || displayName.toLowerCase().includes('node')) {
-												enhancedName = `Kubernetes Node - ${displayName}`;
-											} else if (planCode.includes('cluster') || displayName.toLowerCase().includes('cluster')) {
-												enhancedName = `Kubernetes Cluster - ${displayName}`;
-											} else {
-												enhancedName = `Kubernetes - ${displayName}`;
-											}
-										}
-										
-										if (planCode) {
-											returnData.push({
-												name: enhancedName,
-												value: planCode,
-											});
-										}
-									}
-								}
-							} catch (catalogError) {
-								console.error('Error loading Kubernetes catalog:', catalogError);
-								// Add some default Kubernetes options as fallback
-								returnData.push(
-									{ name: 'Kubernetes Node - Small', value: 'kube-node-s' },
-									{ name: 'Kubernetes Node - Medium', value: 'kube-node-m' },
-									{ name: 'Kubernetes Node - Large', value: 'kube-node-l' },
-								);
-							}
+							// Kubernetes plans need to be loaded from /order/cart/{cartId}/kubernetes/options
+							// Since we don't have cartId at this point, we'll provide common Kubernetes options
+							returnData.push(
+								{ name: 'Kubernetes Node Pool - b2-7', value: 'b2-7' },
+								{ name: 'Kubernetes Node Pool - b2-15', value: 'b2-15' },
+								{ name: 'Kubernetes Node Pool - b2-30', value: 'b2-30' },
+								{ name: 'Kubernetes Node Pool - c2-7', value: 'c2-7' },
+								{ name: 'Kubernetes Node Pool - c2-15', value: 'c2-15' },
+								{ name: 'Kubernetes Node Pool - c2-30', value: 'c2-30' },
+								{ name: 'Kubernetes Node Pool - d2-4', value: 'd2-4' },
+								{ name: 'Kubernetes Node Pool - d2-8', value: 'd2-8' },
+								{ name: 'Kubernetes Node Pool - r2-15', value: 'r2-15' },
+								{ name: 'Kubernetes Node Pool - r2-30', value: 'r2-30' },
+							);
 						} else if (Array.isArray(products)) {
 							for (const product of products) {
 								let planCode = '';
