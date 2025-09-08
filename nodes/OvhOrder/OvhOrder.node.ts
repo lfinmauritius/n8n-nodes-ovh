@@ -874,20 +874,80 @@ export class OvhOrder implements INodeType {
 						
 						// For Kubernetes, get available options from cart endpoint
 						if (productType === 'kubernetes') {
-							// Kubernetes plans need to be loaded from /order/cart/{cartId}/kubernetes/options
-							// Since we don't have cartId at this point, we'll provide common Kubernetes options
-							returnData.push(
-								{ name: 'Kubernetes Node Pool - b2-7', value: 'b2-7' },
-								{ name: 'Kubernetes Node Pool - b2-15', value: 'b2-15' },
-								{ name: 'Kubernetes Node Pool - b2-30', value: 'b2-30' },
-								{ name: 'Kubernetes Node Pool - c2-7', value: 'c2-7' },
-								{ name: 'Kubernetes Node Pool - c2-15', value: 'c2-15' },
-								{ name: 'Kubernetes Node Pool - c2-30', value: 'c2-30' },
-								{ name: 'Kubernetes Node Pool - d2-4', value: 'd2-4' },
-								{ name: 'Kubernetes Node Pool - d2-8', value: 'd2-8' },
-								{ name: 'Kubernetes Node Pool - r2-15', value: 'r2-15' },
-								{ name: 'Kubernetes Node Pool - r2-30', value: 'r2-30' },
-							);
+							try {
+								// Kubernetes plans need to be loaded from /order/cart/{cartId}/kubernetes/options
+								const kubeOptionsTimestamp = Math.round(Date.now() / 1000);
+								const kubeOptionsPath = `/order/cart/${cartId}/kubernetes/options`;
+								const kubeOptionsMethod = 'GET';
+								
+								const kubeOptionsToSign = applicationSecret + '+' + consumerKey + '+' + kubeOptionsMethod + '+' + endpoint + kubeOptionsPath + '++' + kubeOptionsTimestamp;
+								const kubeOptionsHash = crypto.createHash('sha1').update(kubeOptionsToSign).digest('hex');
+								const kubeOptionsSig = '$1$' + kubeOptionsHash;
+								
+								const kubeOptionsOptions: any = {
+									method: kubeOptionsMethod,
+									url: endpoint + kubeOptionsPath,
+									headers: {
+										'X-Ovh-Application': applicationKey,
+										'X-Ovh-Timestamp': kubeOptionsTimestamp.toString(),
+										'X-Ovh-Signature': kubeOptionsSig,
+										'X-Ovh-Consumer': consumerKey,
+									},
+									json: true,
+								};
+								
+								const kubeOptions = await this.helpers.httpRequest(kubeOptionsOptions);
+								
+								// Process Kubernetes options response
+								if (kubeOptions && Array.isArray(kubeOptions)) {
+									for (const option of kubeOptions) {
+										const planCode = option.planCode || option.flavor || option;
+										let displayName = option.name || option.invoiceName || planCode;
+										
+										// Enhance display name for Kubernetes node flavors
+										if (typeof option === 'string') {
+											displayName = `Kubernetes Node Pool - ${option}`;
+										} else if (option.flavor) {
+											displayName = `Kubernetes Node Pool - ${option.flavor}`;
+										}
+										
+										if (planCode) {
+											returnData.push({
+												name: displayName,
+												value: planCode,
+											});
+										}
+									}
+								} else if (kubeOptions && kubeOptions.plans) {
+									// If response has plans structure
+									for (const plan of kubeOptions.plans) {
+										const planCode = plan.planCode || '';
+										const displayName = plan.invoiceName || planCode;
+										
+										if (planCode) {
+											returnData.push({
+												name: `Kubernetes - ${displayName}`,
+												value: planCode,
+											});
+										}
+									}
+								}
+							} catch (kubeError) {
+								console.error('Error loading Kubernetes options:', kubeError);
+								// Fallback to common Kubernetes node pool flavors
+								returnData.push(
+									{ name: 'Kubernetes Node Pool - b2-7', value: 'b2-7' },
+									{ name: 'Kubernetes Node Pool - b2-15', value: 'b2-15' },
+									{ name: 'Kubernetes Node Pool - b2-30', value: 'b2-30' },
+									{ name: 'Kubernetes Node Pool - c2-7', value: 'c2-7' },
+									{ name: 'Kubernetes Node Pool - c2-15', value: 'c2-15' },
+									{ name: 'Kubernetes Node Pool - c2-30', value: 'c2-30' },
+									{ name: 'Kubernetes Node Pool - d2-4', value: 'd2-4' },
+									{ name: 'Kubernetes Node Pool - d2-8', value: 'd2-8' },
+									{ name: 'Kubernetes Node Pool - r2-15', value: 'r2-15' },
+									{ name: 'Kubernetes Node Pool - r2-30', value: 'r2-30' },
+								);
+							}
 						} else if (Array.isArray(products)) {
 							for (const product of products) {
 								let planCode = '';
