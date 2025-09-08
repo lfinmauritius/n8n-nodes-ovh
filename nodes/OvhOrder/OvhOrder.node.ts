@@ -718,7 +718,7 @@ export class OvhOrder implements INodeType {
 						if (productType === 'dedicated') {
 							try {
 								const catalogTimestamp = Math.round(Date.now() / 1000);
-								const catalogPath = '/order/catalog/public/baremetalServers';
+								const catalogPath = '/order/catalog/public/baremetalServers?ovhSubsidiary=FR';
 								const catalogMethod = 'GET';
 								
 								const catalogToSign = applicationSecret + '+' + consumerKey + '+' + catalogMethod + '+' + endpoint + catalogPath + '++' + catalogTimestamp;
@@ -739,53 +739,35 @@ export class OvhOrder implements INodeType {
 								
 								const catalog = await this.helpers.httpRequest(catalogOptions);
 								
-								// The baremetalServers catalog has a different structure
-								if (catalog) {
-									// Check if it's an array of products
-									if (Array.isArray(catalog)) {
-										for (const server of catalog) {
-											const planCode = server.planCode || server.code || '';
-											const displayName = server.invoiceName || server.description || server.name || planCode;
-											
-											if (planCode) {
-												returnData.push({
-													name: displayName,
-													value: planCode,
-													description: server.description || undefined,
-												});
+								// The baremetalServers catalog returns data with plans array
+								if (catalog && catalog.plans && Array.isArray(catalog.plans)) {
+									for (const plan of catalog.plans) {
+										const planCode = plan.planCode || '';
+										const displayName = plan.invoiceName || planCode;
+										
+										// Make the display name more readable
+										let enhancedName = displayName;
+										if (planCode) {
+											if (planCode.includes('kimsufi') || planCode.includes('ks')) {
+												enhancedName = `Kimsufi - ${displayName}`;
+											} else if (planCode.includes('soyoustart') || planCode.includes('sys')) {
+												enhancedName = `So you Start - ${displayName}`;
+											} else if (planCode.includes('scale')) {
+												enhancedName = `Scale - ${displayName}`;
+											} else if (planCode.includes('hgr')) {
+												enhancedName = `High Grade - ${displayName}`;
+											} else if (planCode.includes('adv')) {
+												enhancedName = `Advance - ${displayName}`;
+											} else {
+												enhancedName = `Dedicated - ${displayName}`;
 											}
 										}
-									}
-									// Or if it has a products or servers property
-									else if (catalog.products || catalog.servers) {
-										const items = catalog.products || catalog.servers;
-										for (const server of items) {
-											const planCode = server.planCode || server.code || '';
-											const displayName = server.invoiceName || server.description || server.name || planCode;
-											
-											if (planCode) {
-												returnData.push({
-													name: displayName,
-													value: planCode,
-													description: server.description || undefined,
-												});
-											}
-										}
-									}
-									// Or if it has plans like other catalogs
-									else if (catalog.plans) {
-										for (const plan of catalog.plans) {
-											const planCode = plan.planCode || '';
-											const displayName = plan.invoiceName || plan.blobs?.commercial?.name || planCode;
-											const description = plan.blobs?.commercial?.description || '';
-											
-											if (planCode) {
-												returnData.push({
-													name: displayName,
-													value: planCode,
-													description: description || undefined,
-												});
-											}
+										
+										if (planCode) {
+											returnData.push({
+												name: enhancedName,
+												value: planCode,
+											});
 										}
 									}
 								}
