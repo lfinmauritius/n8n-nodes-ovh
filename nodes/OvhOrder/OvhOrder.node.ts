@@ -1199,8 +1199,7 @@ export class OvhOrder implements INodeType {
 						method = 'POST';
 						const cartId = this.getNodeParameter('cartId', i) as string;
 						path = `/order/cart/${cartId}/assign`;
-						// Empty body for assign operation
-						body = {};
+						// No body for assign operation - it should be empty in signature
 					} else if (operation === 'update') {
 						method = 'PUT';
 						const cartId = this.getNodeParameter('cartId', i) as string;
@@ -1412,6 +1411,12 @@ export class OvhOrder implements INodeType {
 
 				const timestamp = Math.round(Date.now() / 1000);
 
+				// For signature: empty string for GET/DELETE or POST without body, JSON string otherwise
+				let bodyForSignature = '';
+				if (method !== 'GET' && method !== 'DELETE' && Object.keys(body).length > 0) {
+					bodyForSignature = JSON.stringify(body);
+				}
+				
 				const toSign =
 					applicationSecret +
 					'+' +
@@ -1422,7 +1427,7 @@ export class OvhOrder implements INodeType {
 					baseUrl +
 					path +
 					'+' +
-					(method === 'GET' || method === 'DELETE' ? '' : JSON.stringify(body)) +
+					bodyForSignature +
 					'+' +
 					timestamp;
 
