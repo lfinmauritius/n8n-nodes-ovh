@@ -717,8 +717,10 @@ export class OvhOrder implements INodeType {
 						// For dedicated servers, always try to get from catalog as cart endpoint often returns empty
 						if (productType === 'dedicated') {
 							try {
+								// Get the subsidiary from the cart creation (if available) or default to FR
+								const subsidiary = this.getNodeParameter('ovhSubsidiary', 0) as string || 'FR';
 								const catalogTimestamp = Math.round(Date.now() / 1000);
-								const catalogPath = '/order/catalog/public/baremetalServers?ovhSubsidiary=FR';
+								const catalogPath = `/order/catalog/public/baremetalServers?ovhSubsidiary=${subsidiary}`;
 								const catalogMethod = 'GET';
 								
 								const catalogToSign = applicationSecret + '+' + consumerKey + '+' + catalogMethod + '+' + endpoint + catalogPath + '++' + catalogTimestamp;
