@@ -1254,35 +1254,45 @@ export class OvhOrder implements INodeType {
 							const domainName = this.getNodeParameter('domainName', i) as string;
 							const domainConfig = this.getNodeParameter('domainConfig', i) as any;
 							
-							if (domainName) {
-								body.domain = domainName;
+							// Validation for domain
+							if (!domainName) {
+								throw new NodeOperationError(this.getNode(), 'Domain name is required for domain products', { itemIndex: i });
 							}
-							if (domainConfig.duration) {
-								body.duration = domainConfig.duration;
-							}
-							if (domainConfig.quantity !== undefined) {
-								body.quantity = domainConfig.quantity;
-							}
+							
+							body.domain = domainName;
+							body.duration = domainConfig.duration || 'P1Y';
+							body.quantity = domainConfig.quantity || 1;
+							
 						} else if (productType === 'jsonCustom') {
 							// Handle JSON Custom product type
 							const customJson = this.getNodeParameter('customJson', i) as string;
 							try {
 								const parsedJson = JSON.parse(customJson);
+								
+								// Validation for JSON Custom
+								if (!parsedJson.planCode) {
+									throw new NodeOperationError(this.getNode(), 'planCode is required in Custom JSON Configuration', { itemIndex: i });
+								}
+								
 								Object.assign(body, parsedJson);
 							} catch (error) {
 								throw new NodeOperationError(this.getNode(), `Invalid JSON in Custom JSON Configuration: ${error.message}`, { itemIndex: i });
 							}
+							
 						} else {
 							// Handle other product types
 							const productConfig = this.getNodeParameter('productConfig', i) as any;
 							
-							// Add basic fields for other product types
-							if (productConfig.planCode) {
-								body.planCode = productConfig.planCode;
+							// Validation - planCode is required
+							if (!productConfig || !productConfig.planCode) {
+								throw new NodeOperationError(this.getNode(), `Plan Code is required for ${productType} products. Please select a plan code from the dropdown.`, { itemIndex: i });
 							}
-							if (productConfig.quantity !== undefined) {
-								body.quantity = productConfig.quantity;
-							}
+							
+							// Add basic required fields
+							body.planCode = productConfig.planCode;
+							body.quantity = productConfig.quantity !== undefined ? productConfig.quantity : 1;
+							
+							// Add optional fields if provided
 							if (productConfig.duration) {
 								body.duration = productConfig.duration;
 							}
@@ -1291,7 +1301,7 @@ export class OvhOrder implements INodeType {
 							}
 							
 							// Add configuration options
-							if (productConfig.configuration && productConfig.configuration.option) {
+							if (productConfig.configuration && productConfig.configuration.option && productConfig.configuration.option.length > 0) {
 								body.configuration = productConfig.configuration.option.map((opt: any) => ({
 									label: opt.label,
 									value: opt.value,
@@ -1299,10 +1309,15 @@ export class OvhOrder implements INodeType {
 							}
 							
 							// Add options
-							if (productConfig.options && productConfig.options.option) {
+							if (productConfig.options && productConfig.options.option && productConfig.options.option.length > 0) {
 								body.options = productConfig.options.option;
 							}
 						}
+						
+						// Log the request body for debugging
+						console.log('Cart Item Add - Product Type:', productType);
+						console.log('Cart Item Add - Request Path:', path);
+						console.log('Cart Item Add - Request Body:', JSON.stringify(body, null, 2));
 					} else if (operation === 'getAll') {
 						method = 'GET';
 						path = `/order/cart/${cartId}/item`;
