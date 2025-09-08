@@ -512,6 +512,93 @@ export class OvhOrder implements INodeType {
 				],
 			},
 			{
+				displayName: 'VPS Configuration',
+				name: 'vpsConfig',
+				type: 'collection',
+				placeholder: 'Add VPS Configuration',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['cartItem'],
+						operation: ['add'],
+						productType: ['vps'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Datacenter',
+						name: 'vps_datacenter',
+						type: 'options',
+						options: [
+							{ name: 'Beauharnois (Canada)', value: 'BHS' },
+							{ name: 'Frankfurt (Germany)', value: 'DE' },
+							{ name: 'Gravelines (France)', value: 'GRA' },
+							{ name: 'London (UK)', value: 'UK' },
+							{ name: 'Roubaix (France)', value: 'RBX' },
+							{ name: 'Singapore', value: 'SG' },
+							{ name: 'Strasbourg (France)', value: 'SBG' },
+							{ name: 'Sydney (Australia)', value: 'SYD' },
+							{ name: 'Warsaw (Poland)', value: 'WAW' },
+						],
+						default: 'GRA',
+						description: 'Datacenter location for the VPS',
+					},
+					{
+						displayName: 'Duration',
+						name: 'duration',
+						type: 'options',
+						options: [
+							{ name: '1 Month', value: 'P1M' },
+							{ name: '1 Year', value: 'P1Y' },
+							{ name: '2 Years', value: 'P2Y' },
+							{ name: '3 Months', value: 'P3M' },
+							{ name: '6 Months', value: 'P6M' },
+						],
+						default: 'P1M',
+						description: 'Subscription duration',
+					},
+					{
+						displayName: 'Operating System',
+						name: 'vps_os',
+						type: 'options',
+						options: [
+							{ name: 'AlmaLinux 8', value: 'almalinux_8' },
+							{ name: 'AlmaLinux 9', value: 'almalinux_9' },
+							{ name: 'CentOS 7', value: 'centos_7' },
+							{ name: 'Debian 11', value: 'debian_11' },
+							{ name: 'Debian 12', value: 'debian_12' },
+							{ name: 'Rocky Linux 8', value: 'rockylinux_8' },
+							{ name: 'Rocky Linux 9', value: 'rockylinux_9' },
+							{ name: 'Ubuntu 20.04', value: 'ubuntu_20_04' },
+							{ name: 'Ubuntu 22.04', value: 'ubuntu_22_04' },
+							{ name: 'Ubuntu 24.04', value: 'ubuntu_24_04' },
+							{ name: 'Windows Server 2019', value: 'windows_server_2019' },
+							{ name: 'Windows Server 2022', value: 'windows_server_2022' },
+						],
+						default: 'debian_12',
+						description: 'Operating system to install on the VPS',
+					},
+					{
+						displayName: 'Plan Code Name or ID',
+						name: 'planCode',
+						type: 'options',
+						typeOptions: {
+							loadOptionsMethod: 'getProductPlans',
+							loadOptionsDependsOn: ['productType'],
+						},
+						default: '',
+						description: 'The VPS plan to order. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+					},
+					{
+						displayName: 'Quantity',
+						name: 'quantity',
+						type: 'number',
+						default: 1,
+						description: 'Number of VPS to order',
+					},
+				],
+			},
+			{
 				displayName: 'Product Configuration',
 				name: 'productConfig',
 				type: 'collection',
@@ -523,7 +610,7 @@ export class OvhOrder implements INodeType {
 						operation: ['add'],
 					},
 					hide: {
-						productType: ['domain'],
+						productType: ['domain', 'vps'],
 					},
 				},
 				options: [
@@ -1257,6 +1344,51 @@ export class OvhOrder implements INodeType {
 							body.domain = domainName;
 							body.duration = domainConfig.duration || 'P1Y';
 							body.quantity = domainConfig.quantity || 1;
+							
+						} else if (productType === 'vps') {
+							// Handle VPS products with required configurations
+							const vpsConfig = this.getNodeParameter('vpsConfig', i) as any;
+							
+							// Validation - planCode is required
+							if (!vpsConfig || !vpsConfig.planCode) {
+								throw new NodeOperationError(this.getNode(), `Plan Code is required for VPS products. Please select a plan code from the dropdown.`, { itemIndex: i });
+							}
+							
+							// Add basic required fields
+							body.planCode = vpsConfig.planCode;
+							body.quantity = vpsConfig.quantity !== undefined ? vpsConfig.quantity : 1;
+							body.duration = vpsConfig.duration || 'P1M';
+							
+							// Add required VPS configurations
+							body.configuration = [];
+							
+							// Add OS configuration (required)
+							if (vpsConfig.vps_os) {
+								body.configuration.push({
+									label: 'vps_os',
+									value: vpsConfig.vps_os,
+								});
+							} else {
+								// Default OS if not specified
+								body.configuration.push({
+									label: 'vps_os',
+									value: 'debian_12',
+								});
+							}
+							
+							// Add datacenter configuration (required)
+							if (vpsConfig.vps_datacenter) {
+								body.configuration.push({
+									label: 'vps_datacenter',
+									value: vpsConfig.vps_datacenter,
+								});
+							} else {
+								// Default datacenter if not specified
+								body.configuration.push({
+									label: 'vps_datacenter',
+									value: 'GRA',
+								});
+							}
 							
 						} else if (productType === 'jsonCustom') {
 							// Handle JSON Custom product type
