@@ -1,6 +1,8 @@
 import {
 	IExecuteFunctions,
+	ILoadOptionsFunctions,
 	INodeExecutionData,
+	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
 	NodeOperationError,
@@ -11,7 +13,7 @@ export class OvhOrder implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'OVH Order',
 		name: 'ovhOrder',
-		icon: 'file:ovhOrder.svg',
+		icon: 'file:ovh.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -404,18 +406,141 @@ export class OvhOrder implements INodeType {
 				description: 'Type of product to add to cart',
 			},
 			{
-				displayName: 'Product Details',
-				name: 'productDetails',
-				type: 'json',
-				required: true,
+				displayName: 'Product Configuration',
+				name: 'productConfig',
+				type: 'collection',
+				placeholder: 'Add Configuration',
+				default: {},
 				displayOptions: {
 					show: {
 						resource: ['cartItem'],
 						operation: ['add'],
 					},
 				},
-				default: '{}',
-				description: 'Product configuration as JSON object',
+				options: [
+					{
+						displayName: 'Configuration',
+						name: 'configuration',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						placeholder: 'Add Configuration Option',
+						options: [
+							{
+								name: 'option',
+								displayName: 'Option',
+								values: [
+									{
+										displayName: 'Label',
+										name: 'label',
+										type: 'string',
+										default: '',
+										description: 'Configuration option label (e.g., "region", "flavor")',
+									},
+									{
+										displayName: 'Value',
+										name: 'value',
+										type: 'string',
+										default: '',
+										description: 'Configuration option value',
+									},
+								],
+							},
+						],
+					},
+					{
+						displayName: 'Duration',
+						name: 'duration',
+						type: 'options',
+						options: [
+							{ name: '1 Month', value: 'P1M' },
+							{ name: '1 Year', value: 'P1Y' },
+							{ name: '2 Years', value: 'P2Y' },
+							{ name: '3 Months', value: 'P3M' },
+							{ name: '3 Years', value: 'P3Y' },
+							{ name: '6 Months', value: 'P6M' },
+						],
+						default: 'P1M',
+						description: 'Subscription duration',
+					},
+					{
+						displayName: 'Options',
+						name: 'options',
+						type: 'fixedCollection',
+						typeOptions: {
+							multipleValues: true,
+						},
+						default: {},
+						placeholder: 'Add Option',
+						options: [
+							{
+								name: 'option',
+								displayName: 'Option',
+								values: [
+									{
+										displayName: 'Duration',
+										name: 'duration',
+										type: 'string',
+										default: 'P1M',
+										description: 'Option duration',
+									},
+									{
+										displayName: 'Plan Code',
+										name: 'planCode',
+										type: 'string',
+										default: '',
+										description: 'Option plan code',
+									},
+									{
+										displayName: 'Pricing Mode',
+										name: 'pricingMode',
+										type: 'string',
+										default: 'default',
+										description: 'Option pricing mode',
+									},
+									{
+										displayName: 'Quantity',
+										name: 'quantity',
+										type: 'number',
+										default: 1,
+										description: 'Option quantity',
+									},
+								],
+							},
+						],
+					},
+					{
+						displayName: 'Plan Code Name or ID',
+						name: 'planCode',
+						type: 'options',
+						typeOptions: {
+							loadOptionsMethod: 'getProductPlans',
+							loadOptionsDependsOn: ['productType'],
+						},
+						default: '',
+						description: 'The plan code for the product. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+					},
+					{
+						displayName: 'Pricing Mode',
+						name: 'pricingMode',
+						type: 'options',
+						options: [
+							{ name: 'Default', value: 'default' },
+							{ name: 'Degressivity', value: 'degressivity' },
+						],
+						default: 'default',
+						description: 'Pricing mode for the product',
+					},
+					{
+						displayName: 'Quantity',
+						name: 'quantity',
+						type: 'number',
+						default: 1,
+						description: 'Number of items to add',
+					},
+				],
 			},
 			{
 				displayName: 'Item Update Fields',
@@ -473,6 +598,270 @@ export class OvhOrder implements INodeType {
 				description: 'Whether to waive retraction period',
 			},
 		],
+	};
+
+	methods = {
+		loadOptions: {
+			async getProductPlans(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					let productType: string;
+					try {
+						productType = this.getNodeParameter('productType') as string;
+					} catch (error) {
+						return [{
+							name: 'Please Select a Product Type First',
+							value: '',
+						}];
+					}
+					
+					if (!productType || productType.trim() === '') {
+						return [{
+							name: 'Please Select a Product Type First',
+							value: '',
+						}];
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Create a temporary cart to get available products
+					const timestamp = Math.round(Date.now() / 1000);
+					const createCartPath = '/order/cart';
+					const method = 'POST';
+					const body = JSON.stringify({ ovhSubsidiary: 'FR' }); // Default to FR, could be made configurable
+
+					const toSign = applicationSecret + '+' + consumerKey + '+' + method + '+' + endpoint + createCartPath + '+' + body + '+' + timestamp;
+					const crypto = require('crypto');
+					const hash = crypto.createHash('sha1').update(toSign).digest('hex');
+					const sig = '$1$' + hash;
+
+					const createCartOptions: any = {
+						method,
+						url: endpoint + createCartPath,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Timestamp': timestamp.toString(),
+							'X-Ovh-Signature': sig,
+							'X-Ovh-Consumer': consumerKey,
+							'Content-Type': 'application/json',
+						},
+						body: JSON.parse(body),
+						json: true,
+					};
+
+					const cartResponse = await this.helpers.httpRequest(createCartOptions);
+					const cartId = cartResponse.cartId;
+
+					// Get available products for this cart
+					const getProductsTimestamp = Math.round(Date.now() / 1000);
+					const getProductsPath = `/order/cart/${cartId}/${productType}`;
+					const getMethod = 'GET';
+
+					const getToSign = applicationSecret + '+' + consumerKey + '+' + getMethod + '+' + endpoint + getProductsPath + '++' + getProductsTimestamp;
+					const getHash = crypto.createHash('sha1').update(getToSign).digest('hex');
+					const getSig = '$1$' + getHash;
+
+					const getProductsOptions: any = {
+						method: getMethod,
+						url: endpoint + getProductsPath,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Timestamp': getProductsTimestamp.toString(),
+							'X-Ovh-Signature': getSig,
+							'X-Ovh-Consumer': consumerKey,
+							'Content-Type': 'application/json',
+						},
+						json: true,
+					};
+
+					try {
+						const products = await this.helpers.httpRequest(getProductsOptions);
+						
+						if (Array.isArray(products)) {
+							for (const product of products) {
+								const displayName = product.productName || product.planCode || product;
+								const value = product.planCode || product;
+								returnData.push({
+									name: displayName,
+									value: value,
+									description: product.description || undefined,
+								});
+							}
+						}
+					} catch (error) {
+						// If no products available for this type, return empty
+						console.error('Error loading products:', error);
+					}
+
+					// Clean up - delete the temporary cart
+					const deleteTimestamp = Math.round(Date.now() / 1000);
+					const deletePath = `/order/cart/${cartId}`;
+					const deleteMethod = 'DELETE';
+
+					const deleteToSign = applicationSecret + '+' + consumerKey + '+' + deleteMethod + '+' + endpoint + deletePath + '++' + deleteTimestamp;
+					const deleteHash = crypto.createHash('sha1').update(deleteToSign).digest('hex');
+					const deleteSig = '$1$' + deleteHash;
+
+					const deleteOptions: any = {
+						method: deleteMethod,
+						url: endpoint + deletePath,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Timestamp': deleteTimestamp.toString(),
+							'X-Ovh-Signature': deleteSig,
+							'X-Ovh-Consumer': consumerKey,
+						},
+						json: true,
+					};
+
+					try {
+						await this.helpers.httpRequest(deleteOptions);
+					} catch (error) {
+						// Ignore deletion errors
+					}
+
+				} catch (error) {
+					console.error('Error in getProductPlans:', error);
+					return [{
+						name: 'Error Loading Plans',
+						value: '',
+					}];
+				}
+
+				return returnData.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+			},
+
+			async getProductConfigurations(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				
+				try {
+					let productType: string;
+					let planCode: string;
+					
+					try {
+						productType = this.getNodeParameter('productType') as string;
+						planCode = this.getNodeParameter('productConfig.planCode') as string;
+					} catch (error) {
+						return returnData;
+					}
+					
+					if (!productType || !planCode) {
+						return returnData;
+					}
+
+					const credentials = await this.getCredentials('ovhApi');
+					const endpoint = credentials.endpoint as string;
+					const applicationKey = credentials.applicationKey as string;
+					const applicationSecret = credentials.applicationSecret as string;
+					const consumerKey = credentials.consumerKey as string;
+
+					// Create a temporary cart
+					const timestamp = Math.round(Date.now() / 1000);
+					const createCartPath = '/order/cart';
+					const method = 'POST';
+					const body = JSON.stringify({ ovhSubsidiary: 'FR' });
+
+					const toSign = applicationSecret + '+' + consumerKey + '+' + method + '+' + endpoint + createCartPath + '+' + body + '+' + timestamp;
+					const crypto = require('crypto');
+					const hash = crypto.createHash('sha1').update(toSign).digest('hex');
+					const sig = '$1$' + hash;
+
+					const createCartOptions: any = {
+						method,
+						url: endpoint + createCartPath,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Timestamp': timestamp.toString(),
+							'X-Ovh-Signature': sig,
+							'X-Ovh-Consumer': consumerKey,
+							'Content-Type': 'application/json',
+						},
+						body: JSON.parse(body),
+						json: true,
+					};
+
+					const cartResponse = await this.helpers.httpRequest(createCartOptions);
+					const cartId = cartResponse.cartId;
+
+					// Get configuration requirements for this product
+					const getConfigTimestamp = Math.round(Date.now() / 1000);
+					const getConfigPath = `/order/cart/${cartId}/${productType}/options`;
+					const getConfigBody = JSON.stringify({ planCode });
+					const getMethod = 'POST';
+
+					const getToSign = applicationSecret + '+' + consumerKey + '+' + getMethod + '+' + endpoint + getConfigPath + '+' + getConfigBody + '+' + getConfigTimestamp;
+					const getHash = crypto.createHash('sha1').update(getToSign).digest('hex');
+					const getSig = '$1$' + getHash;
+
+					const getConfigOptions: any = {
+						method: getMethod,
+						url: endpoint + getConfigPath,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Timestamp': getConfigTimestamp.toString(),
+							'X-Ovh-Signature': getSig,
+							'X-Ovh-Consumer': consumerKey,
+							'Content-Type': 'application/json',
+						},
+						body: JSON.parse(getConfigBody),
+						json: true,
+					};
+
+					try {
+						const configurations = await this.helpers.httpRequest(getConfigOptions);
+						
+						if (Array.isArray(configurations)) {
+							for (const config of configurations) {
+								returnData.push({
+									name: config.label || config.name || config,
+									value: config.value || config,
+									description: config.description || undefined,
+								});
+							}
+						}
+					} catch (error) {
+						console.error('Error loading configurations:', error);
+					}
+
+					// Clean up - delete the temporary cart
+					const deleteTimestamp = Math.round(Date.now() / 1000);
+					const deletePath = `/order/cart/${cartId}`;
+					const deleteMethod = 'DELETE';
+
+					const deleteToSign = applicationSecret + '+' + consumerKey + '+' + deleteMethod + '+' + endpoint + deletePath + '++' + deleteTimestamp;
+					const deleteHash = crypto.createHash('sha1').update(deleteToSign).digest('hex');
+					const deleteSig = '$1$' + deleteHash;
+
+					const deleteOptions: any = {
+						method: deleteMethod,
+						url: endpoint + deletePath,
+						headers: {
+							'X-Ovh-Application': applicationKey,
+							'X-Ovh-Timestamp': deleteTimestamp.toString(),
+							'X-Ovh-Signature': deleteSig,
+							'X-Ovh-Consumer': consumerKey,
+						},
+						json: true,
+					};
+
+					try {
+						await this.helpers.httpRequest(deleteOptions);
+					} catch (error) {
+						// Ignore deletion errors
+					}
+
+				} catch (error) {
+					console.error('Error in getProductConfigurations:', error);
+				}
+
+				return returnData;
+			},
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
@@ -534,6 +923,7 @@ export class OvhOrder implements INodeType {
 					if (operation === 'assign') {
 						method = 'POST';
 						path = `/order/cart/${cartId}/assign`;
+						body = {};
 					}
 				} else if (resource === 'cartCoupon') {
 					const cartId = this.getNodeParameter('cartId', i) as string;
@@ -557,11 +947,35 @@ export class OvhOrder implements INodeType {
 						method = 'POST';
 						const productType = this.getNodeParameter('productType', i) as string;
 						path = `/order/cart/${cartId}/${productType}`;
-						const productDetails = this.getNodeParameter('productDetails', i) as string;
-						try {
-							body = JSON.parse(productDetails);
-						} catch (error) {
-							body = productDetails;
+						
+						const productConfig = this.getNodeParameter('productConfig', i) as any;
+						body = {};
+						
+						// Add basic fields
+						if (productConfig.planCode) {
+							body.planCode = productConfig.planCode;
+						}
+						if (productConfig.quantity !== undefined) {
+							body.quantity = productConfig.quantity;
+						}
+						if (productConfig.duration) {
+							body.duration = productConfig.duration;
+						}
+						if (productConfig.pricingMode) {
+							body.pricingMode = productConfig.pricingMode;
+						}
+						
+						// Add configuration options
+						if (productConfig.configuration && productConfig.configuration.option) {
+							body.configuration = productConfig.configuration.option.map((opt: any) => ({
+								label: opt.label,
+								value: opt.value,
+							}));
+						}
+						
+						// Add options
+						if (productConfig.options && productConfig.options.option) {
+							body.options = productConfig.options.option;
 						}
 					} else if (operation === 'getAll') {
 						method = 'GET';
