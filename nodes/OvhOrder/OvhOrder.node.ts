@@ -866,15 +866,7 @@ export class OvhOrder implements INodeType {
 									}
 								} catch (serverError) {
 									console.error('Error loading dedicated servers list:', serverError);
-									// Add some default dedicated server options as last resort
-									returnData.push(
-										{ name: 'Kimsufi KS-1', value: '24ska01' },
-										{ name: 'Kimsufi KS-2', value: '24ska02' },
-										{ name: 'So you Start Essential', value: '24sys01' },
-										{ name: 'So you Start Power', value: '24sys02' },
-										{ name: 'OVHcloud Advance-1', value: '24adv01' },
-										{ name: 'OVHcloud Advance-2', value: '24adv02' },
-									);
+									// Don't add fake fallback options - they cause "Plan code not found" errors
 								}
 							}
 						}
@@ -1038,6 +1030,14 @@ export class OvhOrder implements INodeType {
 					console.error('Error in getProductPlans:', error);
 					return [{
 						name: 'Error Loading Plans',
+						value: '',
+					}];
+				}
+
+				// If no plans were found, provide helpful message
+				if (returnData.length === 0) {
+					return [{
+						name: 'No Plans Available for This Product Type and Region',
 						value: '',
 					}];
 				}
