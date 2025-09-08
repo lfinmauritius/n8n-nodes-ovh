@@ -714,11 +714,11 @@ export class OvhOrder implements INodeType {
 					try {
 						let products = await this.helpers.httpRequest(getProductsOptions);
 						
-						// For dedicated servers, if the cart endpoint returns empty, try the catalog
-						if (productType === 'dedicated' && (!products || (Array.isArray(products) && products.length === 0))) {
+						// For dedicated servers, always try to get from catalog as cart endpoint often returns empty
+						if (productType === 'dedicated') {
 							try {
 								const catalogTimestamp = Math.round(Date.now() / 1000);
-								const catalogPath = '/order/catalog/formatted/dedicated';
+								const catalogPath = '/order/catalog/public/baremetalServers';
 								const catalogMethod = 'GET';
 								
 								const catalogToSign = applicationSecret + '+' + consumerKey + '+' + catalogMethod + '+' + endpoint + catalogPath + '++' + catalogTimestamp;
@@ -738,32 +738,113 @@ export class OvhOrder implements INodeType {
 								};
 								
 								const catalog = await this.helpers.httpRequest(catalogOptions);
-								if (catalog && catalog.plans) {
-									for (const plan of catalog.plans) {
-										const planCode = plan.planCode || '';
-										const displayName = plan.invoiceName || plan.blobs?.commercial?.name || planCode;
-										const description = plan.blobs?.commercial?.description || '';
-										
-										if (planCode) {
-											returnData.push({
-												name: displayName,
-												value: planCode,
-												description: description || undefined,
-											});
+								
+								// The baremetalServers catalog has a different structure
+								if (catalog) {
+									// Check if it's an array of products
+									if (Array.isArray(catalog)) {
+										for (const server of catalog) {
+											const planCode = server.planCode || server.code || '';
+											const displayName = server.invoiceName || server.description || server.name || planCode;
+											
+											if (planCode) {
+												returnData.push({
+													name: displayName,
+													value: planCode,
+													description: server.description || undefined,
+												});
+											}
+										}
+									}
+									// Or if it has a products or servers property
+									else if (catalog.products || catalog.servers) {
+										const items = catalog.products || catalog.servers;
+										for (const server of items) {
+											const planCode = server.planCode || server.code || '';
+											const displayName = server.invoiceName || server.description || server.name || planCode;
+											
+											if (planCode) {
+												returnData.push({
+													name: displayName,
+													value: planCode,
+													description: server.description || undefined,
+												});
+											}
+										}
+									}
+									// Or if it has plans like other catalogs
+									else if (catalog.plans) {
+										for (const plan of catalog.plans) {
+											const planCode = plan.planCode || '';
+											const displayName = plan.invoiceName || plan.blobs?.commercial?.name || planCode;
+											const description = plan.blobs?.commercial?.description || '';
+											
+											if (planCode) {
+												returnData.push({
+													name: displayName,
+													value: planCode,
+													description: description || undefined,
+												});
+											}
 										}
 									}
 								}
 							} catch (catalogError) {
 								console.error('Error loading dedicated catalog:', catalogError);
-								// Add some default dedicated server options
-								returnData.push(
-									{ name: 'Kimsufi KS-1', value: '24ska01' },
-									{ name: 'Kimsufi KS-2', value: '24ska02' },
-									{ name: 'So you Start Essential', value: '24sys01' },
-									{ name: 'So you Start Power', value: '24sys02' },
-									{ name: 'OVHcloud Advance-1', value: '24adv01' },
-									{ name: 'OVHcloud Advance-2', value: '24adv02' },
-								);
+								
+								// Try another endpoint: /order/dedicated/server
+								try {
+									const serverTimestamp = Math.round(Date.now() / 1000);
+									const serverPath = '/order/dedicated/server';
+									const serverMethod = 'GET';
+									
+									const serverToSign = applicationSecret + '+' + consumerKey + '+' + serverMethod + '+' + endpoint + serverPath + '++' + serverTimestamp;
+									const serverHash = crypto.createHash('sha1').update(serverToSign).digest('hex');
+									const serverSig = '$1$' + serverHash;
+									
+									const serverOptions: any = {
+										method: serverMethod,
+										url: endpoint + serverPath,
+										headers: {
+											'X-Ovh-Application': applicationKey,
+											'X-Ovh-Timestamp': serverTimestamp.toString(),
+											'X-Ovh-Signature': serverSig,
+											'X-Ovh-Consumer': consumerKey,
+										},
+										json: true,
+									};
+									
+									const servers = await this.helpers.httpRequest(serverOptions);
+									if (Array.isArray(servers)) {
+										for (const serverCode of servers) {
+											// Format the server code for display
+											let displayName = serverCode;
+											if (serverCode.includes('kimsufi')) {
+												displayName = 'Kimsufi - ' + serverCode;
+											} else if (serverCode.includes('soyoustart')) {
+												displayName = 'So you Start - ' + serverCode;
+											} else {
+												displayName = 'Dedicated Server - ' + serverCode;
+											}
+											
+											returnData.push({
+												name: displayName,
+												value: serverCode,
+											});
+										}
+									}
+								} catch (serverError) {
+									console.error('Error loading dedicated servers list:', serverError);
+									// Add some default dedicated server options as last resort
+									returnData.push(
+										{ name: 'Kimsufi KS-1', value: '24ska01' },
+										{ name: 'Kimsufi KS-2', value: '24ska02' },
+										{ name: 'So you Start Essential', value: '24sys01' },
+										{ name: 'So you Start Power', value: '24sys02' },
+										{ name: 'OVHcloud Advance-1', value: '24adv01' },
+										{ name: 'OVHcloud Advance-2', value: '24adv02' },
+									);
+								}
 							}
 						} else if (Array.isArray(products)) {
 							for (const product of products) {
