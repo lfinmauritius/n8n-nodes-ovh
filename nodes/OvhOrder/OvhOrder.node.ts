@@ -789,33 +789,97 @@ export class OvhOrder implements INodeType {
 							if (catalog && catalog.plans && Array.isArray(catalog.plans)) {
 								console.log(`Found ${catalog.plans.length} plans in catalog for dedicated servers`);
 								
+								// Validate each plan by testing if it can be added to cart
 								for (const plan of catalog.plans) {
 									const planCode = plan.planCode || '';
 									const displayName = plan.invoiceName || plan.productName || planCode;
 									
 									if (!planCode) continue;
 									
-									let enhancedName = displayName;
-									if (planCode.includes('kimsufi') || planCode.includes('ks')) {
-										enhancedName = `Kimsufi - ${displayName}`;
-									} else if (planCode.includes('soyoustart') || planCode.includes('sys')) {
-										enhancedName = `So you Start - ${displayName}`;
-									} else if (planCode.includes('scale')) {
-										enhancedName = `Scale - ${displayName}`;
-									} else if (planCode.includes('hgr')) {
-										enhancedName = `High Grade - ${displayName}`;
-									} else if (planCode.includes('adv')) {
-										enhancedName = `Advance - ${displayName}`;
-									} else {
-										enhancedName = `Dedicated - ${displayName}`;
+									// Test if this plan code is actually available in the cart
+									try {
+										const testTimestamp = Math.round(Date.now() / 1000);
+										const testPath = `/order/cart/${cartId}/dedicated`;
+										const testMethod = 'POST';
+										const testBody = JSON.stringify({ planCode, quantity: 1 });
+										
+										const testToSign = applicationSecret + '+' + consumerKey + '+' + testMethod + '+' + endpoint + testPath + '+' + testBody + '+' + testTimestamp;
+										const testHash = crypto.createHash('sha1').update(testToSign).digest('hex');
+										const testSig = '$1$' + testHash;
+										
+										const testOptions: any = {
+											method: testMethod,
+											url: endpoint + testPath,
+											headers: {
+												'X-Ovh-Application': applicationKey,
+												'X-Ovh-Timestamp': testTimestamp.toString(),
+												'X-Ovh-Signature': testSig,
+												'X-Ovh-Consumer': consumerKey,
+												'Content-Type': 'application/json',
+											},
+											body: JSON.parse(testBody),
+											json: true,
+										};
+										
+										// Try to add the plan to cart (this will tell us if it's valid)
+										const testResponse = await this.helpers.httpRequest(testOptions);
+										
+										// If we get here, the plan is valid, remove it from cart immediately
+										if (testResponse && testResponse.itemId) {
+											try {
+												const removeTimestamp = Math.round(Date.now() / 1000);
+												const removePath = `/order/cart/${cartId}/item/${testResponse.itemId}`;
+												const removeMethod = 'DELETE';
+												
+												const removeToSign = applicationSecret + '+' + consumerKey + '+' + removeMethod + '+' + endpoint + removePath + '++' + removeTimestamp;
+												const removeHash = crypto.createHash('sha1').update(removeToSign).digest('hex');
+												const removeSig = '$1$' + removeHash;
+												
+												const removeOptions: any = {
+													method: removeMethod,
+													url: endpoint + removePath,
+													headers: {
+														'X-Ovh-Application': applicationKey,
+														'X-Ovh-Timestamp': removeTimestamp.toString(),
+														'X-Ovh-Signature': removeSig,
+														'X-Ovh-Consumer': consumerKey,
+													},
+													json: true,
+												};
+												
+												await this.helpers.httpRequest(removeOptions);
+											} catch (removeError) {
+												// Ignore cleanup errors
+											}
+										}
+										
+										// Plan is valid, add it to the list
+										let enhancedName = displayName;
+										if (planCode.includes('kimsufi') || planCode.includes('ks')) {
+											enhancedName = `Kimsufi - ${displayName}`;
+										} else if (planCode.includes('soyoustart') || planCode.includes('sys')) {
+											enhancedName = `So you Start - ${displayName}`;
+										} else if (planCode.includes('scale')) {
+											enhancedName = `Scale - ${displayName}`;
+										} else if (planCode.includes('hgr')) {
+											enhancedName = `High Grade - ${displayName}`;
+										} else if (planCode.includes('adv')) {
+											enhancedName = `Advance - ${displayName}`;
+										} else {
+											enhancedName = `Dedicated - ${displayName}`;
+										}
+										
+										returnData.push({
+											name: enhancedName,
+											value: planCode,
+										});
+										
+									} catch (testError) {
+										// Plan code is not valid for this cart/region, skip it
+										console.log(`Skipping invalid plan code: ${planCode} - ${testError.message}`);
 									}
-									
-									returnData.push({
-										name: enhancedName,
-										value: planCode,
-									});
 								}
-								console.log(`Added ${returnData.length} dedicated server plans`);
+								console.log(`Added ${returnData.length} validated dedicated server plans`);
 							}
 						} catch (catalogError) {
 							console.error('Error loading dedicated catalog:', catalogError);
