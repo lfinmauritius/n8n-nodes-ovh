@@ -401,11 +401,6 @@ export class OvhOrder implements INodeType {
 						typeOptions: {
 							multipleValues: true,
 						},
-						displayOptions: {
-							hide: {
-								productType: ['domain', 'ip'],
-							},
-						},
 						default: {},
 						placeholder: 'Add Configuration Option',
 						options: [
@@ -435,11 +430,6 @@ export class OvhOrder implements INodeType {
 						displayName: 'Domain Name',
 						name: 'domain',
 						type: 'string',
-						displayOptions: {
-							hide: {
-								productType: ['cloud', 'vps', 'dedicated', 'emailpro', 'exchange', 'hosting', 'ip', 'kubernetes', 'license', 'privateCloud'],
-							},
-						},
 						default: '',
 						description: 'The domain name to register (e.g., example.com)',
 					},
@@ -447,11 +437,6 @@ export class OvhOrder implements INodeType {
 						displayName: 'Duration',
 						name: 'duration',
 						type: 'options',
-						displayOptions: {
-							hide: {
-								productType: ['ip'],
-							},
-						},
 						options: [
 							{ name: '1 Month', value: 'P1M' },
 							{ name: '1 Year', value: 'P1Y' },
@@ -469,11 +454,6 @@ export class OvhOrder implements INodeType {
 						type: 'fixedCollection',
 						typeOptions: {
 							multipleValues: true,
-						},
-						displayOptions: {
-							hide: {
-								productType: ['domain'],
-							},
 						},
 						default: {},
 						placeholder: 'Add Option',
@@ -522,11 +502,6 @@ export class OvhOrder implements INodeType {
 							loadOptionsMethod: 'getProductPlans',
 							loadOptionsDependsOn: ['productType'],
 						},
-						displayOptions: {
-							hide: {
-								productType: ['domain'],
-							},
-						},
 						default: '',
 						description: 'The plan code for the product. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 					},
@@ -534,11 +509,6 @@ export class OvhOrder implements INodeType {
 						displayName: 'Pricing Mode',
 						name: 'pricingMode',
 						type: 'options',
-						displayOptions: {
-							hide: {
-								productType: ['domain', 'ip'],
-							},
-						},
 						options: [
 							{ name: 'Default', value: 'default' },
 							{ name: 'Degressivity', value: 'degressivity' },
