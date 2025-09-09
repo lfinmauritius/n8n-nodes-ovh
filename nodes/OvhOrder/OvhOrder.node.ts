@@ -893,10 +893,8 @@ export class OvhOrder implements INodeType {
 						json: true,
 					};
 
-					// Use catalog API directly - Cart API doesn't return plan codes, only offers
+					// Use Cart API only - Catalog API returns obsolete plan codes 
 					const subsidiary = 'FR'; // Default to FR for now
-					
-					// Use catalog API for dedicated and VPS (only place with plan codes)
 					console.log(`DEBUG: About to call Cart API for productType: "${productType}", cartId: "${cartId}"`);
 					console.log(`DEBUG: Cart API endpoint: ${endpoint + getProductsPath}`);
 					try {
@@ -964,8 +962,7 @@ export class OvhOrder implements INodeType {
 							}
 							console.log(`Added ${returnData.length} ${productType} plans from cart API`);
 						} else {
-							console.log(`No products found via cart API for ${productType}, trying fallback methods`);
-							throw new NodeOperationError(this.getNode(), 'No products from cart API, try fallback');
+							console.log(`No products found via cart API for ${productType}`);
 						}
 					} catch (cartError) {
 						console.log(`Cart API failed for ${productType}, trying catalog fallback:`, cartError.message);
