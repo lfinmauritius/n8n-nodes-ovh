@@ -37,3 +37,11 @@ parameters_audit.txt
 parameters_summary.txt
 post_put_parameters.txt
 production_endpoints.txt
+
+# Test and investigation scripts - development tools only
+test_pricing_modes.js
+test_private_cloud_pricing.js
+test_with_n8n_creds.js
+investigate_private_cloud.js
+extract_all_post_put_params.js
+getProductPlans_fixed.js
