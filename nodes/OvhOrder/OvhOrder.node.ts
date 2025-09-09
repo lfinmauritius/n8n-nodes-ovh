@@ -727,10 +727,11 @@ export class OvhOrder implements INodeType {
 							{ name: 'Degressivity', value: 'degressivity' },
 							{ name: 'Hourly', value: 'hourly' },
 							{ name: 'Monthly', value: 'monthly' },
+							{ name: 'Rental', value: 'rental' },
 							{ name: 'Upfront', value: 'upfront' },
 						],
 						default: 'monthly',
-						description: 'Pricing mode for the product (automatically adjusted for Private Cloud products)',
+						description: 'Pricing mode for the product (Private Cloud automatically uses "rental" mode)',
 					},
 					{
 						displayName: 'Quantity',
@@ -1372,12 +1373,15 @@ export class OvhOrder implements INodeType {
 							if (productConfig.duration) {
 								body.duration = productConfig.duration;
 							}
-							// Set pricing mode
+							// Set pricing mode with enhanced debugging
 							if (productType === 'privateCloud') {
-								// Private Cloud requires a specific pricing mode - try common ones
-								body.pricingMode = productConfig.pricingMode || 'monthly';
+								// Private Cloud uses "rental" pricing mode (discovered via OVH catalog analysis)
+								body.pricingMode = 'rental';
+								console.log(`DEBUG: Private Cloud using pricing mode: "rental" (catalog-confirmed)`);
+								console.log(`DEBUG: Full body before request:`, JSON.stringify(body, null, 2));
 							} else if (productType !== 'domain' && productConfig.pricingMode) {
 								body.pricingMode = productConfig.pricingMode;
+								console.log(`DEBUG: ${productType} using pricing mode: "${productConfig.pricingMode}"`);
 							}
 							
 							// Add configuration options
@@ -1570,19 +1574,25 @@ export class OvhOrder implements INodeType {
 						this.getNodeParameter('productType', i) === 'privateCloud' &&
 						httpError.response?.data?.message?.includes('pricingMode')) {
 						
-						console.log('DEBUG: Private Cloud pricing mode failed, trying alternatives...');
-						
-						// Try alternative pricing modes for Private Cloud
-						const alternativeModes = ['upfront', 'monthly', 'default', 'credit', 'hourly'];
+						console.log('🚨 DEBUG: Private Cloud pricing mode failed, trying alternatives...');
 						const currentMode = body.pricingMode;
+						console.log(`🚨 Original mode "${currentMode}" failed with error: ${httpError.response?.data?.message}`);
+						console.log(`🚨 Plan Code: ${body.planCode}`);
+						console.log(`🚨 Full body that failed:`, JSON.stringify(body, null, 2));
+						
+						// Try common pricing modes for Private Cloud (rental should work based on catalog analysis)
+						const alternativeModes = [
+							'rental', 'monthly', 'upfront', 'default', 'credit', 'hourly'
+						];
 						let retrySucceeded = false;
 						
 						for (const altMode of alternativeModes) {
 							if (altMode === currentMode) continue; // Skip the one that just failed
 							
 							try {
-								console.log(`DEBUG: Trying alternative pricing mode: ${altMode}`);
+								console.log(`🧪 DEBUG: Trying alternative pricing mode: ${altMode}`);
 								const altBody = { ...body, pricingMode: altMode };
+								console.log(`🧪 Testing with body:`, JSON.stringify(altBody, null, 2));
 								
 								// Recalculate signature for new body
 								const altBodyForSignature = JSON.stringify(altBody);
@@ -1602,7 +1612,8 @@ export class OvhOrder implements INodeType {
 								};
 								
 								const altResponse = await this.helpers.httpRequest(altOptions);
-								console.log(`DEBUG: SUCCESS with pricing mode: ${altMode}`);
+								console.log(`🎉 DEBUG: SUCCESS with pricing mode: ${altMode}`);
+								console.log(`🎉 Response:`, JSON.stringify(altResponse, null, 2));
 								
 								const jsonResponse = altResponse || { success: true, operation: operation, resource: resource };
 								returnData.push({
@@ -1615,7 +1626,11 @@ export class OvhOrder implements INodeType {
 								break;
 								
 							} catch (altError) {
-								console.log(`DEBUG: Failed with pricing mode ${altMode}:`, altError.response?.data?.message || altError.message);
+								const altErrorMsg = altError.response?.data?.message || altError.message;
+								console.log(`❌ DEBUG: Failed with pricing mode ${altMode}: ${altErrorMsg}`);
+								if (altError.response?.data) {
+									console.log(`❌ Full error response:`, JSON.stringify(altError.response.data, null, 2));
+								}
 							}
 						}
 						
