@@ -1375,9 +1375,8 @@ export class OvhOrder implements INodeType {
 							}
 							// Set pricing mode with enhanced debugging
 							if (productType === 'privateCloud') {
-								// Private Cloud uses "rental" pricing mode (discovered via OVH catalog analysis)
-								body.pricingMode = 'rental';
-								console.log(`DEBUG: Private Cloud using pricing mode: "rental" (catalog-confirmed)`);
+								// Private Cloud: try omitting pricingMode completely first (let OVH choose default)
+								console.log(`DEBUG: Private Cloud - omitting pricingMode to let OVH API use default`);
 								console.log(`DEBUG: Full body before request:`, JSON.stringify(body, null, 2));
 							} else if (productType !== 'domain' && productConfig.pricingMode) {
 								body.pricingMode = productConfig.pricingMode;
@@ -1575,14 +1574,14 @@ export class OvhOrder implements INodeType {
 						httpError.response?.data?.message?.includes('pricingMode')) {
 						
 						console.log('🚨 DEBUG: Private Cloud pricing mode failed, trying alternatives...');
-						const currentMode = body.pricingMode;
+						const currentMode = body.pricingMode || 'undefined';
 						console.log(`🚨 Original mode "${currentMode}" failed with error: ${httpError.response?.data?.message}`);
 						console.log(`🚨 Plan Code: ${body.planCode}`);
 						console.log(`🚨 Full body that failed:`, JSON.stringify(body, null, 2));
 						
-						// Try common pricing modes for Private Cloud (rental should work based on catalog analysis)
+						// Try alternatives: first without pricingMode, then with different modes
 						const alternativeModes = [
-							'rental', 'monthly', 'upfront', 'default', 'credit', 'hourly'
+							null, 'default', 'monthly', 'upfront', 'credit', 'hourly', 'rental'
 						];
 						let retrySucceeded = false;
 						
@@ -1590,8 +1589,14 @@ export class OvhOrder implements INodeType {
 							if (altMode === currentMode) continue; // Skip the one that just failed
 							
 							try {
-								console.log(`🧪 DEBUG: Trying alternative pricing mode: ${altMode}`);
-								const altBody = { ...body, pricingMode: altMode };
+								console.log(`🧪 DEBUG: Trying alternative pricing mode: ${altMode || 'OMITTED'}`);
+								const altBody = { ...body };
+								if (altMode !== null) {
+									altBody.pricingMode = altMode;
+								} else {
+									// Remove pricingMode completely
+									delete altBody.pricingMode;
+								}
 								console.log(`🧪 Testing with body:`, JSON.stringify(altBody, null, 2));
 								
 								// Recalculate signature for new body
