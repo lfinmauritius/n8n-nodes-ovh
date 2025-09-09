@@ -890,11 +890,78 @@ export class OvhOrder implements INodeType {
 						json: true,
 					};
 
-					// Use catalog approach for all product types (more reliable)
+					// Use cart API first to get only available plans, fallback to catalog if needed
 					const subsidiary = 'FR'; // Default to FR for now
 					
-					if (productType === 'dedicated') {
-						try {
+					// Try cart API first for all product types
+					try {
+						const products = await this.helpers.httpRequest(getProductsOptions);
+						console.log(`Cart API response for ${productType}:`, JSON.stringify(products, null, 2).slice(0, 500));
+						
+						if (Array.isArray(products) && products.length > 0) {
+							console.log(`Found ${products.length} products via cart API for ${productType}`);
+							
+							for (const product of products) {
+								let planCode = '';
+								let displayName = '';
+								
+								if (typeof product === 'string') {
+									planCode = product;
+									if (productType === 'dedicated') {
+										// Format dedicated server names
+										if (planCode.includes('kimsufi') || planCode.includes('ks')) {
+											displayName = `Kimsufi - ${planCode}`;
+										} else if (planCode.includes('soyoustart') || planCode.includes('sys')) {
+											displayName = `So you Start - ${planCode}`;
+										} else if (planCode.includes('scale')) {
+											displayName = `Scale - ${planCode}`;
+										} else if (planCode.includes('hgr')) {
+											displayName = `High Grade - ${planCode}`;
+										} else if (planCode.includes('adv')) {
+											displayName = `Advance - ${planCode}`;
+										} else {
+											displayName = `Dedicated - ${planCode}`;
+										}
+									} else if (productType === 'vps') {
+										// Format VPS names
+										const vpsMatch = planCode.match(/^vps([a-z]+)-(\d+)-(\d+)-(\d+)$/);
+										if (vpsMatch) {
+											const [, tier, vcpu, ram, storage] = vpsMatch;
+											const tierName = tier.charAt(0).toUpperCase() + tier.slice(1);
+											displayName = `VPS ${tierName} - ${vcpu} vCore, ${ram}GB RAM, ${storage}GB SSD`;
+										} else {
+											displayName = `VPS - ${planCode}`;
+										}
+									} else if (productType === 'cloud') {
+										displayName = planCode.replace(/^project\./, 'Public Cloud - ').replace(/\./g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+									} else if (productType === 'domain') {
+										displayName = planCode.toUpperCase();
+									} else {
+										displayName = planCode.replace(/[-_]/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+									}
+								} else {
+									planCode = product.planCode || product.productId || product;
+									displayName = product.productName || product.description || planCode;
+								}
+								
+								if (planCode) {
+									returnData.push({
+										name: displayName,
+										value: planCode,
+									});
+								}
+							}
+							console.log(`Added ${returnData.length} ${productType} plans from cart API`);
+						} else {
+							console.log(`No products found via cart API for ${productType}, trying fallback methods`);
+							throw new NodeOperationError(this.getNode(), 'No products from cart API, try fallback');
+						}
+					} catch (cartError) {
+						console.log(`Cart API failed for ${productType}, trying catalog fallback:`, cartError.message);
+						
+						// Fallback to catalog API for dedicated and VPS
+						if (productType === 'dedicated') {
+							try {
 							const catalogTimestamp = Math.round(Date.now() / 1000);
 							const catalogPath = `/order/catalog/public/baremetalServers?ovhSubsidiary=${subsidiary}`;
 							const catalogMethod = 'GET';
@@ -1017,44 +1084,8 @@ export class OvhOrder implements INodeType {
 						} catch (catalogError) {
 							console.error('Error loading VPS catalog:', catalogError);
 						}
-					} else {
-						// For other product types, use cart API
-						try {
-							const products = await this.helpers.httpRequest(getProductsOptions);
-							console.log(`Cart API response for ${productType}:`, JSON.stringify(products, null, 2).slice(0, 500));
-							
-							if (Array.isArray(products)) {
-								console.log(`Found ${products.length} products via cart API for ${productType}`);
-								
-								for (const product of products) {
-									let planCode = '';
-									let displayName = '';
-									
-									if (typeof product === 'string') {
-										planCode = product;
-										if (productType === 'cloud') {
-											displayName = product.replace(/^project\./, 'Public Cloud - ').replace(/\./g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-										} else if (productType === 'domain') {
-											displayName = product.toUpperCase();
-										} else {
-											displayName = product.replace(/[-_]/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-										}
-									} else {
-										planCode = product.planCode || product.productId || product;
-										displayName = product.productName || product.description || planCode;
-									}
-									
-									if (planCode) {
-										returnData.push({
-											name: displayName,
-											value: planCode,
-										});
-									}
-								}
-								console.log(`Added ${returnData.length} plans via cart API`);
-							}
-						} catch (cartError) {
-							console.error('Error loading products via cart API:', cartError);
+						} else {
+							console.error('No fallback available for product type:', productType);
 						}
 					}
 
