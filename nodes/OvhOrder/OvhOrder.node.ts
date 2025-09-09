@@ -721,6 +721,11 @@ export class OvhOrder implements INodeType {
 						displayName: 'Pricing Mode',
 						name: 'pricingMode',
 						type: 'options',
+						displayOptions: {
+							hide: {
+								productType: ['privateCloud', 'domain'],
+							},
+						},
 						options: [
 							{ name: 'Default', value: 'default' },
 							{ name: 'Degressivity', value: 'degressivity' },
@@ -1368,7 +1373,10 @@ export class OvhOrder implements INodeType {
 							if (productConfig.duration) {
 								body.duration = productConfig.duration;
 							}
-							if (productConfig.pricingMode) {
+							// Set pricing mode, force "default" for privateCloud and domain
+							if (productType === 'privateCloud' || productType === 'domain') {
+								body.pricingMode = 'default';
+							} else if (productConfig.pricingMode) {
 								body.pricingMode = productConfig.pricingMode;
 							}
 							
