@@ -1101,13 +1101,14 @@ export class OvhOrder implements INodeType {
 					}];
 				}
 
-				// Remove duplicates based on name, keeping the first occurrence
-				const seenNames = new Set<string>();
+				// Remove duplicates based on both name and value (plan code), keeping unique combinations
+				const seenPlans = new Set<string>();
 				const uniquePlans = returnData.filter(plan => {
-					if (seenNames.has(plan.name || '')) {
+					const planKey = `${plan.name || ''}|${plan.value || ''}`;
+					if (seenPlans.has(planKey)) {
 						return false;
 					}
-					seenNames.add(plan.name || '');
+					seenPlans.add(planKey);
 					return true;
 				});
 
