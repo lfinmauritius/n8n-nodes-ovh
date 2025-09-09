@@ -722,16 +722,21 @@ export class OvhOrder implements INodeType {
 						name: 'pricingMode',
 						type: 'options',
 						options: [
-							{ name: 'Credit', value: 'credit' },
-							{ name: 'Default', value: 'default' },
-							{ name: 'Degressivity', value: 'degressivity' },
-							{ name: 'Hourly', value: 'hourly' },
-							{ name: 'Monthly', value: 'monthly' },
-							{ name: 'Rental', value: 'rental' },
-							{ name: 'Upfront', value: 'upfront' },
+							{ name: 'Create - Standard Price', value: 'create-default' },
+							{ name: 'Create - Premium Price', value: 'create-premium' },
+							{ name: 'Transfer - Standard Price', value: 'transfer-default' },
+							{ name: 'Transfer - Premium Price', value: 'transfer-premium' },
+							{ name: 'Transfer - Aftermarket 1', value: 'transfer-aftermarket1' },
+							{ name: 'Transfer - Aftermarket 2', value: 'transfer-aftermarket2' },
+							{ name: 'Generic - Default', value: 'default' },
+							{ name: 'Generic - Monthly', value: 'monthly' },
+							{ name: 'Generic - Credit', value: 'credit' },
+							{ name: 'Generic - Hourly', value: 'hourly' },
+							{ name: 'Generic - Rental', value: 'rental' },
+							{ name: 'Generic - Upfront', value: 'upfront' },
 						],
-						default: 'monthly',
-						description: 'Pricing mode for the product (Private Cloud automatically uses "rental" mode)',
+						default: 'create-default',
+						description: 'Pricing mode - Domain-specific modes (create-*, transfer-*) for domains, Generic modes for other products',
 					},
 					{
 						displayName: 'Quantity',
@@ -1378,7 +1383,13 @@ export class OvhOrder implements INodeType {
 								// Private Cloud: try omitting pricingMode completely first (let OVH choose default)
 								console.log(`DEBUG: Private Cloud - omitting pricingMode to let OVH API use default`);
 								console.log(`DEBUG: Full body before request:`, JSON.stringify(body, null, 2));
-							} else if (productType !== 'domain' && productConfig.pricingMode) {
+							} else if (productType === 'domain' && productConfig.pricingMode) {
+								// Domain: use domain-specific pricing modes (create-default, transfer-default, etc.)
+								body.pricingMode = productConfig.pricingMode;
+								console.log(`DEBUG: Domain using pricing mode: "${productConfig.pricingMode}"`);
+								console.log(`DEBUG: Full body before request:`, JSON.stringify(body, null, 2));
+							} else if (productType !== 'privateCloud' && productType !== 'domain' && productConfig.pricingMode) {
+								// Other products: use generic pricing modes
 								body.pricingMode = productConfig.pricingMode;
 								console.log(`DEBUG: ${productType} using pricing mode: "${productConfig.pricingMode}"`);
 							}
