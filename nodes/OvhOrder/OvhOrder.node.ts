@@ -452,7 +452,6 @@ export class OvhOrder implements INodeType {
 					{ name: 'Hosting', value: 'hosting' },
 					{ name: 'IP', value: 'ip' },
 					{ name: 'JSON Custom', value: 'jsonCustom' },
-					{ name: 'Private Cloud', value: 'privateCloud' },
 					{ name: 'VPS', value: 'vps' },
 				],
 				default: 'cloud',
@@ -1379,17 +1378,12 @@ export class OvhOrder implements INodeType {
 								body.duration = productConfig.duration;
 							}
 							// Set pricing mode with enhanced debugging
-							if (productType === 'privateCloud') {
-								// Private Cloud: use "default" pricingMode (confirmed from OVH Python SDK examples)
-								body.pricingMode = 'default';
-								console.log(`DEBUG: Private Cloud using pricingMode: "default" (from OVH SDK examples)`);
-								console.log(`DEBUG: Full body before request:`, JSON.stringify(body, null, 2));
-							} else if (productType === 'domain' && productConfig.pricingMode) {
+							if (productType === 'domain' && productConfig.pricingMode) {
 								// Domain: use domain-specific pricing modes (create-default, transfer-default, etc.)
 								body.pricingMode = productConfig.pricingMode;
 								console.log(`DEBUG: Domain using pricing mode: "${productConfig.pricingMode}"`);
 								console.log(`DEBUG: Full body before request:`, JSON.stringify(body, null, 2));
-							} else if (productType !== 'privateCloud' && productType !== 'domain' && productConfig.pricingMode) {
+							} else if (productType !== 'domain' && productConfig.pricingMode) {
 								// Other products: use generic pricing modes
 								body.pricingMode = productConfig.pricingMode;
 								console.log(`DEBUG: ${productType} using pricing mode: "${productConfig.pricingMode}"`);
@@ -1580,85 +1574,7 @@ export class OvhOrder implements INodeType {
 						pairedItem: { item: i },
 					});
 				} catch (httpError: any) {
-					// Special handling for Private Cloud pricing mode errors
-					if (resource === 'cartItem' && operation === 'add' && 
-						this.getNodeParameter('productType', i) === 'privateCloud' &&
-						httpError.response?.data?.message?.includes('pricingMode')) {
 						
-						console.log('🚨 DEBUG: Private Cloud pricing mode failed, trying alternatives...');
-						const currentMode = body.pricingMode || 'undefined';
-						console.log(`🚨 Original mode "${currentMode}" failed with error: ${httpError.response?.data?.message}`);
-						console.log(`🚨 Plan Code: ${body.planCode}`);
-						console.log(`🚨 Full body that failed:`, JSON.stringify(body, null, 2));
-						
-						// Try alternatives: 'default' is confirmed from OVH SDK examples  
-						const alternativeModes = [
-							'default', 'monthly', 'upfront', 'credit', 'hourly', 'rental', null
-						];
-						let retrySucceeded = false;
-						
-						for (const altMode of alternativeModes) {
-							if (altMode === currentMode) continue; // Skip the one that just failed
-							
-							try {
-								console.log(`🧪 DEBUG: Trying alternative pricing mode: ${altMode || 'OMITTED'}`);
-								const altBody = { ...body };
-								if (altMode !== null) {
-									altBody.pricingMode = altMode;
-								} else {
-									// Remove pricingMode completely
-									delete altBody.pricingMode;
-								}
-								console.log(`🧪 Testing with body:`, JSON.stringify(altBody, null, 2));
-								
-								// Recalculate signature for new body
-								const altBodyForSignature = JSON.stringify(altBody);
-								const altTimestamp = Math.round(Date.now() / 1000);
-								const altToSign = applicationSecret + '+' + consumerKey + '+' + method + '+' + baseUrl + path + '+' + altBodyForSignature + '+' + altTimestamp;
-								const altHash = crypto.createHash('sha1').update(altToSign).digest('hex');
-								const altSig = '$1$' + altHash;
-								
-								const altOptions = {
-									...options,
-									headers: {
-										...options.headers,
-										'X-Ovh-Timestamp': altTimestamp.toString(),
-										'X-Ovh-Signature': altSig,
-									},
-									body: altBody,
-								};
-								
-								const altResponse = await this.helpers.httpRequest(altOptions);
-								console.log(`🎉 DEBUG: SUCCESS with pricing mode: ${altMode}`);
-								console.log(`🎉 Response:`, JSON.stringify(altResponse, null, 2));
-								
-								const jsonResponse = altResponse || { success: true, operation: operation, resource: resource };
-								returnData.push({
-									json: jsonResponse,
-									pairedItem: { item: i },
-								});
-								
-								// Success! Mark retry as succeeded and exit
-								retrySucceeded = true;
-								break;
-								
-							} catch (altError) {
-								const altErrorMsg = altError.response?.data?.message || altError.message;
-								console.log(`❌ DEBUG: Failed with pricing mode ${altMode}: ${altErrorMsg}`);
-								if (altError.response?.data) {
-									console.log(`❌ Full error response:`, JSON.stringify(altError.response.data, null, 2));
-								}
-							}
-						}
-						
-						// If retry succeeded, skip the regular error handling
-						if (retrySucceeded) {
-							continue; // Continue to next item in the main loop
-						}
-						
-						// If we get here, all pricing modes failed
-						console.error('DEBUG: All Private Cloud pricing modes failed');
-					}
 					// Enhanced error handling with OVH API response details
 					let errorMessage = httpError.message || 'Unknown error';
 					let errorDetails: any = {};
