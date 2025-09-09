@@ -446,7 +446,6 @@ export class OvhOrder implements INodeType {
 				},
 				options: [
 					{ name: 'Cloud', value: 'cloud' },
-					{ name: 'Dedicated Server', value: 'dedicated' },
 					{ name: 'Domain', value: 'domain' },
 					{ name: 'Email Pro', value: 'emailpro' },
 					{ name: 'Exchange', value: 'exchange' },
@@ -842,199 +841,11 @@ export class OvhOrder implements INodeType {
 					const applicationSecret = credentials.applicationSecret as string;
 					const consumerKey = credentials.consumerKey as string;
 
-					// Create a temporary cart to get available products
-					const timestamp = Math.round(Date.now() / 1000);
-					const createCartPath = '/order/cart';
-					const method = 'POST';
-					const body = JSON.stringify({ ovhSubsidiary: 'FR' }); // Default to FR, could be made configurable
-
-					const toSign = applicationSecret + '+' + consumerKey + '+' + method + '+' + endpoint + createCartPath + '+' + body + '+' + timestamp;
 					const crypto = require('crypto');
-					const hash = crypto.createHash('sha1').update(toSign).digest('hex');
-					const sig = '$1$' + hash;
 
-					const createCartOptions: any = {
-						method,
-						url: endpoint + createCartPath,
-						headers: {
-							'X-Ovh-Application': applicationKey,
-							'X-Ovh-Timestamp': timestamp.toString(),
-							'X-Ovh-Signature': sig,
-							'X-Ovh-Consumer': consumerKey,
-							'Content-Type': 'application/json',
-						},
-						body: JSON.parse(body),
-						json: true,
-					};
-
-					const cartResponse = await this.helpers.httpRequest(createCartOptions);
-					const cartId = cartResponse.cartId;
-
-					// Get available products for this cart
-					const getProductsTimestamp = Math.round(Date.now() / 1000);
-					// For dedicated servers, try the regular cart endpoint first
-					const getProductsPath = `/order/cart/${cartId}/${productType}`;
-					const getMethod = 'GET';
-
-					const getToSign = applicationSecret + '+' + consumerKey + '+' + getMethod + '+' + endpoint + getProductsPath + '++' + getProductsTimestamp;
-					const getHash = crypto.createHash('sha1').update(getToSign).digest('hex');
-					const getSig = '$1$' + getHash;
-
-					const getProductsOptions: any = {
-						method: getMethod,
-						url: endpoint + getProductsPath,
-						headers: {
-							'X-Ovh-Application': applicationKey,
-							'X-Ovh-Timestamp': getProductsTimestamp.toString(),
-							'X-Ovh-Signature': getSig,
-							'X-Ovh-Consumer': consumerKey,
-							'Content-Type': 'application/json',
-						},
-						json: true,
-					};
-
-					// Use Cart API only - Catalog API returns obsolete plan codes 
 					const subsidiary = 'FR'; // Default to FR for now
-					console.log(`DEBUG: About to call Cart API for productType: "${productType}", cartId: "${cartId}"`);
-					console.log(`DEBUG: Cart API endpoint: ${endpoint + getProductsPath}`);
-					try {
-						const products = await this.helpers.httpRequest(getProductsOptions);
-						console.log(`DEBUG: Cart API raw response for ${productType}:`, JSON.stringify(products, null, 2));
-						console.log(`DEBUG: Response type: ${typeof products}, is array: ${Array.isArray(products)}, length: ${Array.isArray(products) ? products.length : 'N/A'}`);
-						
-						if (Array.isArray(products) && products.length > 0) {
-							console.log(`Found ${products.length} products via cart API for ${productType}`);
-							
-							for (const product of products) {
-								let planCode = '';
-								let displayName = '';
-								
-								if (typeof product === 'string') {
-									planCode = product;
-									console.log(`DEBUG: Processing string product for ${productType}: "${planCode}"`);
-									if (productType === 'dedicated') {
-										// Format dedicated server names
-										if (planCode.includes('kimsufi') || planCode.includes('ks')) {
-											displayName = `Kimsufi - ${planCode}`;
-										} else if (planCode.includes('soyoustart') || planCode.includes('sys')) {
-											displayName = `So you Start - ${planCode}`;
-										} else if (planCode.includes('scale')) {
-											displayName = `Scale - ${planCode}`;
-										} else if (planCode.includes('hgr')) {
-											displayName = `High Grade - ${planCode}`;
-										} else if (planCode.includes('adv')) {
-											displayName = `Advance - ${planCode}`;
-										} else {
-											displayName = `Dedicated - ${planCode}`;
-										}
-									} else if (productType === 'vps') {
-										// Format VPS names
-										const vpsMatch = planCode.match(/^vps([a-z]+)-(\d+)-(\d+)-(\d+)$/);
-										if (vpsMatch) {
-											const [, tier, vcpu, ram, storage] = vpsMatch;
-											const tierName = tier.charAt(0).toUpperCase() + tier.slice(1);
-											displayName = `VPS ${tierName} - ${vcpu} vCore, ${ram}GB RAM, ${storage}GB SSD`;
-										} else {
-											displayName = `VPS - ${planCode}`;
-										}
-									} else if (productType === 'cloud') {
-										displayName = planCode.replace(/^project\./, 'Public Cloud - ').replace(/\./g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-									} else if (productType === 'domain') {
-										displayName = planCode.toUpperCase();
-									} else {
-										displayName = planCode.replace(/[-_]/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-									}
-								} else {
-									console.log(`DEBUG: Processing object product for ${productType}:`, JSON.stringify(product, null, 2));
-									planCode = product.planCode || product.productId || product;
-									displayName = product.productName || product.description || planCode;
-								}
-								
-								console.log(`DEBUG: Final mapping - Display: "${displayName}" -> Value: "${planCode}"`);
-								
-								
-								if (planCode) {
-									returnData.push({
-										name: displayName,
-										value: planCode,
-									});
-								}
-							}
-							console.log(`Added ${returnData.length} ${productType} plans from cart API`);
-						} else {
-							console.log(`No products found via cart API for ${productType}`);
-						}
-					} catch (cartError) {
-						console.log(`Cart API failed for ${productType}, trying catalog fallback:`, cartError.message);
-						
-						// Fallback to catalog API for dedicated and VPS
-						if (productType === 'dedicated') {
-							try {
-							const catalogTimestamp = Math.round(Date.now() / 1000);
-							const catalogPath = `/order/catalog/public/baremetalServers?ovhSubsidiary=${subsidiary}`;
-							const catalogMethod = 'GET';
-							
-							const catalogToSign = applicationSecret + '+' + consumerKey + '+' + catalogMethod + '+' + endpoint + catalogPath + '++' + catalogTimestamp;
-							const catalogHash = crypto.createHash('sha1').update(catalogToSign).digest('hex');
-							const catalogSig = '$1$' + catalogHash;
-							
-							const catalogOptions: any = {
-								method: catalogMethod,
-								url: endpoint + catalogPath,
-								headers: {
-									'X-Ovh-Application': applicationKey,
-									'X-Ovh-Timestamp': catalogTimestamp.toString(),
-									'X-Ovh-Signature': catalogSig,
-									'X-Ovh-Consumer': consumerKey,
-								},
-								json: true,
-							};
-							
-							const catalog = await this.helpers.httpRequest(catalogOptions);
-							console.log(`Catalog response for dedicated:`, JSON.stringify(catalog, null, 2).slice(0, 500));
-							
-							if (catalog && catalog.plans && Array.isArray(catalog.plans)) {
-								console.log(`Found ${catalog.plans.length} plans in catalog for dedicated servers`);
-								
-								// Add all plans from catalog (no validation to avoid blocking all plans)
-								for (const plan of catalog.plans) {
-									const planCode = plan.planCode || '';
-									const displayName = plan.invoiceName || plan.productName || planCode;
-									
-									if (!planCode) continue;
-									
-									// Format the display name
-									let enhancedName = displayName;
-									if (planCode.includes('kimsufi') || planCode.includes('ks')) {
-										enhancedName = `Kimsufi - ${displayName}`;
-									} else if (planCode.includes('soyoustart') || planCode.includes('sys')) {
-										enhancedName = `So you Start - ${displayName}`;
-									} else if (planCode.includes('scale')) {
-										enhancedName = `Scale - ${displayName}`;
-									} else if (planCode.includes('hgr')) {
-										enhancedName = `High Grade - ${displayName}`;
-									} else if (planCode.includes('adv')) {
-										enhancedName = `Advance - ${displayName}`;
-									} else {
-										enhancedName = `Dedicated - ${displayName}`;
-									}
-									
-									// Add warning for potentially unavailable plans
-									if (planCode.includes('adv')) {
-										enhancedName += ' (May require special region)';
-									}
-									
-									returnData.push({
-										name: enhancedName,
-										value: planCode,
-									});
-								}
-								console.log(`Added ${returnData.length} dedicated server plans from catalog`);
-							}
-						} catch (catalogError) {
-							console.error('Error loading dedicated catalog:', catalogError);
-						}
-					} else if (productType === 'vps') {
+
+					if (productType === 'vps') {
 						try {
 							const catalogTimestamp = Math.round(Date.now() / 1000);
 							const catalogPath = `/order/catalog/public/vps?ovhSubsidiary=${subsidiary}`;
@@ -1057,21 +868,16 @@ export class OvhOrder implements INodeType {
 							};
 							
 							const catalog = await this.helpers.httpRequest(catalogOptions);
-							console.log(`Catalog response for VPS:`, JSON.stringify(catalog, null, 2).slice(0, 500));
 							
 							if (catalog && catalog.plans && Array.isArray(catalog.plans)) {
-								console.log(`Found ${catalog.plans.length} VPS plans in catalog`);
-								
-								// Add all VPS plans from catalog (no validation to avoid blocking all plans)
 								for (const plan of catalog.plans) {
 									const planCode = plan.planCode || '';
 									const displayName = plan.invoiceName || plan.productName || planCode;
 									
 									if (!planCode) continue;
 									
-									// Format the display name
 									let enhancedName = displayName;
-									const vpsMatch = planCode.match(/vps-([^-]+)-(\d+)-(\d+)-(\d+)/);
+									const vpsMatch = planCode.match(/^vps([a-z]+)-(\d+)-(\d+)-(\d+)$/);
 									if (vpsMatch) {
 										const [, tier, vcpu, ram, storage] = vpsMatch;
 										const tierName = tier.charAt(0).toUpperCase() + tier.slice(1);
@@ -1087,42 +893,125 @@ export class OvhOrder implements INodeType {
 										value: planCode,
 									});
 								}
-								console.log(`Added ${returnData.length} VPS plans from catalog`);
 							}
 						} catch (catalogError) {
-							console.error('Error loading VPS catalog:', catalogError);
+							// VPS catalog failed, return empty for now
 						}
-						} else {
-							console.error('No fallback available for product type:', productType);
+					} else {
+						// For other product types (domain, cloud, etc), try cart API for plan codes
+						try {
+							// Create temporary cart to get available plans
+							const timestamp = Math.round(Date.now() / 1000);
+							const createCartPath = '/order/cart';
+							const method = 'POST';
+							const body = JSON.stringify({
+								ovhSubsidiary: subsidiary,
+							});
+
+							const toSign = applicationSecret + '+' + consumerKey + '+' + method + '+' + endpoint + createCartPath + '+' + body + '+' + timestamp;
+							const hash = crypto.createHash('sha1').update(toSign).digest('hex');
+							const sig = '$1$' + hash;
+
+							const createCartOptions: any = {
+								method,
+								url: endpoint + createCartPath,
+								headers: {
+									'X-Ovh-Application': applicationKey,
+									'X-Ovh-Timestamp': timestamp.toString(),
+									'X-Ovh-Signature': sig,
+									'X-Ovh-Consumer': consumerKey,
+									'Content-Type': 'application/json',
+								},
+								body: JSON.parse(body),
+								json: true,
+							};
+
+							const cartResponse = await this.helpers.httpRequest(createCartOptions);
+							const cartId = cartResponse.cartId;
+
+							// Get available products for this cart
+							const getProductsTimestamp = Math.round(Date.now() / 1000);
+							const getProductsPath = `/order/cart/${cartId}/${productType}`;
+							const getMethod = 'GET';
+
+							const getToSign = applicationSecret + '+' + consumerKey + '+' + getMethod + '+' + endpoint + getProductsPath + '++' + getProductsTimestamp;
+							const getHash = crypto.createHash('sha1').update(getToSign).digest('hex');
+							const getSig = '$1$' + getHash;
+
+							const getProductsOptions: any = {
+								method: getMethod,
+								url: endpoint + getProductsPath,
+								headers: {
+									'X-Ovh-Application': applicationKey,
+									'X-Ovh-Timestamp': getProductsTimestamp.toString(),
+									'X-Ovh-Signature': getSig,
+									'X-Ovh-Consumer': consumerKey,
+									'Content-Type': 'application/json',
+								},
+								json: true,
+							};
+
+							const products = await this.helpers.httpRequest(getProductsOptions);
+							
+							if (Array.isArray(products)) {
+								for (const product of products) {
+									let planCode = '';
+									let displayName = '';
+									
+									if (typeof product === 'string') {
+										planCode = product;
+										if (productType === 'cloud') {
+											displayName = product.replace(/^project\./, 'Public Cloud - ').replace(/\./g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+										} else if (productType === 'domain') {
+											displayName = product.toUpperCase();
+										} else {
+											displayName = product.replace(/[-_]/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+										}
+									} else {
+										planCode = product.planCode || product.productId || product;
+										displayName = product.productName || product.description || planCode;
+									}
+									
+									if (planCode) {
+										returnData.push({
+											name: displayName,
+											value: planCode,
+										});
+									}
+								}
+							}
+
+							// Clean up - delete the temporary cart
+							try {
+								const deleteTimestamp = Math.round(Date.now() / 1000);
+								const deletePath = `/order/cart/${cartId}`;
+								const deleteMethod = 'DELETE';
+
+								const deleteToSign = applicationSecret + '+' + consumerKey + '+' + deleteMethod + '+' + endpoint + deletePath + '++' + deleteTimestamp;
+								const deleteHash = crypto.createHash('sha1').update(deleteToSign).digest('hex');
+								const deleteSig = '$1$' + deleteHash;
+
+								const deleteOptions: any = {
+									method: deleteMethod,
+									url: endpoint + deletePath,
+									headers: {
+										'X-Ovh-Application': applicationKey,
+										'X-Ovh-Timestamp': deleteTimestamp.toString(),
+										'X-Ovh-Signature': deleteSig,
+										'X-Ovh-Consumer': consumerKey,
+									},
+									json: true,
+								};
+
+								await this.helpers.httpRequest(deleteOptions);
+							} catch (deleteError) {
+								// Ignore cleanup errors
+							}
+						} catch (cartError) {
+							// Cart API failed for other product types
 						}
 					}
 
-					// Clean up - delete the temporary cart
-					try {
-						const deleteTimestamp = Math.round(Date.now() / 1000);
-						const deletePath = `/order/cart/${cartId}`;
-						const deleteMethod = 'DELETE';
-
-						const deleteToSign = applicationSecret + '+' + consumerKey + '+' + deleteMethod + '+' + endpoint + deletePath + '++' + deleteTimestamp;
-						const deleteHash = crypto.createHash('sha1').update(deleteToSign).digest('hex');
-						const deleteSig = '$1$' + deleteHash;
-
-						const deleteOptions: any = {
-							method: deleteMethod,
-							url: endpoint + deletePath,
-							headers: {
-								'X-Ovh-Application': applicationKey,
-								'X-Ovh-Timestamp': deleteTimestamp.toString(),
-								'X-Ovh-Signature': deleteSig,
-								'X-Ovh-Consumer': consumerKey,
-							},
-							json: true,
-						};
-
-						await this.helpers.httpRequest(deleteOptions);
-					} catch (error) {
-						console.error('Error deleting temporary cart:', error);
-					}
 
 				} catch (error) {
 					console.error('Error in getProductPlans:', error);
@@ -1132,10 +1021,10 @@ export class OvhOrder implements INodeType {
 					}];
 				}
 
-				// If no plans were found, provide helpful message
+				// Handle empty results
 				if (returnData.length === 0) {
 					return [{
-						name: 'No Plans Available for This Product Type and Region',
+						name: 'No Plans Available for This Product Type',
 						value: '',
 					}];
 				}
