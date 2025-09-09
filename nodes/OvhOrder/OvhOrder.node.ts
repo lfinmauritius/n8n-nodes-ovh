@@ -721,17 +721,12 @@ export class OvhOrder implements INodeType {
 						displayName: 'Pricing Mode',
 						name: 'pricingMode',
 						type: 'options',
-						displayOptions: {
-							hide: {
-								productType: ['privateCloud', 'domain'],
-							},
-						},
 						options: [
 							{ name: 'Default', value: 'default' },
 							{ name: 'Degressivity', value: 'degressivity' },
 						],
 						default: 'default',
-						description: 'Pricing mode for the product',
+						description: 'Pricing mode for the product (Note: some product types only support Default mode)',
 					},
 					{
 						displayName: 'Quantity',
