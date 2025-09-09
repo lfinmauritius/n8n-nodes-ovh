@@ -723,10 +723,14 @@ export class OvhOrder implements INodeType {
 						type: 'options',
 						options: [
 							{ name: 'Default', value: 'default' },
+							{ name: 'Monthly', value: 'monthly' },
+							{ name: 'Upfront', value: 'upfront' },
+							{ name: 'Credit', value: 'credit' },
+							{ name: 'Hourly', value: 'hourly' },
 							{ name: 'Degressivity', value: 'degressivity' },
 						],
-						default: 'default',
-						description: 'Pricing mode for the product (Note: Private Cloud and Domain products do not use pricing modes)',
+						default: 'monthly',
+						description: 'Pricing mode for the product (automatically adjusted for Private Cloud products)',
 					},
 					{
 						displayName: 'Quantity',
@@ -1371,7 +1375,7 @@ export class OvhOrder implements INodeType {
 							// Set pricing mode
 							if (productType === 'privateCloud') {
 								// Private Cloud requires a specific pricing mode - try common ones
-								body.pricingMode = productConfig.pricingMode || 'upfront';
+								body.pricingMode = productConfig.pricingMode || 'monthly';
 							} else if (productType !== 'domain' && productConfig.pricingMode) {
 								body.pricingMode = productConfig.pricingMode;
 							}
@@ -1569,7 +1573,7 @@ export class OvhOrder implements INodeType {
 						console.log('DEBUG: Private Cloud pricing mode failed, trying alternatives...');
 						
 						// Try alternative pricing modes for Private Cloud
-						const alternativeModes = ['monthly', 'default', 'credit', 'hourly'];
+						const alternativeModes = ['upfront', 'monthly', 'default', 'credit', 'hourly'];
 						const currentMode = body.pricingMode;
 						let retrySucceeded = false;
 						
