@@ -1380,8 +1380,9 @@ export class OvhOrder implements INodeType {
 							}
 							// Set pricing mode with enhanced debugging
 							if (productType === 'privateCloud') {
-								// Private Cloud: try omitting pricingMode completely first (let OVH choose default)
-								console.log(`DEBUG: Private Cloud - omitting pricingMode to let OVH API use default`);
+								// Private Cloud: use "default" pricingMode (confirmed from OVH Python SDK examples)
+								body.pricingMode = 'default';
+								console.log(`DEBUG: Private Cloud using pricingMode: "default" (from OVH SDK examples)`);
 								console.log(`DEBUG: Full body before request:`, JSON.stringify(body, null, 2));
 							} else if (productType === 'domain' && productConfig.pricingMode) {
 								// Domain: use domain-specific pricing modes (create-default, transfer-default, etc.)
@@ -1590,9 +1591,9 @@ export class OvhOrder implements INodeType {
 						console.log(`🚨 Plan Code: ${body.planCode}`);
 						console.log(`🚨 Full body that failed:`, JSON.stringify(body, null, 2));
 						
-						// Try alternatives: first without pricingMode, then with different modes
+						// Try alternatives: 'default' is confirmed from OVH SDK examples  
 						const alternativeModes = [
-							null, 'default', 'monthly', 'upfront', 'credit', 'hourly', 'rental'
+							'default', 'monthly', 'upfront', 'credit', 'hourly', 'rental', null
 						];
 						let retrySucceeded = false;
 						
