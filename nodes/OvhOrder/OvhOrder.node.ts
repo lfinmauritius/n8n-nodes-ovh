@@ -832,6 +832,9 @@ export class OvhOrder implements INodeType {
 							value: '',
 						}];
 					}
+					
+					console.log(`DEBUG: getProductPlans called for productType: "${productType}"`);
+					
 
 					const credentials = await this.getCredentials('ovhApi');
 					const endpoint = credentials.endpoint as string;
@@ -894,9 +897,12 @@ export class OvhOrder implements INodeType {
 					const subsidiary = 'FR'; // Default to FR for now
 					
 					// Try cart API first for all product types
+					console.log(`DEBUG: About to call Cart API for productType: "${productType}", cartId: "${cartId}"`);
+					console.log(`DEBUG: Cart API endpoint: ${endpoint + getProductsPath}`);
 					try {
 						const products = await this.helpers.httpRequest(getProductsOptions);
-						console.log(`Cart API response for ${productType}:`, JSON.stringify(products, null, 2).slice(0, 500));
+						console.log(`DEBUG: Cart API raw response for ${productType}:`, JSON.stringify(products, null, 2));
+						console.log(`DEBUG: Response type: ${typeof products}, is array: ${Array.isArray(products)}, length: ${Array.isArray(products) ? products.length : 'N/A'}`);
 						
 						if (Array.isArray(products) && products.length > 0) {
 							console.log(`Found ${products.length} products via cart API for ${productType}`);
@@ -907,6 +913,7 @@ export class OvhOrder implements INodeType {
 								
 								if (typeof product === 'string') {
 									planCode = product;
+									console.log(`DEBUG: Processing string product for ${productType}: "${planCode}"`);
 									if (productType === 'dedicated') {
 										// Format dedicated server names
 										if (planCode.includes('kimsufi') || planCode.includes('ks')) {
@@ -940,9 +947,13 @@ export class OvhOrder implements INodeType {
 										displayName = planCode.replace(/[-_]/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
 									}
 								} else {
+									console.log(`DEBUG: Processing object product for ${productType}:`, JSON.stringify(product, null, 2));
 									planCode = product.planCode || product.productId || product;
 									displayName = product.productName || product.description || planCode;
 								}
+								
+								console.log(`DEBUG: Final mapping - Display: "${displayName}" -> Value: "${planCode}"`);
+								
 								
 								if (planCode) {
 									returnData.push({
@@ -1392,8 +1403,13 @@ export class OvhOrder implements INodeType {
 								throw new NodeOperationError(this.getNode(), `Plan Code is required for VPS products. Please select a plan code from the dropdown.`, { itemIndex: i });
 							}
 							
+							console.log(`DEBUG: About to use planCode for VPS: "${vpsConfig.planCode}"`);
+							console.log(`DEBUG: Full vpsConfig:`, JSON.stringify(vpsConfig, null, 2));
+							
 							// Add basic required fields
 							body.planCode = vpsConfig.planCode;
+							console.log(`DEBUG: VPS Body planCode set to: "${body.planCode}"`);
+							
 							body.quantity = vpsConfig.quantity !== undefined ? vpsConfig.quantity : 1;
 							body.duration = vpsConfig.duration || 'P1M';
 							
@@ -1453,8 +1469,13 @@ export class OvhOrder implements INodeType {
 								throw new NodeOperationError(this.getNode(), `Plan Code is required for ${productType} products. Please select a plan code from the dropdown.`, { itemIndex: i });
 							}
 							
+							console.log(`DEBUG: About to use planCode for ${productType}: "${productConfig.planCode}"`);
+							console.log(`DEBUG: Full productConfig:`, JSON.stringify(productConfig, null, 2));
+							
 							// Add basic required fields
 							body.planCode = productConfig.planCode;
+							console.log(`DEBUG: Body planCode set to: "${body.planCode}"`);
+							
 							body.quantity = productConfig.quantity !== undefined ? productConfig.quantity : 1;
 							
 							// Add optional fields if provided
@@ -1628,6 +1649,15 @@ export class OvhOrder implements INodeType {
 
 				if (method !== 'GET' && method !== 'DELETE' && Object.keys(body).length > 0) {
 					options.body = body;
+				}
+
+				console.log(`DEBUG: About to make HTTP request to OVH API`);
+				console.log(`DEBUG: Method: ${method}`);
+				console.log(`DEBUG: Path: ${path}`);
+				console.log(`DEBUG: Full URL: ${options.url}`);
+				console.log(`DEBUG: Request body:`, JSON.stringify(body, null, 2));
+				if (body && body.planCode) {
+					console.log(`DEBUG: Plan Code being sent to API: "${body.planCode}"`);
 				}
 
 				try {
