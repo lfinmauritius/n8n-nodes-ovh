@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-ovh",
-  "version": "0.15.67",
+  "version": "0.16.0",
   "description": "Comprehensive n8n nodes for OVH API integration - Developed by Ascenzia, experts in AI agent creation",
   "keywords": [
     "n8n-community-node-package",
