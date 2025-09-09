@@ -1368,8 +1368,11 @@ export class OvhOrder implements INodeType {
 							if (productConfig.duration) {
 								body.duration = productConfig.duration;
 							}
-							// Set pricing mode, skip for privateCloud and domain as they don't support it
-							if (productType !== 'privateCloud' && productType !== 'domain' && productConfig.pricingMode) {
+							// Set pricing mode
+							if (productType === 'privateCloud') {
+								// Private Cloud requires a specific pricing mode - try common ones
+								body.pricingMode = productConfig.pricingMode || 'upfront';
+							} else if (productType !== 'domain' && productConfig.pricingMode) {
 								body.pricingMode = productConfig.pricingMode;
 							}
 							
@@ -1558,6 +1561,68 @@ export class OvhOrder implements INodeType {
 						pairedItem: { item: i },
 					});
 				} catch (httpError: any) {
+					// Special handling for Private Cloud pricing mode errors
+					if (resource === 'cartItem' && operation === 'add' && 
+						this.getNodeParameter('productType', i) === 'privateCloud' &&
+						httpError.response?.data?.message?.includes('pricingMode')) {
+						
+						console.log('DEBUG: Private Cloud pricing mode failed, trying alternatives...');
+						
+						// Try alternative pricing modes for Private Cloud
+						const alternativeModes = ['monthly', 'default', 'credit', 'hourly'];
+						const currentMode = body.pricingMode;
+						let retrySucceeded = false;
+						
+						for (const altMode of alternativeModes) {
+							if (altMode === currentMode) continue; // Skip the one that just failed
+							
+							try {
+								console.log(`DEBUG: Trying alternative pricing mode: ${altMode}`);
+								const altBody = { ...body, pricingMode: altMode };
+								
+								// Recalculate signature for new body
+								const altBodyForSignature = JSON.stringify(altBody);
+								const altTimestamp = Math.round(Date.now() / 1000);
+								const altToSign = applicationSecret + '+' + consumerKey + '+' + method + '+' + baseUrl + path + '+' + altBodyForSignature + '+' + altTimestamp;
+								const altHash = crypto.createHash('sha1').update(altToSign).digest('hex');
+								const altSig = '$1$' + altHash;
+								
+								const altOptions = {
+									...options,
+									headers: {
+										...options.headers,
+										'X-Ovh-Timestamp': altTimestamp.toString(),
+										'X-Ovh-Signature': altSig,
+									},
+									body: altBody,
+								};
+								
+								const altResponse = await this.helpers.httpRequest(altOptions);
+								console.log(`DEBUG: SUCCESS with pricing mode: ${altMode}`);
+								
+								const jsonResponse = altResponse || { success: true, operation: operation, resource: resource };
+								returnData.push({
+									json: jsonResponse,
+									pairedItem: { item: i },
+								});
+								
+								// Success! Mark retry as succeeded and exit
+								retrySucceeded = true;
+								break;
+								
+							} catch (altError) {
+								console.log(`DEBUG: Failed with pricing mode ${altMode}:`, altError.response?.data?.message || altError.message);
+							}
+						}
+						
+						// If retry succeeded, skip the regular error handling
+						if (retrySucceeded) {
+							continue; // Continue to next item in the main loop
+						}
+						
+						// If we get here, all pricing modes failed
+						console.error('DEBUG: All Private Cloud pricing modes failed');
+					}
 					// Enhanced error handling with OVH API response details
 					let errorMessage = httpError.message || 'Unknown error';
 					let errorDetails: any = {};
